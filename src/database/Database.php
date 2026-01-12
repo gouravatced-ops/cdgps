@@ -3,11 +3,11 @@
 class Database {
     private $host = 'localhost:3306';
     private $dbname = 'gpsimdega';
-    // private $username = 'gpsimdega_admin';
-    // private $password = '3k1x!2P2s';
+    private $username = 'gpsimdega_admin';
+    private $password = '3k1x!2P2s';
 
-   private $username = 'root';
-   private $password = '';
+//    private $username = 'root';
+//    private $password = '';
 	
     private $pdo;
 
