@@ -46,20 +46,23 @@ class PostingModel
     }
 
     public function saveData($data)
-    {
+    {   
+        // print_r($data); die();
         $sql = "INSERT INTO notices (
-                    uniq_id, notice_category, notice_subcategory, notice_dated,
+                    domain_id, uniq_id, notice_category, notice_subcategory, notice_childsubcategory, notice_dated,
                     notice_ref_no, notice_title, notice_path,
                     notice_new_tag, notice_new_tag_days, ip_address, session_year, notice_url, url_tab_open
                 ) VALUES (
-                    :uniq_id, :category, :sub_category, :dated,
+                    :domainId, :uniq_id, :category, :sub_category, :child_sub_category, :dated,
                     :reference_no, :title, :attachment,
                     :new_flag, :new_no_of_days, :ip_address, :session_year, :external_url, :url_tab_open
-                )";
+                )";  
         $stmt = $this->pdo->prepare($sql);
+        $stmt->bindParam(':domainId', $data['domain_id'], PDO::PARAM_INT);
         $stmt->bindParam(':uniq_id', $data['uniq_id'], PDO::PARAM_INT);
-        $stmt->bindParam(':category', $data['category'], PDO::PARAM_INT);
+        $stmt->bindParam(':category', $data['categoryId'], PDO::PARAM_INT);
         $stmt->bindParam(':sub_category', $data['sub_category'], PDO::PARAM_INT);
+        $stmt->bindParam(':child_sub_category', $data['child_sub_category'], PDO::PARAM_INT);
         $stmt->bindParam(':dated', $data['dated'], PDO::PARAM_STR);
         $stmt->bindParam(':reference_no', trim($data['reference_no']), PDO::PARAM_STR);
         $stmt->bindParam(':title', trim($data['title']), PDO::PARAM_STR);

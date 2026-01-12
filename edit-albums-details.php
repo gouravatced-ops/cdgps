@@ -1,9 +1,12 @@
 <?php
-// ini_set('display_errors', 1);
-// ini_set('display_startup_errors', 1);
-// error_reporting(E_ALL);
-
 session_start();
+include('./timeout.php');
+
+if (!isset($_SESSION['user_id'])) {
+    $_SESSION['login_error'] = 'Session Timeout, Please Login Again.';
+    header('Location: index.php');
+    exit;
+}
 if (isset($_SESSION['user_id'])) {
 
     require_once __DIR__ . '/src/database/Database.php';
@@ -17,21 +20,25 @@ if (isset($_SESSION['user_id'])) {
     $albumQuery->execute([$albumId]);
     $album = $albumQuery->fetch(PDO::FETCH_ASSOC);
 
+    $sql_domains = "SELECT * FROM `domains`";
+    $domain_data = $pdo->query($sql_domains)->fetchAll(PDO::FETCH_ASSOC);
+
     $album_id = $album['id'];
 
- 
+
     if (!$album) {
         die('Album not found.');
     }
 
     $en_title = htmlspecialchars($album['name_en']);
+    $hi_title = htmlspecialchars($album['name_hi']);
     $en_description = $album['description_en'];
     $dateOfEvent = htmlspecialchars($album['event_date']);
     $location = htmlspecialchars($album['location']);
     $coverId = $album['cover_photo_id'];
 
     require_once __DIR__ . '/layouts/header.php';
-    ?>
+?>
 
     <style>
         /* Custom styles */
@@ -81,6 +88,20 @@ if (isset($_SESSION['user_id'])) {
                             <div class="col-md-6">
                                 <!-- Date of Event -->
                                 <div class="form-group">
+                                    <label for="domainId">Domain: <span class="text-danger">*</span></label>
+                                    <select name="domainId" id="domainId" class="form-select" required>
+                                        <option value="">Choose domain...</option>
+                                        <?php foreach ($domain_data as $values): ?>
+                                            <option value="<?php echo htmlspecialchars($values['id']); ?>" <?php if (!empty($album['domain_id']) && $album['domain_id'] == $values['id']) echo 'selected'; ?>>
+                                                <?php echo htmlspecialchars($values['eng_name']) . ' / ' . htmlspecialchars($values['hin_name']); ?>
+                                            </option>
+                                        <?php endforeach; ?>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <!-- Date of Event -->
+                                <div class="form-group">
                                     <label for="dateOfEvent">Date of Event: <span class="text-danger">*</span></label>
                                     <input type="date" id="dateOfEvent" class="form-control" value="<?= $dateOfEvent ?>"
                                         required>
@@ -88,8 +109,13 @@ if (isset($_SESSION['user_id'])) {
                             </div>
                         </div>
                         <div class="form-group mt-2">
-                            <label for="enalbumTitle">Album Title: <span class="text-danger">*</span></label>
+                            <label for="enalbumTitle">Album Title (English): <span class="text-danger">*</span></label>
                             <input type="text" id="enalbumTitle" class="form-control" value="<?= $en_title ?>" required>
+                        </div>
+
+                        <div class="form-group mt-2">
+                            <label for="hialbumTitle">Album Title (Hindi): </label>
+                            <input type="text" id="hialbumTitle" class="form-control" value="<?= $hi_title ?>">
                         </div>
 
                         <div class="row mt-2">
@@ -127,7 +153,7 @@ if (isset($_SESSION['user_id'])) {
     </div>
 
     <script>
-        setTimeout(function () {
+        setTimeout(function() {
             $('.cke_notifications_area').remove();
         }, 1000);
 
@@ -135,7 +161,9 @@ if (isset($_SESSION['user_id'])) {
             $("#btn").prop('disabled', true).text('Please Wait..');
             const albumId = new URLSearchParams(window.location.search).get("album_id");
             const sub_cat = $("#category").val();
+            const domainId = $("#domainId").val();
             const enAlbumTitle = $("#enalbumTitle").val();
+            const hiAlbumTitle = $("#hialbumTitle").val();
             const enAlbumDescription = CKEDITOR.instances.enalbumDescription.getData(); // Get CKEditor content
             const dateOfEvent = $("#dateOfEvent").val();
             const location = $("#location").val();
@@ -145,7 +173,9 @@ if (isset($_SESSION['user_id'])) {
             const formData = new FormData();
             formData.append('sub_cat_id', sub_cat);
             formData.append('albumId', albumId);
+            formData.append('domainId', domainId);
             formData.append('enAlbumTitle', enAlbumTitle);
+            formData.append('hiAlbumTitle', hiAlbumTitle);
             formData.append('enAlbumDescription', enAlbumDescription);
             formData.append('dateOfEvent', dateOfEvent);
             formData.append('location', location);
@@ -160,10 +190,10 @@ if (isset($_SESSION['user_id'])) {
                 contentType: false,
                 data: formData,
                 // contentType: "application/json",
-                success: function (response) {
+                success: function(response) {
                     window.location.reload();
                 },
-                error: function (xhr, status, error) {
+                error: function(xhr, status, error) {
                     // alert(error)
                     window.location.reload();
                 }

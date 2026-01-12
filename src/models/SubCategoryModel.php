@@ -9,28 +9,31 @@ class SubCategoryModel
         $this->pdo = $pdo;
     }
 
-    public function insertSubCategory($subCatName, $categoryId, $createdBy)
+    public function insertSubCategory($domainId , $engsubCatName, $hinsubCatName, $categoryId, $createdBy)
     {
-        $sql = "INSERT INTO sub_category (sub_category_name, category_id, created_by) VALUES (:subCatName, :categoryId, :createdBy)";
+        $sql = "INSERT INTO sub_category (domain_id, sub_category_name, hindi_sub_category_name, category_id, created_by) VALUES (:domainId, :engsubCatName, :hinsubCatName, :categoryId, :createdBy)";
 
         $stmt = $this->pdo->prepare($sql);
 
-        $stmt->bindParam(':subCatName', $subCatName, PDO::PARAM_STR);
+        $stmt->bindParam(':domainId', $domainId, PDO::PARAM_STR);
+        $stmt->bindParam(':engsubCatName', $engsubCatName, PDO::PARAM_STR);
+        $stmt->bindParam(':hinsubCatName', $hinsubCatName, PDO::PARAM_STR);
         $stmt->bindParam(':categoryId', $categoryId, PDO::PARAM_INT);
         $stmt->bindParam(':createdBy', $createdBy, PDO::PARAM_STR);
 
         return $stmt->execute();
     }
 
-    public function insertChildSubCategory($chsubCatName, $hnSubCatName, $description, $subcategoryId, $categoryId, $createdBy)
+    public function insertChildSubCategory($domainId, $chsubCatName, $hnSubCatName, $description, $subcategoryId, $categoryId, $createdBy)
     {
-        $sql = "INSERT INTO child_sub_category (child_sub_category_name, hn_child_sub_category_name, subcategory_id, category_id, created_by) VALUES (:childSubCatName, :hnChildSubCatName, :subCategoryId, :categoryId, :createdBy)";
+        $sql = "INSERT INTO child_sub_category (domain_id, child_sub_category_name, hn_child_sub_category_name, description, subcategory_id, category_id, created_by) VALUES (:domainId, :childSubCatName, :hnChildSubCatName, :description, :subCategoryId, :categoryId, :createdBy)";
 
         $stmt = $this->pdo->prepare($sql);
 
+        $stmt->bindParam(':domainId', $domainId, PDO::PARAM_STR);
         $stmt->bindParam(':childSubCatName', $chsubCatName, PDO::PARAM_STR);
         $stmt->bindParam(':hnChildSubCatName', $hnSubCatName, PDO::PARAM_STR);
-        // $stmt->bindParam(':description', $description, PDO::PARAM_STR);
+        $stmt->bindParam(':description', $description, PDO::PARAM_STR);
         $stmt->bindParam(':categoryId', $categoryId, PDO::PARAM_INT);
         $stmt->bindParam(':subCategoryId', $subcategoryId, PDO::PARAM_INT);
         $stmt->bindParam(':createdBy', $createdBy, PDO::PARAM_STR);
@@ -49,36 +52,46 @@ class SubCategoryModel
         $sql = "SELECT id, sub_category_name FROM sub_category WHERE is_active = 1 AND category_id= '$cat_id'";
         return $this->pdo->query($sql)->fetchAll(PDO::FETCH_ASSOC);
     }
-    public function updateSubCategory($id, $engCat, $updatedBy)
+    public function updateSubCategory($id, $domainId, $eng_sub_cat, $hin_sub_cat, $categoryId, $updatedBy)
     {
         $sql = "UPDATE sub_category SET
+                    domain_id = :domainId,
                     sub_category_name = :sub_category_name,
+                    hindi_sub_category_name = :hindi_sub_category_name,
+                    category_id = :categoryId,
                     updated_date = CURRENT_TIMESTAMP,
                     updated_by = :updated_by
                 WHERE id = :id";
         $stmt = $this->pdo->prepare($sql);
         $stmt->bindParam(':id', $id, PDO::PARAM_INT);
-        $stmt->bindParam(':sub_category_name', $engCat, PDO::PARAM_STR);
+        $stmt->bindParam(':domainId', $domainId, PDO::PARAM_STR);
+        $stmt->bindParam(':sub_category_name', $eng_sub_cat, PDO::PARAM_STR);
+        $stmt->bindParam(':hindi_sub_category_name', $hin_sub_cat, PDO::PARAM_STR);
+        $stmt->bindParam(':categoryId', $categoryId, PDO::PARAM_STR);
         $stmt->bindParam(':updated_by', $updatedBy, PDO::PARAM_INT);
         return $stmt->execute();
     }
 
-    public function updateChildSubCategory($id, $engCat, $hnCat, $catId, $subCatId, $updatedBy)
+    public function updateChildSubCategory($id, $domainId, $chsubCatName, $hnSubCatName, $description, $categoryId, $subcategoryId, $updatedBy)
     {
         $sql = "UPDATE child_sub_category SET
+                    domain_id = :domainId,
                     category_id = :category_id,
                     subcategory_id = :subcategory_id,
                     child_sub_category_name = :child_sub_category_name,
                     hn_child_sub_category_name = :hn_child_sub_category_name,
+                    description = :description,
                     updated_date = CURRENT_TIMESTAMP,
                     updated_by = :updated_by
                 WHERE id = :id";
         $stmt = $this->pdo->prepare($sql);
         $stmt->bindParam(':id', $id, PDO::PARAM_INT);
-        $stmt->bindParam(':child_sub_category_name', $engCat, PDO::PARAM_STR);
-        $stmt->bindParam(':hn_child_sub_category_name', $hnCat, PDO::PARAM_STR);
-        $stmt->bindParam(':category_id', $catId, PDO::PARAM_INT);
-        $stmt->bindParam(':subcategory_id', $subCatId, PDO::PARAM_INT);
+        $stmt->bindParam(':domainId', $domainId, PDO::PARAM_STR);
+        $stmt->bindParam(':child_sub_category_name', $chsubCatName, PDO::PARAM_STR);
+        $stmt->bindParam(':hn_child_sub_category_name', $hnSubCatName, PDO::PARAM_STR);
+        $stmt->bindParam(':description', $description, PDO::PARAM_STR);
+        $stmt->bindParam(':category_id', $categoryId, PDO::PARAM_INT);
+        $stmt->bindParam(':subcategory_id', $subcategoryId, PDO::PARAM_INT);
         $stmt->bindParam(':updated_by', $updatedBy, PDO::PARAM_INT);
         return $stmt->execute();
     }

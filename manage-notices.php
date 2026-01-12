@@ -1,9 +1,10 @@
 <?php
-
 session_start();
+include('./timeout.php');
 
 if (!isset($_SESSION['user_id'])) {
-    header("Location: index.php");
+    $_SESSION['login_error'] = 'Session Timeout, Please Login Again.';
+    header('Location: index.php');
     exit;
 }
 
@@ -12,7 +13,7 @@ require_once __DIR__ . '/src/database/Database.php';
 $database = new Database();
 $pdo = $database->getConnection();
 
-$sql = "SELECT *, b.sub_category_name as category_name FROM notices a join sub_category b on a.notice_category = b.id WHERE  a.is_deleted='0' ORDER BY created_at";
+$sql = "SELECT *, b.sub_category_name as category_name , dm.eng_name , csc.child_sub_category_name FROM notices a join sub_category b on a.notice_subcategory = b.id LEFT JOIN domains as dm ON dm.id = a.domain_id LEFT JOIN child_sub_category as csc ON csc.id = a.notice_childsubcategory WHERE  a.is_deleted='0' ORDER BY created_at";
 
 $categories = $pdo->query($sql)->fetchAll(PDO::FETCH_ASSOC);
 
@@ -45,8 +46,10 @@ require_once __DIR__ . '/layouts/header.php'; ?>
                     <tr>
                         <th>S.No.</th>
                         <th>Ref. No.</th>
-                        <th>Tender Category</th>
-                        <th>Tender Title</th>
+                        <th>Domain</th>
+                        <th>Category</th>
+                        <th style="white-space: nowrap;" >Sub Category</th>
+                        <th style="white-space: nowrap;" >Notice Title</th>
                         <th>Dated</th>
                         <th>Actions</th>
                     </tr>
@@ -58,9 +61,11 @@ require_once __DIR__ . '/layouts/header.php'; ?>
                         <tr>
                             <td><?php echo $i++; ?></td>
                             <td><?php echo htmlspecialchars($row['notice_ref_no']); ?></td>
+                            <td><?php echo htmlspecialchars($row['eng_name']); ?></td>
                             <td><?php echo htmlspecialchars($row['category_name']); ?></td>
+                            <td><?php echo htmlspecialchars($row['child_sub_category_name']); ?></td>
                             <td><?php echo htmlspecialchars($row['notice_title']); ?></td>
-                            <td><?= htmlspecialchars($row['notice_dated']); ?></td>
+                            <td style="white-space: nowrap;"><?= htmlspecialchars($row['notice_dated']); ?></td>
                             <td><a href="<?= $base_url ?>/edit-notices.php?id=<?php echo htmlspecialchars($row['uniq_id']) ?>"
                                     class="btn btn-info btn-sm"><i class="ti ti-edit"></i></a>&nbsp;&nbsp;
 

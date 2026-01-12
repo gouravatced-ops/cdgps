@@ -1,14 +1,18 @@
 <?php
 session_start();
+include('./timeout.php');
+
+if (!isset($_SESSION['user_id'])) {
+    $_SESSION['login_error'] = 'Session Timeout, Please Login Again.';
+    header('Location: index.php');
+    exit;
+}
 if (isset($_SESSION['user_id'])) {
     $title = "Admin - Post News";
 
     require_once __DIR__ . '/src/database/Database.php';
     $database = new Database();
     $pdo = $database->getConnection();
-
-    $sql_subcat = "SELECT * FROM sub_category WHERE is_deleted='0' and category_id=2";
-    $subcategories = $pdo->query($sql_subcat)->fetchAll(PDO::FETCH_ASSOC);
 
     $postingId = isset($_GET['id']) ? intval($_GET['id']) : 0;
 
@@ -17,8 +21,23 @@ if (isset($_SESSION['user_id'])) {
     $stmt->execute();
     $data = $stmt->fetch(PDO::FETCH_ASSOC);
 
+    $domainId = $data['domain_id'];
+    $sql = "SELECT * FROM category_master WHERE domain_id = $domainId";
+    $categories = $pdo->query($sql)->fetchAll(PDO::FETCH_ASSOC);
+
+    $categoryId = $data['category_id'];
+    $sql = "SELECT * FROM sub_category WHERE category_id = '$categoryId'";
+    $subcategories = $pdo->query($sql)->fetchAll(PDO::FETCH_ASSOC);
+
+    $subcategoryId = $data['sub_category_id'];
+    $sql = "SELECT * FROM child_sub_category WHERE subcategory_id = $subcategoryId";
+    $childsubcategories = $pdo->query($sql)->fetchAll(PDO::FETCH_ASSOC);
+
+    $sql_domains = "SELECT * FROM `domains`";
+    $domain_data = $pdo->query($sql_domains)->fetchAll(PDO::FETCH_ASSOC);
+
     require_once __DIR__ . '/layouts/header.php';
-    ?>
+?>
 
     <script src="https://cdn.ckeditor.com/4.9.2/standard/ckeditor.js"></script>
 
@@ -77,6 +96,62 @@ if (isset($_SESSION['user_id'])) {
 
                     <div class="row">
                         <div class="col-md-6">
+                            <input type="hidden" name="page" id="currentPage" value="news">
+                            <!-- News Date -->
+                            <div class="mb-3">
+                                <label for="domainId" class="form-label">Domains<span
+                                        class="text-danger">*</span></label>
+                                <select name="domainId" id="subCategoryList" class="form-select" required>
+                                    <option value="">Choose domain...</option>
+                                    <?php foreach ($domain_data as $values): ?>
+                                        <option value="<?php echo htmlspecialchars($values['id']); ?>" <?php if (!empty($data['domain_id']) && $data['domain_id'] == $values['id']) echo 'selected'; ?>>
+                                            <?php echo htmlspecialchars($values['eng_name']) . ' / ' . htmlspecialchars($values['hin_name']); ?>
+                                        </option>
+                                    <?php endforeach; ?>
+                                </select>
+                                <?php if (isset($err['domainId'])) { ?>
+                                    <div class="form-text text-danger"><?php echo $err['domainId']; ?></div>
+                                <?php } ?>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <!-- News Date -->
+                            <div class="mb-3">
+                                <label for="subCategoryId" class="form-label">Category<span
+                                        class="text-danger">*</span></label>
+                                <select name="subCategoryId" id="postcategoryId" class="form-select" required>
+                                    <option value="">Choose Sub Category...</option>
+                                    <?php foreach ($subcategories as $subcategory): ?>
+                                        <option value="<?php echo htmlspecialchars($subcategory['id']); ?>" <?= $subcategory['id'] == $data['sub_category_id'] ? 'selected' : '' ?>>
+                                            <?php echo htmlspecialchars($subcategory['sub_category_name']); ?>
+                                        </option>
+                                    <?php endforeach; ?>
+                                </select>
+                                <?php if (isset($err['subCategoryId'])) { ?>
+                                    <div class="form-text text-danger"><?php echo $err['subCategoryId']; ?></div>
+                                <?php } ?>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <!-- News Date -->
+                            <div class="mb-3">
+                                <label for="childSubCategoryId" class="form-label">Sub Category<span
+                                        class="text-danger">*</span></label>
+                                <select name="childSubCategoryId" id="SubCategoryId" class="form-select" required>
+                                    <option value="">Choose Child Sub Category...</option>
+                                    <?php foreach ($childsubcategories as $childsubcategory): ?>
+                                        <option value="<?php echo htmlspecialchars($childsubcategory['id']); ?>" <?= $childsubcategory['id'] == $data['child_sub_category_id'] ? 'selected' : '' ?>>
+                                            <?php echo htmlspecialchars($childsubcategory['child_sub_category_name']); ?>
+                                        </option>
+                                    <?php endforeach; ?>
+                                </select>
+                                <?php if (isset($err['childSubCategoryId'])) { ?>
+                                    <div class="form-text text-danger"><?php echo $err['childSubCategoryId']; ?></div>
+                                <?php } ?>
+                            </div>
+                        </div>
+
+                        <div class="col-md-6">
                             <input type="hidden" name="post" value="<?= $postingId ?>">
                             <!-- News Date -->
                             <div class="mb-3">
@@ -99,6 +174,13 @@ if (isset($_SESSION['user_id'])) {
                             <?php if (isset($err['news_title'])) { ?>
                                 <div class="form-text text-danger"><?php echo $err['news_title']; ?></div>
                             <?php } ?>
+                        </div>
+
+                        <!-- Hindi News Title -->
+                        <div class="col-md-12 mb-3">
+                            <label for="news_title_hin" class="form-label">News Title (Hindi)</label>
+                            <input type="text" class="form-control" class="form-control" id="news_title_hin" name="news_title_hin"
+                                placeholder="Max 255 characters" maxlength="255" value="<?= $data['news_title_hin']; ?>">
                         </div>
 
                         <!-- News Description -->
@@ -148,11 +230,9 @@ if (isset($_SESSION['user_id'])) {
                         </div>
                     </div>
                     <!-- YouTube Videos Section -->
-                    <div class="card mb-3">
-                        <div class="card-header">
-                            <h5 class="mb-0">YouTube Videos (Max. 4 Links allowed)</h5>
-                        </div>
-                        <div class="card-body" id="videoAttachments">
+                    <div class="mb-3">
+                        <h5 class="mb-0 text-primary border-bottom border-primary">YouTube Videos (Max. 4 Links allowed)</h5>
+                        <div class="mt-3" id="videoAttachments">
                             <!-- Video input groups will go here -->
                             <div class="row" id="video1">
                                 <div class="col-md-6">
@@ -236,19 +316,17 @@ if (isset($_SESSION['user_id'])) {
                                 </div>
                             </div>
                         </div>
-                        <div class="card-footer">
-                            <button type="button" id="deleteVideo" style="color:red">Delete Last Attachement &
+                        <div class="mt-2">
+                            <button type="button" id="deleteVideo" class="btn" style="background-color: #db0101; color:white;">Delete Last Attachement &
                                 Title</button>
-                            <button type="button" id="addVideo">Add More</button>
+                            <button type="button" id="addVideo" class="btn" style="background-color: #02a102; color:white;">Add More</button>
                         </div>
                     </div>
 
                     <!-- PDF Section -->
-                    <div class="card mb-3">
-                        <div class="card-header bg-info">
-                            <h5 class="mb-0 text-light">PDF Attachement</h5>
-                        </div>
-                        <div class="card-body" id="pdfAttachments">
+                    <div class="mb-3">
+                        <h5 class="mb-0 text-light">PDF Attachement</h5>
+                        <div class="mt-3" id="pdfAttachments">
                             <!-- PDF input groups will go here -->
 
                             <div class="row" id="pdf1">
@@ -257,11 +335,10 @@ if (isset($_SESSION['user_id'])) {
                                         <span class="text">PDF Attachment 1</span>
                                         <input type="file" name="pdf_attachement1" class="form-control" id="pdf_attachment1"
                                             value="" data-constraints="@Required" accept=".pdf" />
-                                            <?php if($data['pdf_attachement1'])
-                                            { ?>
- <iframe src="<?= $base_url ?>/src/<?= $data['pdf_attachement1']; ?>" frameborder="0" style="height: 150px;"></iframe>  
-                                           <?php  } ?>
-                                                        
+                                        <?php if ($data['pdf_attachement1']) { ?>
+                                            <iframe src="<?= $base_url ?>/src/<?= $data['pdf_attachement1']; ?>" frameborder="0" style="height: 150px;"></iframe>
+                                        <?php  } ?>
+
                                     </label>
                                     <?php if (isset($err['pdf_attachement1'])) {
                                         echo '<span class="empty-message">' . $err['pdf_attachement1'] . '</span>';
@@ -457,11 +534,11 @@ if (isset($_SESSION['user_id'])) {
                                 </div>
                             </div>
                         </div>
-                        <!-- <div class="card-footer">
-                            <button type="button" id="deletePdf" style="color:red">Delete Last
+                        <div class="mt-2">
+                            <button type="button" id="deletePdf" class="btn" style="background-color: #db0101; color:white;">Delete Last
                                 Attachment</button>
-                            <button type="button" id="addPdf">Add More</button>
-                        </div> -->
+                            <button type="button" id="addPdf" class="btn" style="background-color: #02a102; color:white;">Add More</button>
+                        </div>
                     </div>
 
 
@@ -471,20 +548,20 @@ if (isset($_SESSION['user_id'])) {
                             <input type="text" class="form-control" class="form-control" id="location" name="location"
                                 placeholder="Enter location" value="<?= $data['location']; ?>" required>
                         </div>
-                        <div class="col-md-6 mb-3">
+                        <!-- <div class="col-md-6 mb-3">
                             <label for="new_tag" class="form-label">New Button <span
                                     class="text-danger">*</span></label><br>
                             <input type="radio" id="new_tag_yes" name="new_tag" value="Y"
-                                <?= $data['new_tag'] == 'Y' ? 'checked' : '' ?> onchange="toggleNumberInput()"> Yes
+                                <?php #$data['new_tag'] == 'Y' ? 'checked' : '' ?> onchange="toggleNumberInput()"> Yes
                             <input type="radio" id="new_tag_no" name="new_tag" value="N"
-                                <?= $data['new_tag'] == 'N' ? 'checked' : '' ?> onchange="toggleNumberInput()"> No
+                                <?php #$data['new_tag'] == 'N' ? 'checked' : '' ?> onchange="toggleNumberInput()"> No
                         </div>
 
                         <div class="col-md-6 mb-3" id="number_input_container"
-                            style="<?= $data['new_tag'] == 'N' ?? 'display: none' ?>">
+                            style="<?php #$data['new_tag'] == 'N' ?? 'display: none' ?>">
                             <label for="number_input" class="form-label">Enter Number of Days<span
                                     class="text-danger">*</span></label>
-                            <input type="number" class="form-control" id="number_input" name="new_tag_days" <?= $data['new_tag'] == 'N' ? 'disabled' : '' ?> value="<?= $data['new_news_valid_upto']; ?>">
+                            <input type="number" class="form-control" id="number_input" name="new_tag_days" <?php #$data['new_tag'] == 'N' ? 'disabled' : '' ?> value="<?php #$data['new_news_valid_upto']; ?>">
                         </div>
 
                         <script>
@@ -506,18 +583,18 @@ if (isset($_SESSION['user_id'])) {
                             }
 
                             // Initialize on page load
-                            document.addEventListener('DOMContentLoaded', function () {
+                            document.addEventListener('DOMContentLoaded', function() {
                                 toggleNumberInput();
                             });
-                        </script>
-                        <!-- <div class="col-md-12 mb-3">
+                        </script> -->
+                        <div class="col-md-12 mb-3">
                             <label for="hashTag" class="form-label">
                                 Hash Tags
                                 <small class="text-muted">(Comma separated)</small>
                             </label>
                             <textarea class="form-control" class="form-control" id="hashTag" name="hashTag"
-                                placeholder="#hashtag1, #hashtag2"><?= $data['hashTag']; ?></textarea>
-                        </div> -->
+                                placeholder="#hashtag1, #hashtag2"><?= $data['hashtag']; ?></textarea>
+                        </div>
                     </div>
 
                     <!-- Submit Buttons -->

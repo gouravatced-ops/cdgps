@@ -21,7 +21,9 @@ class SubCategoryController
 
         // Start session and retrieve inputs
         session_start();
-        $subCatName = filter_input(INPUT_POST, 'subCatName', FILTER_SANITIZE_STRING);
+        $domainId = filter_input(INPUT_POST, 'domainId', FILTER_SANITIZE_STRING);
+        $engsubCatName = filter_input(INPUT_POST, 'engsubCatName', FILTER_SANITIZE_STRING);
+        $hinsubCatName = filter_input(INPUT_POST, 'hinsubCatName', FILTER_SANITIZE_STRING);
         $categoryId = filter_input(INPUT_POST, 'categoryId', FILTER_SANITIZE_NUMBER_INT);
         $createdBy = $_SESSION['user_id'];
 
@@ -33,8 +35,8 @@ class SubCategoryController
         $subCategoryModel = new SubCategoryModel($pdo);
 
         // Insert the sub-category
-        if ($subCategoryModel->insertSubCategory($subCatName,  $categoryId, $createdBy)) {
-           
+        if ($subCategoryModel->insertSubCategory($domainId, $engsubCatName, $hinsubCatName,  $categoryId, $createdBy)) {
+
             $_SESSION['message'] = "Sub Category added successfully.";
             header("Location: ../../create-sub-category.php");
         } else {
@@ -64,7 +66,10 @@ class SubCategoryController
     {
         session_start();
         $id = filter_input(INPUT_POST, 'uid', FILTER_SANITIZE_NUMBER_INT);
-        $engCat = filter_input(INPUT_POST, 'eng_cat', FILTER_SANITIZE_STRING);
+        $domainId = filter_input(INPUT_POST, 'domainId', FILTER_SANITIZE_STRING);
+        $categoryId = filter_input(INPUT_POST, 'categoryId', FILTER_SANITIZE_STRING);
+        $eng_sub_cat = filter_input(INPUT_POST, 'eng_sub_cat', FILTER_SANITIZE_STRING);
+        $hin_sub_cat = filter_input(INPUT_POST, 'hin_sub_cat', FILTER_SANITIZE_STRING);
         $updatedBy = $_SESSION['user_id'];
 
         $database = new Database();
@@ -72,7 +77,7 @@ class SubCategoryController
 
         $subCategoryModel = new SubCategoryModel($pdo);
 
-        if ($subCategoryModel->updateSubCategory($id, $engCat, $updatedBy)) {
+        if ($subCategoryModel->updateSubCategory($id, $domainId, $eng_sub_cat, $hin_sub_cat, $categoryId, $updatedBy)) {
             $_SESSION['message'] = "Sub Category updated successfully.";
             header("Location: ../../edit-sub-category.php?id=" . $id);
             exit;
@@ -104,7 +109,6 @@ class SubCategoryController
             exit;
         }
     }
-
 }
 
 $controller = new SubCategoryController();
@@ -122,9 +126,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     } else {
         $controller->insertSubCategory();
     }
-
 } else {
     $controller->showSubCategoryForm();
 }
-
-?>

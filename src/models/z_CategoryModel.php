@@ -30,7 +30,7 @@ class CategoryModel
     {
         $sql = "UPDATE category_master SET
                     category_name = :category,
-                    hn_category_name = :hn_category_name,
+                    hindi_category_name = :hn_category_name,
                     updated_date = CURRENT_TIMESTAMP,
                     updated_by = :updated_by
                 WHERE id = :id";

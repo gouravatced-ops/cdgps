@@ -5,10 +5,10 @@
                 document.documentElement.setAttribute("data-color-theme", e);
         }
 </script>
-<button class="btn btn-primary p-3 rounded-circle d-flex align-items-center justify-content-center customizer-btn"
+<!-- <button class="btn btn-primary p-3 rounded-circle d-flex align-items-center justify-content-center customizer-btn"
         type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasExample" aria-controls="offcanvasExample">
         <i class="icon ti ti-settings fs-7"></i>
-</button>
+</button> -->
 
 <div class="offcanvas customizer offcanvas-end" tabindex="-1" id="offcanvasExample"
         aria-labelledby="offcanvasExampleLabel">
@@ -192,6 +192,18 @@
 </div>
 </div>
 <div class="dark-transparent sidebartoggler"></div>
+<div class="alert alert-success alert-dismissible fade show mt-3">
+  Success! Saved successfully.
+</div>
+
+<script>
+  setTimeout(() => {
+    document.querySelectorAll('.alert-success').forEach(alert => {
+      alert.classList.remove('show');
+      setTimeout(() => alert.remove(), 300); // remove after fade
+    });
+  }, 4000);
+</script>
 <script src="<?= $base_url ?>/assets/js/vendor.min.js"></script>
 <!-- Import Js Files -->
 <script src="<?= $base_url ?>/assets/libs/jquery/dist/jquery.min.js"></script>

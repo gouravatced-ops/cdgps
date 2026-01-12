@@ -1,9 +1,10 @@
 <?php
-
 session_start();
+include('./timeout.php');
 
 if (!isset($_SESSION['user_id'])) {
-    header("Location: index.php");
+    $_SESSION['login_error'] = 'Session Timeout, Please Login Again.';
+    header('Location: index.php');
     exit;
 }
 require_once __DIR__ . '/layouts/header.php'; ?>

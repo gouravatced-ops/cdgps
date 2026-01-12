@@ -3,9 +3,9 @@ $protocol = isset($_SERVER['HTTPS']) &&
     $_SERVER['HTTPS'] === 'on' ? 'https://' : 'http://';
 $base_url = $protocol . $_SERVER['HTTP_HOST'] . '/cdgps';
 
-$app_name = "GP Simdega";
+$app_name = "Central GST";
 
-$full_app_name = "Government Polytechnic, Simdega";
+$full_app_name = "Central GST & Central Excise, India";
 //echo $base_url;
 //die; 
 
@@ -26,7 +26,7 @@ if (!isset($_SESSION['csrf_token'])) {
     <title>Admin</title>
 
     <!-- Favicon icon-->
-    <link rel="shortcut icon" type="image/png" href="<?= $base_url ?>/assets/images/logos/rims_logo.jpg" />
+    <link rel="shortcut icon" type="image/png" href="<?= $base_url ?>/assets/images/logos/cgst-logo.png" />
     <!-- <link rel="stylesheet" href="<?= $base_url ?>/assets/css/styles.min.css"> -->
 
     <!-- Core Css -->
@@ -90,7 +90,7 @@ if (!isset($_SESSION['csrf_token'])) {
                             
                         </ul>
 
-                        <h3 class="text-center"><img src="<?= $base_url ?>/assets/images/logos/rims_logo.jpg" class="" width="50" alt="admin-img" /> <?= $full_app_name; ?></h3>
+                        <h3 class="text-center"><img src="<?= $base_url ?>/assets/images/logos/cgst-logo.png" class="" width="50" alt="admin-img" /> <?= $full_app_name; ?></h3>
 
                         <div class="d-block d-lg-none py-4">
                             <a href="index.html" class="text-nowrap logo-img">
@@ -379,4 +379,4 @@ if (!isset($_SESSION['csrf_token'])) {
             <!--  Header End -->
 
             <div class="body-wrapper">
-                <div class="container-fluid">
+                <!-- <div class="container-fluid"> -->

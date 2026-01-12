@@ -45,7 +45,22 @@ class UpdatePostController
         $stmt->execute();
         $existingData = $stmt->fetch(PDO::FETCH_ASSOC);
 
+        $subCategoryId = $_POST['subCategory'];
+        $stmt = $pdo->prepare(
+            "SELECT category_id 
+            FROM sub_category 
+            WHERE id = :subCategoryId
+            AND is_deleted = '0'
+            LIMIT 1"
+        );
+
+        $stmt->execute(['subCategoryId' => $subCategoryId]);
+        $catgeoryId = $stmt->fetchColumn();
+
+        $domainId = filter_input(INPUT_POST, 'domainId', FILTER_SANITIZE_NUMBER_INT);
+        $categoryid = $catgeoryId;
         $sub_category = filter_input(INPUT_POST, 'subCategory', FILTER_SANITIZE_NUMBER_INT);
+        $child_sub_category = filter_input(INPUT_POST, 'childSubCategoryId', FILTER_SANITIZE_NUMBER_INT);
         $document_no = filter_input(INPUT_POST, 'doc_nos', FILTER_SANITIZE_STRING);
         $dated = filter_input(INPUT_POST, 'doc_date', FILTER_SANITIZE_STRING);
         $reference_no = filter_input(INPUT_POST, 'ref_nos', FILTER_SANITIZE_STRING);
@@ -63,7 +78,10 @@ class UpdatePostController
 
         $postingModel = new PostingModel($pdo);
 
+        $data['domainId'] = ($sub_category === $existingData['domain_id']) ? $existingData['domain_id'] : $domainId;
+        $data['categoryId'] = ($sub_category === $existingData['notice_category']) ? $existingData['notice_category'] : $categoryid;
         $data['sub_category'] = ($sub_category === $existingData['notice_subcategory']) ? $existingData['notice_subcategory'] : $sub_category;
+        $data['child_sub_category'] = ($sub_category === $existingData['notice_childsubcategory']) ? $existingData['notice_childsubcategory'] : $child_sub_category;
         $data['notice_dated'] = ($dated === $existingData['notice_dated']) ? $existingData['notice_dated'] : $dated;
         $data['notice_ref_no'] = ($reference_no === $existingData['notice_ref_no']) ? $existingData['notice_ref_no'] : $reference_no;
         $data['notice_title'] = ($title === $existingData['notice_title']) ? $existingData['notice_title'] : $title;

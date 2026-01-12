@@ -1,9 +1,10 @@
 <?php
-
 session_start();
+include('./timeout.php');
 
 if (!isset($_SESSION['user_id'])) {
-    header("Location: index.php");
+    $_SESSION['login_error'] = 'Session Timeout, Please Login Again.';
+    header('Location: index.php');
     exit;
 }
 
@@ -12,11 +13,20 @@ require_once __DIR__ . '/src/database/Database.php';
 $database = new Database();
 $pdo = $database->getConnection();
 
-$sql = "SELECT a.*, b.category_name, c.sub_category_name,c.id as sub_cat_id 
-        FROM child_sub_category a 
-        INNER JOIN category_master b ON b.id = a.category_id 
-        LEFT JOIN sub_category c ON c.id = a.subcategory_id 
-        WHERE a.is_deleted='0'";
+$sql = "SELECT 
+            a.*,
+            dm.eng_name,
+            b.category_name,
+            c.sub_category_name,
+            c.id AS sub_cat_id
+        FROM child_sub_category a
+        INNER JOIN category_master b 
+            ON b.id = a.category_id
+        LEFT JOIN sub_category c 
+            ON c.id = a.subcategory_id
+        LEFT JOIN domains dm 
+            ON dm.id = a.domain_id
+        WHERE a.is_deleted = '0';";
 
 $chsubcategories = $pdo->query($sql)->fetchAll(PDO::FETCH_ASSOC);
 
@@ -48,6 +58,7 @@ require_once __DIR__ . '/layouts/header.php'; ?>
                 <thead>
                     <tr>
                         <th>S.No.</th>
+                        <th>Commissionerate</th>
                         <th>Category Name</th>
                         <th>Sub Category Name</th>
                         <th>Child Name</th>
@@ -61,6 +72,7 @@ require_once __DIR__ . '/layouts/header.php'; ?>
                     foreach ($chsubcategories as $row): ?>
                         <tr>
                             <td><?php echo $i++; ?></td>
+                            <td><?php echo htmlspecialchars($row['eng_name']); ?></td>
                             <td><?php echo htmlspecialchars($row['category_name']); ?></td>
                             <td><?php echo htmlspecialchars($row['sub_category_name']); ?></td>
                             <td><?php echo htmlspecialchars($row['child_sub_category_name']); ?></td>
@@ -81,4 +93,6 @@ require_once __DIR__ . '/layouts/header.php'; ?>
     </div>
 </div>
 
-<?php require_once __DIR__ . '/layouts/footer.php'; ?>
+<?php 
+$embed_script = "newsForm.js";
+require_once __DIR__ . '/layouts/footer.php'; ?>

@@ -34,7 +34,9 @@ class AlbumController
         $albumModel = new AlbumModel($pdo);
 
         session_start();
+        $domainId = filter_input(INPUT_POST, 'domainId', FILTER_SANITIZE_NUMBER_INT);
         $name_en = filter_input(INPUT_POST, 'eng_cat', FILTER_SANITIZE_STRING);
+        $name_hi = filter_input(INPUT_POST, 'hin_cat', FILTER_SANITIZE_STRING);
         $description_en = filter_input(INPUT_POST, 'en_albm_desc');
         $location = filter_input(INPUT_POST, 'location', FILTER_SANITIZE_STRING);
         $event_date = filter_input(INPUT_POST, 'dt_event', FILTER_SANITIZE_STRING);
@@ -76,7 +78,7 @@ class AlbumController
 
         try {
             $pdo->beginTransaction();
-            $album_id = $albumModel->createAlbum($name_en, $description_en, $location, $event_date, $type, $uid, $session_year);
+            $album_id = $albumModel->createAlbum($domainId, $name_en, $name_hi, $description_en, $location, $event_date, $type, $uid, $session_year);
 
             switch ($type) {
                 case 'Videos':

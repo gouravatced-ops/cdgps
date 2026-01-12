@@ -1,5 +1,12 @@
 <?php
 session_start();
+include('./timeout.php');
+
+if (!isset($_SESSION['user_id'])) {
+    $_SESSION['login_error'] = 'Session Timeout, Please Login Again.';
+    header('Location: index.php');
+    exit;
+}
 
 error_reporting(E_ALL);
 ini_set('display_errors', '1');

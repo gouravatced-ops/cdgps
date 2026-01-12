@@ -1,5 +1,13 @@
 <?php
 session_start();
+include('./timeout.php');
+
+if (!isset($_SESSION['user_id'])) {
+    $_SESSION['login_error'] = 'Session Timeout, Please Login Again.';
+    header('Location: index.php');
+    exit;
+}
+
 if (isset($_SESSION['user_id'])) {
 
     require_once __DIR__ . '/src/database/Database.php';
@@ -7,13 +15,11 @@ if (isset($_SESSION['user_id'])) {
     $database = new Database();
     $pdo = $database->getConnection();
 
-    $sql = "SELECT * FROM category_master where is_deleted='0'";
+    $sql_domains = "SELECT * FROM `domains`";
+    $domains_data = $pdo->query($sql_domains)->fetchAll(PDO::FETCH_ASSOC);
 
-    $categories = $pdo->query($sql)->fetchAll(PDO::FETCH_ASSOC);
-
-    
     require_once __DIR__ . '/layouts/header.php';
-    ?>
+?>
 
     <div class="container-fluid">
         <div class="card">
@@ -42,20 +48,29 @@ if (isset($_SESSION['user_id'])) {
                     <form action="<?= $base_url ?>/src/controllers/SubCategoryController.php" method="post"
                         enctype='multipart/form-data'>
                         <div class="mb-3">
-                            <label for="categoryId" class="form-label">Category Name<span class="text-danger">*</span></label>
-                            <select name="categoryId" id="categoryId" class="form-control" required>
-                                <option value="">Choose Category...</option>
-                                <?php foreach ($categories as $category): ?>
-                                    <option value="<?php echo htmlspecialchars($category['id']); ?>">
-                                        <?php echo htmlspecialchars($category['category_name']); ?>
+                            <label for="domainId" class="form-label">Domains<span class="text-danger">*</span></label>
+                            <select name="domainId" id="pickDomainId" class="form-select" required>
+                                <option value="">Choose Domain...</option>
+                                <?php foreach ($domains_data as $values): ?>
+                                    <option value="<?php echo htmlspecialchars($values['id']); ?>">
+                                        <?php echo htmlspecialchars($values['eng_name']) . ' / ' . htmlspecialchars($values['hin_name']); ?>
                                     </option>
                                 <?php endforeach; ?>
                             </select>
                         </div>
                         <div class="mb-3">
-                            <label for="subCatName" class="form-label">Sub-Category Name <span class="text-danger">*</span></label>
-                            <input type="subCatName" name="subCatName" id="subCatName" class="form-control" value="" required>
-
+                            <label for="categoryId" class="form-label">Category<span class="text-danger">*</span></label>
+                            <select name="categoryId" id="categoryId" class="form-control" required>
+                                <option value="">Choose Category...</option>
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label for="engsubCatName" class="form-label">Sub-Category Name (English)<span class="text-danger">*</span></label>
+                            <input type="engsubCatName" name="engsubCatName" id="engsubCatName" class="form-control" value="" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="hinsubCatName" class="form-label">Sub-Category Name (Hindi)</label>
+                            <input type="hinsubCatName" name="hinsubCatName" id="hinsubCatName" class="form-control" value="">
                         </div>
 
                         <!-- <div class="mb-3">
@@ -70,7 +85,10 @@ if (isset($_SESSION['user_id'])) {
             </div>
         </div>
     </div>
-<?php require_once __DIR__ . '/layouts/footer.php'; } else {
+<?php
+    $embed_script = "newsForm.js";
+    require_once __DIR__ . '/layouts/footer.php';
+} else {
     echo "Invalid session, <a href='index.php'>click here</a> to login";
 }
 ?>

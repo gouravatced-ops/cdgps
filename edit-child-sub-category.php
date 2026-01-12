@@ -1,5 +1,12 @@
 <?php
 session_start();
+include('./timeout.php');
+
+if (!isset($_SESSION['user_id'])) {
+    $_SESSION['login_error'] = 'Session Timeout, Please Login Again.';
+    header('Location: index.php');
+    exit;
+}
 if (isset($_SESSION['user_id'])) {
     $title = "Admin - Add Category";
 
@@ -19,8 +26,19 @@ if (isset($_SESSION['user_id'])) {
     $sql->execute();
     $data = $sql->fetch(PDO::FETCH_ASSOC);
 
+    $domainId = $data['domain_id'];
+    $sql = "SELECT * FROM category_master WHERE domain_id = $domainId";
+    $categories = $pdo->query($sql)->fetchAll(PDO::FETCH_ASSOC);
+
+    $categoryId = $data['category_id'];
+    $sql = "SELECT * FROM sub_category WHERE category_id = $categoryId";
+    $subcategories = $pdo->query($sql)->fetchAll(PDO::FETCH_ASSOC);
+
+    $sql_commissionerates = "SELECT * FROM `domains`";
+    $commr_data = $pdo->query($sql_commissionerates)->fetchAll(PDO::FETCH_ASSOC);
+
     require_once __DIR__ . '/layouts/header.php';
-    ?>
+?>
 
     <div class="container-fluid">
         <div class="card">
@@ -51,8 +69,24 @@ if (isset($_SESSION['user_id'])) {
                         <input type="hidden" name="uid" value="<?= $data['id'] ?>">
                         <input type="hidden" name="action" value="updateChildSubCategory">
                         <div class="mb-3">
+                            <label for="domainId" class="form-label">Domains<span class="text-danger">*</span></label>
+                            <select name="domainId" id="pickDomainId" class="form-select" required>
+                                <option value="">Choose Domain...</option>
+                                <?php foreach ($commr_data as $values): ?>
+                                    <option value="<?php echo htmlspecialchars($values['id']); ?>"
+                                        <?php if (!empty($domainId) && $domainId == $values['id']) echo 'selected'; ?>>
+                                        <?php
+                                        echo htmlspecialchars($values['eng_name']) . ' / ' .
+                                            htmlspecialchars($values['hin_name']);
+                                        ?>
+                                    </option>
+                                <?php endforeach; ?>
+                            </select>
+                        </div>
+
+                        <div class="mb-3">
                             <label for="category" class="form-label">Category <span class="text-danger">*</span></label>
-                            <select name="category" id="category" class="form-control" required>
+                            <select name="categoryId" id="categoryId" class="form-control" required>
                                 <option value="">Choose Category...</option>
                                 <?php foreach ($categories as $category): ?>
                                     <option value="<?php echo htmlspecialchars($category['id']); ?>"
@@ -64,29 +98,35 @@ if (isset($_SESSION['user_id'])) {
                         </div>
 
                         <div class="mb-3">
-                            <label for="subCategory" class="form-label">Sub Category Name</label>
-                            <select name="subCategory" id="subCategory" class="form-select">
+                            <label for="subCategory" class="form-label">Sub Category Name <span class="text-danger">*</span></label>
+                            <select name="subCategoryId" id="subCategoryId" class="form-select" required>
                                 <option value="">Choose Sub Category...</option>
                                 <?php foreach ($subcategories as $subcategory): ?>
                                     <option value="<?php echo htmlspecialchars($subcategory['id']); ?>" <?= $subcategory['id'] == $data['subcategory_id'] ? 'selected' : '' ?>>
-                                        <?php echo htmlspecialchars($subcategory['category_name']); ?>
+                                        <?php echo htmlspecialchars($subcategory['sub_category_name']); ?>
                                     </option>
                                 <?php endforeach; ?>
                             </select>
                         </div>
 
                         <div class="mb-3">
-                            <label for="chsubCatName" class="form-label">Child Name</label>
+                            <label for="chsubCatName" class="form-label">Child Name <span class="text-danger">*</span></label>
                             <input type="chsubCatName" name="chsubCatName" id="chsubCatName" class="form-control"
-                                value="<?= $data['child_sub_category_name'] ?>">
+                                value="<?= $data['child_sub_category_name'] ?>" required>
                         </div>
 
                         <div class="mb-3">
-                            <label for="chhnSubCatName" class="form-label">Child Hindi Name</label>
+                            <label for="chhnSubCatName" class="form-label">Child Hindi Name </label>
                             <input type="chhnSubCatName" name="chhnSubCatName" id="chhnSubCatName" class="form-control"
                                 value="<?= $data['hn_child_sub_category_name'] ?>">
 
                         </div>
+
+                        <div class="mb-3">
+                            <label for="description" class="form-label">Description (optional)</label>
+                            <textarea name="description" rows="4" id="description" class="form-control"><?= $data['description'] ?></textarea>
+                        </div>
+
                         <button type="submit" class="btn btn-primary">Submit</button>
 
                     </form>
@@ -95,7 +135,9 @@ if (isset($_SESSION['user_id'])) {
         </div>
     </div>
 
-    <?php require_once __DIR__ . '/layouts/footer.php'; ?>
+    <?php 
+        $embed_script = "newsForm.js";
+        require_once __DIR__ . '/layouts/footer.php'; ?>
 <?php } else {
     echo "Invalid session, <a href='index.php'>click here</a> to login";
 }

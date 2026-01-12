@@ -11,7 +11,10 @@ class UpdatePostModel
     public function updatePosting($data)
     {
         $sql = "UPDATE notices SET
+                    domain_id = :domainId,
+                    notice_category = :categoryId,
                     notice_subcategory = :sub_category,
+                    notice_childsubcategory = :child_sub_category,
                     notice_dated = :notice_dated,
                     notice_ref_no = :notice_ref_no,
                     notice_title = :notice_title,
@@ -28,7 +31,10 @@ class UpdatePostModel
 
         $stmt = $this->pdo->prepare($sql);
         $stmt->bindParam(':uniq_id', $data['uniq_id'], PDO::PARAM_INT);
+        $stmt->bindParam(':domainId', $data['domainId'], PDO::PARAM_INT);
+        $stmt->bindParam(':categoryId', $data['categoryId'], PDO::PARAM_INT);
         $stmt->bindParam(':sub_category', $data['sub_category'], PDO::PARAM_INT);
+        $stmt->bindParam(':child_sub_category', $data['child_sub_category'], PDO::PARAM_INT);
         $stmt->bindParam(':notice_dated', $data['notice_dated'], PDO::PARAM_STR);
         $stmt->bindParam(':notice_ref_no', trim($data['notice_ref_no']), PDO::PARAM_STR);
         $stmt->bindParam(':notice_title', trim($data['notice_title']), PDO::PARAM_STR);

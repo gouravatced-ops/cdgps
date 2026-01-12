@@ -21,12 +21,12 @@ class LoginController
         $password = filter_input(INPUT_POST, 'password', FILTER_SANITIZE_STRING);
         
         // Validate CAPTCHA
-        $captchaResponse = $_POST['g-recaptcha-response'] ?? '';
-        if (!$this->validateCaptcha($captchaResponse)) {
-            $_SESSION['login_error'] = 'Please complete the CAPTCHA verification.';
-            header('Location: ../../index.php');
-            exit;
-        }
+        // $captchaResponse = $_POST['g-recaptcha-response'] ?? '';
+        // if (!$this->validateCaptcha($captchaResponse)) {
+        //     $_SESSION['login_error'] = 'Please complete the CAPTCHA verification.';
+        //     header('Location: ../../index.php');
+        //     exit;
+        // }
         
         if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
             $_SESSION['login_error'] = 'Invalid email address.';
@@ -54,6 +54,9 @@ class LoginController
             $_SESSION['user_id'] = $user['id'];
             $_SESSION['user_mail'] = $user['email'];
             $_SESSION['user_name'] = $user['username'];
+            date_default_timezone_set('Asia/Kolkata');
+            $_SESSION['login_time']  = date('Y-m-d H:i:s');
+            $_SESSION['exp_session']  = 15 * 60; // Session expiration 5 min
 
             header("Location: ../../dashboard_view.php");
             exit;

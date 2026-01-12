@@ -6,6 +6,7 @@ if ((isset($_SESSION['login'])) && ($_SESSION['login'] == true)) {
 
     // Use the form data to populate the form fields
     $eng_cat = isset($form_data['eng_cat']) ? htmlspecialchars($form_data['eng_cat']) : '';
+    $hin_cat = isset($form_data['hin_cat']) ? htmlspecialchars($form_data['hin_cat']) : '';
     $en_albm_desc = isset($form_data['en_albm_desc']) ? htmlspecialchars($form_data['en_albm_desc']) : '';
     $location = isset($form_data['location']) ? htmlspecialchars($form_data['location']) : '';
     $dt_event = isset($form_data['dt_event']) ? htmlspecialchars($form_data['dt_event']) : '';
@@ -14,8 +15,14 @@ if ((isset($_SESSION['login'])) && ($_SESSION['login'] == true)) {
 
     $title = "Admin - Add Photo Album";
 
+    require_once __DIR__ . '/src/database/Database.php';
+
+    $database = new Database();
+    $pdo = $database->getConnection();
+    $sql_domains = "SELECT * FROM `domains`";
+    $domain_data = $pdo->query($sql_domains)->fetchAll(PDO::FETCH_ASSOC);
     require_once __DIR__ . '/layouts/header.php';
-    ?>
+?>
     <script src="https://cdn.ckeditor.com/4.9.2/standard/ckeditor.js"></script>
 
     <div class="container-fluid">
@@ -45,6 +52,20 @@ if ((isset($_SESSION['login'])) && ($_SESSION['login'] == true)) {
 
                 <form action="<?= $base_url ?>/src/controllers/gallery/addPhotoAlbumController.php" method="post"
                     enctype="multipart/form-data">
+                    <div class="form-group row mt-3">
+                        <label for="domainId" class="col-form-label col-md-4">Domains <span
+                                class="text-danger">*</span></label>
+                        <div class="col-md-8">
+                            <select name="domainId" id="domainId" class="form-select">
+                                <option value="">Select Domain</option>
+                                <?php foreach ($domain_data as $values): ?>
+                                    <option value="<?php echo htmlspecialchars($values['id']); ?>">
+                                        <?php echo htmlspecialchars($values['eng_name']) . ' / ' . htmlspecialchars($values['hin_name']); ?>
+                                    </option>
+                                <?php endforeach; ?>
+                            </select>
+                        </div>
+                    </div>
 
                     <div class="form-group row mt-3">
                         <label for="album_type" class="col-form-label col-md-4">Album Type <span
@@ -68,11 +89,18 @@ if ((isset($_SESSION['login'])) && ($_SESSION['login'] == true)) {
                     </div>
 
                     <div class="form-group row mt-3">
-                        <label for="eng_cat" class="col-md-4 col-form-label">Album Name <span
+                        <label for="eng_cat" class="col-md-4 col-form-label">Album Name (English)<span
                                 class="text-danger">*</span></label>
                         <div class="col-md-8">
-                            <input type="text" name="eng_cat" id="eng_cat" class="form-control" value="<?= $eng_cat ?>"
+                            <input type="text" name="eng_cat" id="eng_cat" class="form-control" value="<?= $eng_cat ?>" placeholder="Album Name"
                                 required>
+                        </div>
+                    </div>
+
+                    <div class="form-group row mt-3">
+                        <label for="hin_cat" class="col-md-4 col-form-label">Album Name (Hindi)</label>
+                        <div class="col-md-8">
+                            <input type="text" name="hin_cat" id="hin_cat" class="form-control" value="<?= $hin_cat ?>" placeholder="एल्बम का नाम" >
                         </div>
                     </div>
 
@@ -83,8 +111,7 @@ if ((isset($_SESSION['login'])) && ($_SESSION['login'] == true)) {
                             <textarea name="en_albm_desc" id="editor" placeholder="Max 15000 chars (Optional)"
                                 maxlength="15000" required cols="50"><?= $en_albm_desc; ?></textarea>
                             <script>
-                                CKEDITOR.replace('editor', {
-                                });
+                                CKEDITOR.replace('editor', {});
                             </script>
                         </div>
                     </div>
@@ -136,7 +163,7 @@ if ((isset($_SESSION['login'])) && ($_SESSION['login'] == true)) {
     </div>
 
     <script>
-        document.addEventListener('DOMContentLoaded', function () {
+        document.addEventListener('DOMContentLoaded', function() {
             // Get the album type select element
             const albumTypeSelect = document.getElementById('album_type');
 
@@ -151,7 +178,7 @@ if ((isset($_SESSION['login'])) && ($_SESSION['login'] == true)) {
             const videoCaption = document.getElementById('video_caption');
 
             // Add event listener to the album type select
-            albumTypeSelect.addEventListener('change', function () {
+            albumTypeSelect.addEventListener('change', function() {
                 // Get the selected value
                 const selectedType = this.value;
 
@@ -196,7 +223,7 @@ if ((isset($_SESSION['login'])) && ($_SESSION['login'] == true)) {
 
     require_once __DIR__ . '/layouts/footer.php'; ?>
 
-    <?php
+<?php
 } else {
     $_SESSION['login_error'] = 'Session Timeout, Please Login Again.';
     header('Location: index.php');

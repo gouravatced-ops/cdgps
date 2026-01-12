@@ -1,9 +1,10 @@
 <?php
-
 session_start();
+include('./timeout.php');
 
 if (!isset($_SESSION['user_id'])) {
-    header("Location: index.php");
+    $_SESSION['login_error'] = 'Session Timeout, Please Login Again.';
+    header('Location: index.php');
     exit;
 }
 
@@ -12,7 +13,7 @@ require_once __DIR__ . '/src/database/Database.php';
 $database = new Database();
 $pdo = $database->getConnection();
 
-$sql = "SELECT cm.* FROM category_master cm  WHERE is_deleted='0' ORDER BY cm.category_name";
+$sql = "SELECT cm.*, dm.eng_name , dm.hin_name FROM category_master cm JOIN domains as dm ON dm.id = cm.domain_id WHERE cm.is_deleted='0' ORDER BY cm.category_name";
 
 $categories = $pdo->query($sql)->fetchAll(PDO::FETCH_ASSOC);
 
@@ -44,7 +45,9 @@ require_once __DIR__ . '/layouts/header.php'; ?>
                 <thead>
                     <tr>
                         <th>S.No.</th>
-                        <th>Name</th>
+                        <th>Domain</th>
+                        <th>Name (English)</th>
+                        <th>Name (Hindi)</th>
                         <th>Actions</th>
                     </tr>
                 </thead>
@@ -54,7 +57,9 @@ require_once __DIR__ . '/layouts/header.php'; ?>
                     foreach ($categories as $row): ?>
                         <tr>
                             <td><?php echo $i++; ?></td>
+                            <td><?php echo htmlspecialchars($row['eng_name']); ?></td>
                             <td><?php echo htmlspecialchars($row['category_name']); ?></td>
+                            <td><?php echo htmlspecialchars($row['hindi_category_name']); ?></td>
                             <td><a href="<?= $base_url ?>/edit-category.php?id=<?php echo htmlspecialchars($row['id']) ?>"
                                     class="btn btn-info btn-sm"><i class="ti ti-edit"></i></a>&nbsp;&nbsp;
                                 <button class="btn btn-danger btn-sm delete-category-button"
@@ -71,4 +76,6 @@ require_once __DIR__ . '/layouts/header.php'; ?>
     </div>
 </div>
 
-<?php require_once __DIR__ . '/layouts/footer.php'; ?>
+<?php 
+$embed_script = "newsForm.js";
+require_once __DIR__ . '/layouts/footer.php'; ?>

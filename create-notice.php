@@ -1,5 +1,6 @@
 <?php
 session_start();
+include('./timeout.php');
 
 if (!isset($_SESSION['user_id'])) {
     $_SESSION['login_error'] = 'Session Timeout, Please Login Again.';
@@ -12,8 +13,11 @@ require_once __DIR__ . '/src/database/Database.php';
 $database = new Database();
 $pdo = $database->getConnection();
 
-$sql_subcat = "SELECT * FROM sub_category WHERE is_deleted='0' AND category_id=2";
+$sql_subcat = "SELECT * FROM sub_category WHERE is_deleted='0' AND sub_category_name LIKE '%notice%'";
 $subcategories = $pdo->query($sql_subcat)->fetchAll(PDO::FETCH_ASSOC);
+
+$sql_domains = "SELECT * FROM `domains`";
+$domain_data = $pdo->query($sql_domains)->fetchAll(PDO::FETCH_ASSOC);
 
 require_once __DIR__ . '/layouts/header.php';
 ?>
@@ -71,27 +75,54 @@ require_once __DIR__ . '/layouts/header.php';
                     <?php } ?>
 
                     <div class="row">
+                        <input type="hidden" name="page" id="currentPage" value="notice">
+                        <div class="col-md-6">
+                            <!-- Notice Category -->
+                            <div class="mb-3">
+                                <input type="hidden" name="cat_id" value="2">
+                                <label for="domainId" class="form-label">Domains<span
+                                        class="text-danger">*</span></label>
+                                <select class="form-select" name="domainId" id="subCategoryList" required>
+                                    <option value="">Select Domain</option>
+                                    <?php foreach ($domain_data as $values): ?>
+                                        <option value="<?php echo htmlspecialchars($values['id']); ?>">
+                                            <?php echo htmlspecialchars($values['eng_name']) . ' / ' . htmlspecialchars($values['hin_name']); ?>
+                                        </option>
+                                    <?php endforeach; ?>
+                                </select>
+                                <?php if (isset($_SESSION['req_error_msg']['domainId'])) { ?>
+                                    <div class="form-text text-danger">
+                                        <?php echo $_SESSION['req_error_msg']['domainId']; ?>
+                                    </div>
+                                <?php } ?>
+                            </div>
+                        </div>
 
                         <div class="col-md-6">
                             <!-- Notice Category -->
                             <div class="mb-3">
                                 <input type="hidden" name="cat_id" value="2">
-                                <label for="noticeCategory" class="form-label">Notice Category <span
+                                <label for="noticeCategory" class="form-label">Category <span
                                         class="text-danger">*</span></label>
-                                <select class="form-select" name="noticeCategory" id="noticeCategory" required>
+                                <select class="form-select" name="noticeCategory" id="postcategoryId" required>
                                     <option value="">Select Category</option>
-                                    <?php
-                                    foreach ($subcategories as $subCat) {
-                                        // $selected = ($subCat === $latestFinancialsubCat) ? "selected" : "";
-                                        echo "<option value='" . $subCat['id'] . "'>" . $subCat['sub_category_name'] . "</option>";
-                                    }
-                                    ?>
                                 </select>
                                 <?php if (isset($_SESSION['req_error_msg']['noticeCategory'])) { ?>
                                     <div class="form-text text-danger">
                                         <?php echo $_SESSION['req_error_msg']['noticeCategory']; ?>
                                     </div>
                                 <?php } ?>
+                            </div>
+                        </div>
+
+                        <div class="col-md-6">
+                            <!-- News Date -->
+                            <div class="mb-3">
+                                <label for="childSubCategoryId" class="form-label">Sub Category<span
+                                        class="text-danger">*</span></label>
+                                <select name="childSubCategoryId" id="SubCategoryId" class="form-select" required>
+                                    <option value="">Choose Child Sub Category...</option>
+                                </select>
                             </div>
                         </div>
 
@@ -163,7 +194,7 @@ require_once __DIR__ . '/layouts/header.php';
                         </div>
 
                         <div class="col-md-8" id="noticeURLWrapper">
-                            <label for="attachNoticeURL" class="form-label">Notice URL &nbsp;&nbsp; ( Is New Tab ?<input type="radio" name="isNewTab" value="yes" id="radioYes" checked required> Yes   <input type="radio" name="isNewTab" value="no" id="radioNo"> No )</label>
+                            <label for="attachNoticeURL" class="form-label">Notice URL &nbsp;&nbsp; ( Is New Tab ? <input type="radio" name="isNewTab" value="yes" id="radioYes" checked required> Yes <input type="radio" name="isNewTab" value="no" id="radioNo"> No )</label>
                             <input type="text" name="attachNoticeURL" id="attachNoticeURL" class="form-control" required>
                         </div>
 
@@ -214,7 +245,7 @@ require_once __DIR__ . '/layouts/header.php';
 </div>
 
 <script>
-    document.addEventListener('DOMContentLoaded', function () {
+    document.addEventListener('DOMContentLoaded', function() {
         const notice_type = document.getElementById('notice_type');
         const noticeURLWrapper = document.getElementById('noticeURLWrapper');
         const noticeFileWrapper = document.getElementById('noticeFileWrapper');
@@ -238,8 +269,8 @@ require_once __DIR__ . '/layouts/header.php';
                 FileInput.required = false;
                 FileInput.setAttribute('disabled', true);
                 URLInput.required = true;
-              
-            } else if(notice_type.value === 'F') {
+
+            } else if (notice_type.value === 'F') {
                 noticeURLWrapper.style.display = 'none';
                 noticeFileWrapper.style.display = 'block';
                 noticeFilePreview.style.display = 'block';
@@ -249,7 +280,7 @@ require_once __DIR__ . '/layouts/header.php';
                 URLInput.setAttribute('disabled', true);
                 URLInput.required = false;
                 FileInput.required = true;
-            } else if(notice_type.value === 'Both') {
+            } else if (notice_type.value === 'Both') {
                 noticeURLWrapper.style.display = 'block';
                 noticeFileWrapper.style.display = 'block';
                 noticeFilePreview.style.display = 'block';
@@ -259,7 +290,7 @@ require_once __DIR__ . '/layouts/header.php';
 
                 URLInput.removeAttribute('disabled');
                 FileInput.removeAttribute('disabled');
-                
+
                 URLInput.required = true;
                 FileInput.required = true;
             } else {
@@ -276,7 +307,7 @@ require_once __DIR__ . '/layouts/header.php';
                 URLInput.required = false;
                 FileInput.required = false;
             }
-        
+
         }
 
         function toggleNewTagDays() {
@@ -301,4 +332,6 @@ require_once __DIR__ . '/layouts/header.php';
     });
 </script>
 
-<?php require_once __DIR__ . '/layouts/footer.php'; ?>
+<?php
+$embed_script = "newsForm.js";
+require_once __DIR__ . '/layouts/footer.php'; ?>

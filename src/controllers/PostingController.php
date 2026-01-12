@@ -39,9 +39,24 @@ class PostingController
 
         $postingModel = new PostingModel($pdo);
 
+        $subCategoryId = $_POST['noticeCategory'];
+        $stmt = $pdo->prepare(
+            "SELECT category_id 
+            FROM sub_category 
+            WHERE id = :subCategoryId
+            AND is_deleted = '0'
+            LIMIT 1"
+        );
+
+        $stmt->execute(['subCategoryId' => $subCategoryId]);
+        $categoryId = $stmt->fetchColumn();
+
         $data = [
+            'domain_id' => filter_input(INPUT_POST, 'domainId', FILTER_SANITIZE_NUMBER_INT),
+            'categoryId' => $categoryId,
             'sub_category' => filter_input(INPUT_POST, 'noticeCategory', FILTER_SANITIZE_NUMBER_INT),
-            // 'document_no' => filter_input(INPUT_POST, 'referenceNo', FILTER_SANITIZE_STRING),
+            'child_sub_category' => filter_input(INPUT_POST, 'childSubCategoryId', FILTER_SANITIZE_NUMBER_INT),
+            'document_no' => filter_input(INPUT_POST, 'referenceNo', FILTER_SANITIZE_STRING),
             'dated' => filter_input(INPUT_POST, 'dated', FILTER_SANITIZE_STRING),
             'reference_no' => filter_input(INPUT_POST, 'referenceNo', FILTER_SANITIZE_STRING),
             // 'reference_date' => filter_input(INPUT_POST, 'ref_date', FILTER_SANITIZE_STRING),

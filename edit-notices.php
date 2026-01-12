@@ -1,15 +1,19 @@
 <?php
 session_start();
+include('./timeout.php');
+
+if (!isset($_SESSION['user_id'])) {
+    $_SESSION['login_error'] = 'Session Timeout, Please Login Again.';
+    header('Location: index.php');
+    exit;
+}
+
 if (isset($_SESSION['user_id'])) {
 
     require_once __DIR__ . '/src/database/Database.php';
 
     $database = new Database();
     $pdo = $database->getConnection();
-
-    $sql_subcat = "SELECT * FROM sub_category WHERE is_deleted='0' and category_id=2";
-    $subcategories = $pdo->query($sql_subcat)->fetchAll(PDO::FETCH_ASSOC);
-
     $postingId = isset($_GET['id']) ? intval($_GET['id']) : 0;
 
     $stmt = $pdo->prepare("SELECT a.* FROM notices a WHERE a.uniq_id = :postingId AND is_deleted='0'");
@@ -17,8 +21,34 @@ if (isset($_SESSION['user_id'])) {
     $stmt->execute();
     $data = $stmt->fetch(PDO::FETCH_ASSOC);
 
+    $domain_id = (int) $data['domain_id'];
+    $search = 'notice';
+
+    $sql = "
+            SELECT id, sub_category_name
+            FROM sub_category
+            WHERE is_deleted = '0'
+            AND domain_id = :domain_id
+            AND sub_category_name LIKE :search
+            ORDER BY sub_category_name ASC
+        ";
+
+    $stmt = $pdo->prepare($sql);
+    $stmt->bindValue(':domain_id', $domain_id, PDO::PARAM_INT);
+    $stmt->bindValue(':search', "%{$search}%", PDO::PARAM_STR);
+    $stmt->execute();
+
+    $subcategories = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+    $subcategoryId = $data['notice_subcategory'];
+    $sql = "SELECT * FROM child_sub_category WHERE subcategory_id = $subcategoryId";
+    $childsubcategories = $pdo->query($sql)->fetchAll(PDO::FETCH_ASSOC);
+
+    $sql_commissionerates = "SELECT * FROM `domains`";
+    $domain_data = $pdo->query($sql_commissionerates)->fetchAll(PDO::FETCH_ASSOC);
+
     require_once __DIR__ . '/layouts/header.php';
-    ?>
+?>
 
     <div class="container-fluid">
         <div class="card">
@@ -50,16 +80,45 @@ if (isset($_SESSION['user_id'])) {
                         <!-- *********************************** -->
                         <div class="row">
                             <input type="hidden" name="id" value="<?= $postingId ?>">
+                            <input type="hidden" name="page" id="currentPage" value="notice">
                             <div class="mb-3 col-md-6">
-                                <label for="subCategory" class="form-label">Notice Type </label>
-                                <select name="subCategory" id="subCategory" class="form-select">
-                                    <option value="">Choose Sub Category..</option>
+                                <label for="domainId" class="form-label">Domains <span
+                                            class="text-danger">*</span></label>
+                                <select name="domainId" id="subCategoryList" class="form-select">
+                                    <option value="">Choose Domain..</option>
+                                    <?php foreach ($domain_data as $values): ?>
+                                        <option value="<?php echo htmlspecialchars($values['id']); ?>" <?php if (!empty($data['domain_id']) && $data['domain_id'] == $values['id']) echo 'selected'; ?>>
+                                            <?php echo htmlspecialchars($values['eng_name']) . ' / ' . htmlspecialchars($values['hin_name']); ?>
+                                        </option>
+                                    <?php endforeach; ?>
+                                </select>
+                            </div>
+                            <div class="mb-3 col-md-6">
+                                <label for="subCategory" class="form-label">Category <span
+                                            class="text-danger">*</span></label>
+                                <select name="subCategory" id="postcategoryId" class="form-select">
+                                    <option value="">Choose Category..</option>
                                     <?php foreach ($subcategories as $subcategory): ?>
                                         <option value="<?php echo htmlspecialchars($subcategory['id']); ?>" <?php echo $data['notice_subcategory'] == $subcategory['id'] ? "selected" : "" ?>>
                                             <?php echo htmlspecialchars($subcategory['sub_category_name']); ?>
                                         </option>
                                     <?php endforeach; ?>
                                 </select>
+                            </div>
+
+                            <div class="col-md-6">
+                                <!-- News Date -->
+                                <div class="mb-3">
+                                    <label for="childSubCategoryId" class="form-label">Sub Category</label>
+                                    <select name="childSubCategoryId" id="SubCategoryId" class="form-select" >
+                                        <option value="">Choose Child Sub Category...</option>
+                                        <?php foreach ($childsubcategories as $subcategory): ?>
+                                            <option value="<?php echo htmlspecialchars($subcategory['id']); ?>" <?= $subcategory['id'] == $data['notice_childsubcategory'] ? 'selected' : '' ?>>
+                                                <?php echo htmlspecialchars($subcategory['child_sub_category_name']); ?>
+                                            </option>
+                                        <?php endforeach; ?>
+                                    </select>
+                                </div>
                             </div>
 
                             <div class="mb-3 col-md-6">
@@ -92,7 +151,7 @@ if (isset($_SESSION['user_id'])) {
                             </div>
 
                             <div class="col-md-8" id="noticeURLWrapper">
-                                <label for="attachNoticeURL" class="form-label">Notice URL &nbsp;&nbsp;  (Is New Tab ? <input type="radio" name="isNewTab" value="yes" id="radioYes" <?= $data['url_tab_open'] == '_blank' ? 'checked' : '' ?>> Yes   <input type="radio" name="isNewTab" value="no" id="radioNo" <?= $data['url_tab_open'] == '_self' ? 'checked' : '' ?>> No )</label>
+                                <label for="attachNoticeURL" class="form-label">Notice URL &nbsp;&nbsp; (Is New Tab ? <input type="radio" name="isNewTab" value="yes" id="radioYes" <?= $data['url_tab_open'] == '_blank' ? 'checked' : '' ?>> Yes <input type="radio" name="isNewTab" value="no" id="radioNo" <?= $data['url_tab_open'] == '_self' ? 'checked' : '' ?>> No )</label>
                                 <input type="text" name="attachNoticeURL" id="attachNoticeURL" class="form-control" value="<?= $data['notice_url'] ?>"
                                     required>
                             </div>
@@ -175,9 +234,8 @@ if (isset($_SESSION['user_id'])) {
                         </div>
 
                         <script>
-
                             // Initialize on page load
-                            document.addEventListener('DOMContentLoaded', function () {
+                            document.addEventListener('DOMContentLoaded', function() {
 
                                 const notice_type = document.getElementById('notice_type');
                                 const noticeURLWrapper = document.getElementById('noticeURLWrapper');
@@ -188,7 +246,7 @@ if (isset($_SESSION['user_id'])) {
                                 const URLInput = document.getElementById('attachNoticeURL');
 
                                 const isNewTag = document.getElementById('new_tag');
-       
+
                                 function toggleDaysInput() {
                                     const newTagValue = document.getElementById('new_tag').value;
                                     const daysContainer = document.getElementById('days_input_container');
@@ -209,7 +267,7 @@ if (isset($_SESSION['user_id'])) {
                                         noticeURLWrapper.style.display = 'block';
                                         noticeFileWrapper.style.display = 'none';
                                         noticeFilePreview.style.display = 'none';
-                                       
+
                                         attachNoticeURL.required = true;
                                         FileInput.required = false;
                                     } else if (notice_type.value === 'F') {
@@ -266,12 +324,12 @@ if (isset($_SESSION['user_id'])) {
             const postId = document.querySelector('[name="post"]').value;
 
             fetch('<?= $base_url ?>/src/controllers/PostingController.php', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/x-www-form-urlencoded',
-                },
-                body: 'action=deleteAttach&post=' + encodeURIComponent(postId)
-            })
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded',
+                    },
+                    body: 'action=deleteAttach&post=' + encodeURIComponent(postId)
+                })
                 .then(response => response.json())
                 .then(data => {
                     // Handle the response
@@ -288,7 +346,9 @@ if (isset($_SESSION['user_id'])) {
         }
     </script>
 
-    <?php require_once __DIR__ . '/layouts/footer.php'; ?>
+    <?php
+    $embed_script = "newsForm.js";
+    require_once __DIR__ . '/layouts/footer.php'; ?>
 <?php } else {
     $_SESSION['login_error'] = 'Session Timeout, Please Login Again.';
     header('Location: index.php');

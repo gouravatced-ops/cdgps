@@ -15,7 +15,9 @@ class CategoryController
         }
 
         session_start();
+        $domainCatId = filter_input(INPUT_POST, 'domainId', FILTER_SANITIZE_STRING);
         $engCat = filter_input(INPUT_POST, 'eng_cat', FILTER_SANITIZE_STRING);
+        $hinCat = filter_input(INPUT_POST, 'hin_cat', FILTER_SANITIZE_STRING);
         $createdBy = $_SESSION['user_id'];
 
         $database = new Database();
@@ -23,7 +25,7 @@ class CategoryController
 
         $categoryModel = new CategoryModel($pdo);
 
-        if ($categoryModel->insertCategory($engCat,  $createdBy)) {
+        if ($categoryModel->insertCategory($domainCatId, $engCat, $hinCat, $createdBy)) {
             $_SESSION['message'] = "Category added successfully.";
             header("Location: ../../create-category.php");
         } else {
@@ -52,8 +54,9 @@ class CategoryController
     {
         session_start();
         $id = filter_input(INPUT_POST, 'uid', FILTER_SANITIZE_NUMBER_INT);
+        $domainId = filter_input(INPUT_POST, 'domainId', FILTER_SANITIZE_NUMBER_INT);
         $engCat = filter_input(INPUT_POST, 'eng_cat', FILTER_SANITIZE_STRING);
-        $hnCat = filter_input(INPUT_POST, 'hn_cat', FILTER_SANITIZE_STRING);
+        $hnCat = filter_input(INPUT_POST, 'hin_cat', FILTER_SANITIZE_STRING);
         $updatedBy = $_SESSION['user_id'];
 
         $database = new Database();
@@ -61,7 +64,7 @@ class CategoryController
 
         $categoryModel = new CategoryModel($pdo);
 
-        if ($categoryModel->updateCategory($id, $engCat, $hnCat, $updatedBy)) {
+        if ($categoryModel->updateCategory($id, $domainId, $engCat, $hnCat, $updatedBy)) {
             $_SESSION['message'] = "Category updated successfully.";
             header("Location: ../../edit-category.php?id=" . $id);
             exit;

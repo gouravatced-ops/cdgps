@@ -8,7 +8,7 @@ class AlbumController
 
     public function __construct()
     {
-        session_start();
+        // session_start();
 
         if (!isset($_SESSION['user_id']) || $_SESSION['login'] == 0) {
             http_response_code(401);
@@ -39,15 +39,17 @@ class AlbumController
 
     public function editAlbums($data)
     {
-        if (!$data || !isset($data['albumId'], $data['enAlbumTitle'], $data['dateOfEvent'], $data['location'])) {
+        if (!$data || !isset($data['domainId'], $data['albumId'], $data['enAlbumTitle'], $data['dateOfEvent'], $data['location'])) {
             http_response_code(400);
             echo json_encode(['error' => 'Invalid data format.']);
             exit;
         }
 
 
+        $domainId = filter_var($data['domainId'], FILTER_SANITIZE_STRING);
         $albumId = filter_var($data['albumId'], FILTER_SANITIZE_STRING);
         $enAlbumTitle = htmlspecialchars($data['enAlbumTitle'], ENT_QUOTES, 'UTF-8');
+        $hiAlbumTitle = htmlspecialchars($data['hiAlbumTitle'], ENT_QUOTES, 'UTF-8');
         $enAlbumDescription = $data['enAlbumDescription'];
         $dateOfEvent = filter_var($data['dateOfEvent'], FILTER_SANITIZE_STRING);
         $location = htmlspecialchars($data['location'], ENT_QUOTES, 'UTF-8');
@@ -77,10 +79,10 @@ class AlbumController
 
         try {
             $stmt = $this->pdo->prepare("
-                UPDATE albums SET name_en = ?, description_en = ?, event_date = ?, location = ?, session_year = ?
+                UPDATE albums SET domain_id = ?, name_en = ?, name_hi = ?, description_en = ?, event_date = ?, location = ?, session_year = ?
                 WHERE id = ?
             ");
-            $stmt->execute([$enAlbumTitle, $enAlbumDescription, $dateOfEvent, $location, $session_year, $albumId]);
+            $stmt->execute([$domainId, $enAlbumTitle, $hiAlbumTitle, $enAlbumDescription, $dateOfEvent, $location, $session_year, $albumId]);
 
             $this->pdo->commit();
             $_SESSION['message'] = "Album details updated successfully.";

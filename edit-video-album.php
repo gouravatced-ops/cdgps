@@ -1,5 +1,12 @@
 <?php
 session_start();
+include('./timeout.php');
+
+if (!isset($_SESSION['user_id'])) {
+    $_SESSION['login_error'] = 'Session Timeout, Please Login Again.';
+    header('Location: index.php');
+    exit;
+}
 if ((isset($_SESSION['login'])) && ($_SESSION['login'] == true)) {
 
     require_once __DIR__ . '/src/database/Database.php';
@@ -33,85 +40,89 @@ if ((isset($_SESSION['login'])) && ($_SESSION['login'] == true)) {
     $title = "Admin - Post Video Album";
 
     require_once __DIR__ . '/layouts/header.php';
-    ?>
+?>
 
     <script src="https://cdn.ckeditor.com/4.9.2/standard/ckeditor.js"></script>
     <script>
-        setTimeout(function () {
+        setTimeout(function() {
             $('.cke_notifications_area').remove();
         }, 1000);
     </script>
     <div class="container-fluid">
-        <div class="card">
-            <div class="card-header">
-                <h3 class="text-primary text-center">Manage Video Album</h3>
-            </div>
+        <div class="card shadow-sm border-0">
             <div class="card-body">
+                <h4 class="text-primary text-center mb-4">Manage Video Album</h4>
+
                 <div id="msg"></div>
 
-                <!-- Manage Existing Videos -->
-                <div id="VideoList">
-                    <div class="row">
+                <div class="row">
+                    <?php foreach ($videos as $Video):
+                        $videoId = (int)$Video['id'];
+                        $videoLink = htmlspecialchars(trim($Video['video_link']), ENT_QUOTES);
+                        $videoCaption = htmlspecialchars($Video['video_title'], ENT_QUOTES);
+                    ?>
+                        <div class="col-md-4 mb-4">
+                            <div class="card h-100 shadow-sm">
+                                <div class="card-body">
 
-                        <?php $setIndex = 1;
-                        foreach ($videos as $Video) {
-                            $videoId = htmlspecialchars($Video['id']);
-                            $videoLink = htmlspecialchars(trim($Video['video_link']), ENT_QUOTES, 'UTF-8');
-                            $videoCaptionEn = htmlspecialchars($Video['video_title'], ENT_QUOTES, 'UTF-8');
-                            // $videoCaptionHn = htmlspecialchars($Video['hn_video_title'], ENT_QUOTES, 'UTF-8');
-                    
-                            echo '<div class="col-md-4">
-                                    <div class="card">
-                                    <div class="card-body">';
+                                    <?php if ($album['cover_video_id'] == $videoId): ?>
+                                        <span class="badge bg-success mb-2 d-block text-center">Cover Video</span>
+                                    <?php endif; ?>
 
-                            if ($album['cover_video_id'] == $videoId) {
-                                echo '<h6 class="card-title text-center text-success">Cover Video</h6>';
-                            }
-                            echo '<div class="Video-row" id="Video-' . $videoId . '">
-                                                <iframe width="auto" height="160"
-                                                    src="' . $videoLink . '"
-                                                    title="' . $videoCaptionEn . '"
-                                                    frameborder="0"
-                                                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                                                    allowfullscreen>
-                                                </iframe>
-                                                <textarea class="form-control mt-2" placeholder="Enter Video Link" pattern="https?://.+" >' . $videoLink . '</textarea>
-                                                <textarea class="form-control mt-2" placeholder="Enter Video Link Caption" >' . $videoCaptionEn . '</textarea>
-                                            
-                                                <div class="d-flex align-items-center mt-2">
-                                                    <button class="btn btn-danger me-2" onclick="deleteVideo(\'Video-' . $videoId . '\')">Delete</button>
-                                                    <button class="btn btn-success me-2" onclick="updateVideo(\'Video-' . $videoId . '\')">Update</button> 
-                                                </div>
-                                            </div>
-                                        </div>
+                                    <iframe class="w-100 rounded"
+                                        height="170"
+                                        src="<?= $videoLink ?>"
+                                        frameborder="0"
+                                        allowfullscreen>
+                                    </iframe>
+
+                                    <input type="url"
+                                        class="form-control mt-3 video-link"
+                                        value="<?= $videoLink ?>"
+                                        placeholder="YouTube URL">
+
+                                    <input type="text"
+                                        class="form-control mt-2 video-caption"
+                                        value="<?= $videoCaption ?>"
+                                        placeholder="Video Caption">
+
+                                    <div class="d-flex gap-2 mt-3">
+                                        <button class="btn btn-danger btn-sm w-50"
+                                            onclick="deleteVideo(<?= $videoId ?>)">
+                                            Delete
+                                        </button>
+
+                                        <button class="btn btn-success btn-sm w-50"
+                                            onclick="updateVideo(<?= $videoId ?>, this)">
+                                            Update
+                                        </button>
                                     </div>
-                                </div>';
 
-                            $setIndex++;
-                        } ?>
-                    </div>
-                </div>
-
-                <!-- Add New Video -->
-                <div class="card">
-                    <div class="card-header bg-success text-light">
-                        <h4>Add New Video Link</h4>
-                    </div>
-
-                    <div class="card-body">
-                        <div class="row">
-                            <div class="col-md-12">
-                                <div class="form-group">
-                                    <input type="url" pattern="https?://.+" id="newVideoInput" class="form-control"
-                                        placeholder="Enter Youtube Link">
-                                    <input type="text" id="newVideoCaptionEn" class="form-control mt-2"
-                                        placeholder="Enter caption for new Video">
-                                    <div id="newVideoPreview" class="mt-2"></div>
-                                    <div id="newVideoError" class="error-message"></div>
-                                    <button class="btn btn-primary mt-2" onclick="addNewVideo()">Add Video</button>
+                                    <div class="update-msg mt-2 small"></div>
                                 </div>
                             </div>
                         </div>
+                    <?php endforeach; ?>
+                </div>
+
+                <!-- ADD NEW VIDEO (NO HEADER) -->
+                <div class="card mt-4 shadow-sm">
+                    <div class="card-body">
+                        <h5 class="mb-3 text-secondary">Add New Video</h5>
+
+                        <input type="url" id="newVideoInput" class="form-control"
+                            placeholder="YouTube Video URL">
+
+                        <input type="text" id="newVideoCaptionEn"
+                            class="form-control mt-2"
+                            placeholder="Video Caption">
+
+                        <button class="btn btn-primary mt-3"
+                            onclick="addNewVideo()">
+                            Add Video
+                        </button>
+
+                        <div id="newVideoError" class="text-danger mt-2"></div>
                     </div>
                 </div>
 
@@ -119,7 +130,8 @@ if ((isset($_SESSION['login'])) && ($_SESSION['login'] == true)) {
         </div>
     </div>
 
-    <?php
+
+<?php
 
     $embed_script = "albumForm.js";
 

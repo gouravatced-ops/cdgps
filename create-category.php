@@ -1,5 +1,12 @@
 <?php
 session_start();
+include('./timeout.php');
+
+if (!isset($_SESSION['user_id'])) {
+    $_SESSION['login_error'] = 'Session Timeout, Please Login Again.';
+    header('Location: index.php');
+    exit;
+}
 if (isset($_SESSION['user_id'])) {
     $title = "Admin - Add Category";
 
@@ -13,6 +20,9 @@ if (isset($_SESSION['user_id'])) {
     // $sql = $pdo->prepare("SELECT * FROM type ");
     $sql_cat = "SELECT * FROM `type`";
     $data = $pdo->query($sql_cat)->fetchAll(PDO::FETCH_ASSOC);
+
+    $sql_commissionerates = "SELECT * FROM `domains`";
+    $commr_data = $pdo->query($sql_commissionerates)->fetchAll(PDO::FETCH_ASSOC);
 
     // -- $data = $sql->fetch(PDO::FETCH_ASSOC);
 
@@ -46,10 +56,24 @@ if (isset($_SESSION['user_id'])) {
                     <form action="<?= $base_url ?>/src/controllers/CategoryController.php" method="post"
                         enctype='multipart/form-data'>
                         <div class="mb-3">
-                            <label for="eng_cat" class="form-label">Name<span class="text-danger">*</span></label>
+                            <label for="domainId" class="form-label">Domains<span class="text-danger">*</span></label>
+                            <select name="domainId" id="domainId" class="form-select" required>
+                                <option value="">Choose Domain...</option>
+                                <?php foreach ($commr_data as $values): ?>
+                                    <option value="<?php echo htmlspecialchars($values['id']); ?>">
+                                        <?php echo htmlspecialchars($values['eng_name']) .' / '.htmlspecialchars($values['hin_name']); ?>
+                                    </option>
+                                <?php endforeach; ?>
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label for="eng_cat" class="form-label">Name (English)<span class="text-danger">*</span></label>
                             <input type="eng_cat" name="eng_cat" id="eng_cat" class="form-control" value="" required>
                         </div>
-
+                        <div class="mb-3">
+                            <label for="hin_cat" class="form-label">Name (Hindi)</label>
+                            <input type="hin_cat" name="hin_cat" id="hin_cat" class="form-control" value="">
+                        </div>
                         <button type="submit" class="btn btn-primary">Submit</button>
 
                     </form>

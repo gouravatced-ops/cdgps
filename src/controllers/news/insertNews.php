@@ -110,7 +110,18 @@ class NewsController
         $errors = [];
         $_SESSION['post'] = $_POST; // Store previous input values
 
+        // print_r($_POST); die();
+
         // Basic validations
+        if (empty($_POST['domainId'])) {
+            $errors['domainId'] = "Domain is required";
+        }
+        if (empty($_POST['subCategoryId'])) {
+            $errors['subCategoryId'] = "Category is required";
+        }
+        if (empty($_POST['childSubCategoryId'])) {
+            $errors['childSubCategoryId'] = "Sub Category is required";
+        }
         if (empty($_POST['news_date'])) {
             $errors['news_date'] = "News Date is required";
         }
@@ -217,11 +228,24 @@ class NewsController
 
         // Generate unique ID and prepare paths
         $uniqueTenderID = $this->generateUniqueTenderID();
+        $domainId = $_POST['domainId'];
+        $subCategoryId = $_POST['subCategoryId'];
+        $stmt = $this->pdo->prepare(
+            "SELECT category_id 
+            FROM sub_category 
+            WHERE id = :subCategoryId 
+            AND is_deleted = '0'
+            LIMIT 1"
+        );
+
+        $stmt->execute(['subCategoryId' => $subCategoryId]);
+        $categoryId = $stmt->fetchColumn();
+        $childSubCategoryId = $_POST['childSubCategoryId'];
         $news_date = $_POST['news_date'];
         $news_title = $_POST['news_title'];
+        $news_title_hin = $_POST['news_title_hin'];
         $year = date("Y", strtotime($news_date));
         $mon = date("m", strtotime($news_date));
-
         $session_year = $this->getSessionYear($news_date);
 
         // Sanitize news description
@@ -297,16 +321,13 @@ class NewsController
         $video_title2 = $_POST['videoAttach_title2'] ?? null;
         $video_title3 = $_POST['videoAttach_title3'] ?? null;
         $video_title4 = $_POST['videoAttach_title4'] ?? null;
-        $new_tag = $_POST['new_tag'];
-
-        $new_tag_days = ($new_tag == 'Y') ? $_POST['new_tag_days'] : 0;
 
         // Insert into the database inside a transaction
         try {
             $this->pdo->beginTransaction();
             $stmt = $this->pdo->prepare(
                 "INSERT INTO news 
-                (uniq_id, news_title, news_event_date, news_description, news_pic1, news_pic2, created_by, 
+                (uniq_id, domain_id, category_id, sub_category_id, child_sub_category_id, news_title, news_title_hin, news_event_date, news_description, hashtag, news_pic1, news_pic2, created_by, 
                  video_attach_1, video_attach_title1, 
                  video_attach_2, video_attach_title2, 
                  video_attach_3, video_attach_title3, 
@@ -319,16 +340,22 @@ class NewsController
                  pdf_attachement6, pdf_attachement_title6, 
                  pdf_attachement7, pdf_attachement_title7, 
                  pdf_attachement8, pdf_attachement_title8, 
-                 `location`, new_tag, new_news_valid_upto, session_year) 
+                 `location`, session_year) 
                 VALUES 
-                (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?,?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)"
+                (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?,?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)"
             );
 
             $stmt->execute([
                 $uniqueTenderID,
+                $domainId,
+                $categoryId,
+                $subCategoryId,
+                $childSubCategoryId,
                 $news_title,
+                $news_title_hin,
                 $news_date,
                 $news_description,
+                $hash_tag,
                 $news_picture,
                 $other_images,
                 $_SESSION['user_id'],
@@ -357,8 +384,6 @@ class NewsController
                 $pdf_attachement8,
                 $pdf_attachement_title8,
                 $location,
-                $new_tag,
-                $new_tag_days,
                 $session_year
             ]);
             $this->pdo->commit();
@@ -398,6 +423,15 @@ class NewsController
         $errors = [];
 
         // Basic validations
+        if (empty($_POST['domainId'])) {
+            $errors['domainId'] = "Domain is required";
+        }
+        if (empty($_POST['subCategoryId'])) {
+            $errors['subCategoryId'] = "Category is required";
+        }
+        if (empty($_POST['childSubCategoryId'])) {
+            $errors['childSubCategoryId'] = "Sub Category is required";
+        }
         if (empty($_POST['news_date'])) {
             $errors['news_date'] = "News Date is required";
         }
@@ -471,8 +505,22 @@ class NewsController
         }
 
         $uniqueTenderID = $existingNews['uniq_id'];
+        $domainId = $_POST['domainId'];
+        $subCategoryId = $_POST['subCategoryId'];
+        $stmt = $this->pdo->prepare(
+            "SELECT category_id 
+            FROM sub_category 
+            WHERE id = :subCategoryId
+            AND is_deleted = '0'
+            LIMIT 1"
+        );
+
+        $stmt->execute(['subCategoryId' => $subCategoryId]);
+        $categoryId = $stmt->fetchColumn();
+        $childSubCategoryId = $_POST['childSubCategoryId'];
         $news_date = $_POST['news_date'];
         $news_title = $_POST['news_title'];
+        $news_title_hin = $_POST['news_title_hin'];
         $year = date("Y", strtotime($news_date));
         $mon = date("m", strtotime($news_date));
 
@@ -483,11 +531,8 @@ class NewsController
         $allowed_tags = '<p></p><a></a><b></b><u></u><strong></strong><em></em><ul></ul><ol></ol><li></li><i></i><table></table>';
         $news_description = strip_tags($_POST['news_description'], $allowed_tags);
         $location = $_POST['location'] ?? null;
-        $new_tag = $_POST['new_tag'];
 
-        $new_tag_days = ($new_tag == 'Y') ? $_POST['new_tag_days'] : 0;
-
-        $hash_tag = $_POST['hashtag'] ?? null;
+        $hash_tag = $_POST['hashTag'] ?? null;
 
         $img_allowed_extensions = ["jpg", "jpeg", "gif", "png"];
         $max_allowed_file_size = 500; // in KB
@@ -573,9 +618,15 @@ class NewsController
             $this->pdo->beginTransaction();
             $stmt = $this->pdo->prepare(
                 "UPDATE news SET
+            domain_id = ?, 
+            category_id = ?, 
+            sub_category_id = ?, 
+            child_sub_category_id = ?, 
             news_title = ?, 
+            news_title_hin = ?, 
             news_event_date = ?, 
-            news_description = ?, 
+            news_description = ?,
+            hashtag = ?, 
             news_pic1 = ?, 
             news_pic2 = ?, 
             updated_by = ?,
@@ -605,16 +656,20 @@ class NewsController
             pdf_attachement8 = ?, 
             pdf_attachement_title8 = ?, 
             `location` = ?,
-            new_tag = ?,
-            new_news_valid_upto = ?,
             session_year = ?
             WHERE uniq_id = ?"
             );
 
             $stmt->execute([
+                $domainId,
+                $categoryId,
+                $subCategoryId,
+                $childSubCategoryId,
                 $news_title,
+                $news_title_hin,
                 $news_date,
                 $news_description,
+                $hash_tag,
                 $news_picture,
                 $other_images,
                 $_SESSION['user_id'],
@@ -643,8 +698,6 @@ class NewsController
                 $pdf_files['pdf_attachement8'],
                 $pdf_attachement_title8,
                 $location,
-                $new_tag,
-                $new_tag_days,
                 $session_year,
                 $newsId
             ]);
@@ -759,7 +812,7 @@ class NewsController
 
 $controller = new NewsController();
 
-$postAction = filter_input(INPUT_POST, 'action', FILTER_SANITIZE_STRING);
+$postAction = $_POST['action'];
 
 if (isset($_POST['post']) && $_POST['post']) {
     $controller->updateNews();

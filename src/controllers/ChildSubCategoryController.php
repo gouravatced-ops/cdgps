@@ -19,8 +19,9 @@ class ChildSubCategoryController
         $chsubCatName = filter_input(INPUT_POST, 'chsubCatName', FILTER_SANITIZE_STRING);
         $chhnSubCatName = filter_input(INPUT_POST, 'chhnSubCatName', FILTER_SANITIZE_STRING);
         $description = filter_input(INPUT_POST, 'description', FILTER_SANITIZE_STRING);
-        $categoryId = filter_input(INPUT_POST, 'category', FILTER_SANITIZE_NUMBER_INT);
-        $subcategoryId = filter_input(INPUT_POST, 'subCategory', FILTER_SANITIZE_NUMBER_INT);
+        $domainId = filter_input(INPUT_POST, 'domainId', FILTER_SANITIZE_NUMBER_INT);
+        $categoryId = filter_input(INPUT_POST, 'categoryId', FILTER_SANITIZE_NUMBER_INT);
+        $subcategoryId = filter_input(INPUT_POST, 'subCategoryId', FILTER_SANITIZE_NUMBER_INT);
         $createdBy = $_SESSION['user_id'];
 
         // Establish a database connection
@@ -31,7 +32,7 @@ class ChildSubCategoryController
         $subCategoryModel = new SubCategoryModel($pdo);
 
         // Insert the sub-category
-        if ($subCategoryModel->insertChildSubCategory($chsubCatName, $chhnSubCatName, $description, $subcategoryId, $categoryId, $createdBy)) {
+        if ($subCategoryModel->insertChildSubCategory($domainId, $chsubCatName, $chhnSubCatName, $description, $subcategoryId, $categoryId, $createdBy)) {
 
             $_SESSION['message'] = "Child Sub Category added successfully.";
             header("Location: ../../create-child-sub-category.php");
@@ -62,18 +63,21 @@ class ChildSubCategoryController
     {
         session_start();
         $id = filter_input(INPUT_POST, 'uid', FILTER_SANITIZE_NUMBER_INT);
-        $engCat = filter_input(INPUT_POST, 'chsubCatName', FILTER_SANITIZE_STRING);
-        $hnCat = filter_input(INPUT_POST, 'chhnSubCatName', FILTER_SANITIZE_STRING);
-        $catId = filter_input(INPUT_POST, 'category', FILTER_SANITIZE_NUMBER_INT);
-        $subCatId = filter_input(INPUT_POST, 'subCategory', FILTER_SANITIZE_NUMBER_INT);
+        $chsubCatName = filter_input(INPUT_POST, 'chsubCatName', FILTER_SANITIZE_STRING);
+        $chhnSubCatName = filter_input(INPUT_POST, 'chhnSubCatName', FILTER_SANITIZE_STRING);
+        $description = filter_input(INPUT_POST, 'description', FILTER_SANITIZE_STRING);
+        $domainId = filter_input(INPUT_POST, 'domainId', FILTER_SANITIZE_NUMBER_INT);
+        $categoryId = filter_input(INPUT_POST, 'categoryId', FILTER_SANITIZE_NUMBER_INT);
+        $subcategoryId = filter_input(INPUT_POST, 'subCategoryId', FILTER_SANITIZE_NUMBER_INT);
         $updatedBy = $_SESSION['user_id'];
-// die($subCatId);
+
+
         $database = new Database();
         $pdo = $database->getConnection();
 
         $subCategoryModel = new SubCategoryModel($pdo);
 
-        if ($subCategoryModel->updateChildSubCategory($id, $engCat, $hnCat, $catId, $subCatId, $updatedBy)) {
+        if ($subCategoryModel->updateChildSubCategory($id, $domainId, $chsubCatName, $chhnSubCatName, $description, $categoryId, $subcategoryId, $updatedBy)) {
             $_SESSION['message'] = "Child Sub Category updated successfully.";
             header("Location: ../../edit-child-sub-category.php?id=" . $id);
             exit;

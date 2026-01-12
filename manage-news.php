@@ -1,14 +1,10 @@
 <?php
-
-// // Display all errors, warnings, and notices (remove in production)
-// ini_set('display_errors', 1);
-// ini_set('display_startup_errors', 1);
-// error_reporting(E_ALL);
-
 session_start();
+include('./timeout.php');
 
 if (!isset($_SESSION['user_id'])) {
-    header("Location: index.php");
+    $_SESSION['login_error'] = 'Session Timeout, Please Login Again.';
+    header('Location: index.php');
     exit;
 }
 
@@ -17,7 +13,7 @@ require_once __DIR__ . '/src/database/Database.php';
 $database = new Database();
 $pdo = $database->getConnection();
 
-$sql = "SELECT cm.* FROM news cm  WHERE is_deleted='0' ORDER BY cm.created_at desc";
+$sql = "SELECT cm.*, dm.eng_name FROM news cm LEFT JOIN domains dm ON dm.id = cm.domain_id WHERE cm.is_deleted='0' ORDER BY cm.created_at desc";
 
 $categories = $pdo->query($sql)->fetchAll(PDO::FETCH_ASSOC);
 
@@ -26,10 +22,8 @@ require_once __DIR__ . '/layouts/header.php'; ?>
 <div class="container-fluid">
 
     <div class="card">
-        <div class="card-header bg-success">
-            <h5 class="text-white">Manage News</h5>
-        </div>
-        <div class="card-body">
+        <h5>Manage News</h5>
+        <div class="mt-1">
             <?php if (isset($_SESSION['message'])) { ?>
                 <div class="alert alert-success alert-dismissible fade show mt-3" role="alert">
                     <strong>Success!</strong> <?php echo $_SESSION['message']; ?>.
@@ -51,6 +45,7 @@ require_once __DIR__ . '/layouts/header.php'; ?>
                 <thead>
                     <tr>
                         <th>S.No.</th>
+                        <th>Domain</th>
                         <th style="white-space: nowrap;">Session Year</th>
                         <th>Title</th>
                         <th>News Date</th>
@@ -64,6 +59,7 @@ require_once __DIR__ . '/layouts/header.php'; ?>
                     foreach ($categories as $row): ?>
                         <tr>
                             <td><?php echo $i++; ?></td>
+                            <td><?= $row['eng_name'] ?></td>
                             <td><?= $row['session_year'] ?></td>
                             <td><?php echo htmlspecialchars($row['news_title']); ?></td>
                             <td style="white-space: nowrap;"><?php echo htmlspecialchars(date("d-M-Y", strtotime($row['news_event_date']))); ?></td>
@@ -101,11 +97,14 @@ require_once __DIR__ . '/layouts/header.php'; ?>
         $.ajax({
             url: '<?= $base_url ?>/src/controllers/news/insertNews.php',
             type: 'POST',
-            data: { ed: photoId, action: actionType },
-            success: function (response) {
+            data: {
+                ed: photoId,
+                action: actionType
+            },
+            success: function(response) {
                 window.location.reload();
             },
-            error: function (xhr, status, error) {
+            error: function(xhr, status, error) {
                 window.location.reload();
                 $("#loader").hide();
                 console.error('Error deleting photo:', error);
