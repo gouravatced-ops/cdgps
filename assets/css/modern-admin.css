@@ -441,6 +441,10 @@ body {
   letter-spacing: 0.4px;
 }
 
+.role-badge {
+  background: linear-gradient(90deg, var(--primary-hover) 60%, var(--sidebar-secondary) 100%);
+}
+
 .system-alert-footer {
   /* position: fixed; */
   bottom: 0;

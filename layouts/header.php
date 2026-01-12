@@ -145,7 +145,7 @@ if (isset($_SESSION['user_id']) && !isset($_SESSION['user_role'])) {
 
                         <!-- User Role Badge -->
                         <?php if (isset($_SESSION['user_role'])): ?>
-                            <span class="badge bg-primary me-3 d-none d-md-inline-block"><?= htmlspecialchars(strtoupper($_SESSION['user_role'])); ?></span>
+                            <span class="badge me-3 d-none d-md-inline-block role-badge"><?= htmlspecialchars(strtoupper($_SESSION['user_role'])); ?></span>
                         <?php endif; ?>
 
                         <!-- Session Timer Data (hidden) -->
