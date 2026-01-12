@@ -1,0 +1,123 @@
+<?php
+class CategoryModel
+{
+    private $pdo;
+
+    public function __construct($pdo)
+    {
+        $this->pdo = $pdo;
+    }
+
+    public function insertCategory($engCat, $hnCat, $type_id, $createdBy)
+    {
+        $sql = "INSERT INTO category_master (category_name, hn_category_name, type_id, created_by)
+                VALUES (:engCat, :hnCat, :type_id, :createdBy)";
+        $stmt = $this->pdo->prepare($sql);
+
+        $stmt->bindParam(':engCat', $engCat, PDO::PARAM_STR);
+        $stmt->bindParam(':hnCat', $hnCat, PDO::PARAM_STR);
+        $stmt->bindParam(':type_id', $type_id, PDO::PARAM_STR);
+        $stmt->bindParam(':createdBy', $createdBy, PDO::PARAM_STR);
+
+        return $stmt->execute();
+    }
+
+    public function getAllCategories()
+    {
+        $sql = "SELECT * FROM category_master";
+        return $this->pdo->query($sql)->fetchAll(PDO::FETCH_ASSOC);
+    }
+
+    public function updateCategory($id, $engCat, $hnCat, $updatedBy)
+    {
+        $sql = "UPDATE category_master SET
+                    category_name = :category,
+                    hn_category_name = :hn_category_name,
+                    updated_date = CURRENT_TIMESTAMP,
+                    updated_by = :updated_by
+                WHERE id = :id";
+        $stmt = $this->pdo->prepare($sql);
+        $stmt->bindParam(':id', $id, PDO::PARAM_INT);
+        $stmt->bindParam(':category', $engCat, PDO::PARAM_STR);
+        $stmt->bindParam(':hn_category_name', $hnCat, PDO::PARAM_STR);
+        $stmt->bindParam(':updated_by', $updatedBy, PDO::PARAM_INT);
+        return $stmt->execute();
+    }
+
+    public function softDeleteCategory($id, $updatedBy)
+    {
+        // Check if there are existing postings
+        $stmt = $this->pdo->prepare("SELECT COUNT(*) FROM postings WHERE category = :id AND is_deleted = 0");
+        $stmt->bindParam(':id', $id, PDO::PARAM_INT);
+        $stmt->execute();
+        $exists = $stmt->fetchColumn();
+
+        if ($exists > 0) {
+            return 'post_available';
+        }
+
+        try {
+            $this->pdo->beginTransaction();
+
+            // Update category_master
+            $sql = "UPDATE category_master SET
+                    is_deleted = 1,
+                    updated_date = CURRENT_TIMESTAMP,
+                    updated_by = :updated_by
+                WHERE id = :id";
+            $stmt = $this->pdo->prepare($sql);
+            $stmt->bindParam(':id', $id, PDO::PARAM_INT);
+            $stmt->bindParam(':updated_by', $updatedBy, PDO::PARAM_INT);
+            $stmt->execute();
+            $this->logQuery($stmt, [':id' => $id, ':updated_by' => $updatedBy], "Update category_master");
+
+            // Update sub_category
+            $sql = "UPDATE sub_category SET
+                    is_deleted = 1,
+                    updated_date = CURRENT_TIMESTAMP,
+                    updated_by = :updated_by
+                WHERE category_id = :id";
+            $stmt = $this->pdo->prepare($sql);
+            $stmt->bindParam(':id', $id, PDO::PARAM_INT);
+            $stmt->bindParam(':updated_by', $updatedBy, PDO::PARAM_INT);
+            $stmt->execute();
+            $this->logQuery($stmt, [':id' => $id, ':updated_by' => $updatedBy], "Update sub_category");
+
+            // Update postings
+            $sql = "UPDATE postings SET
+                    is_deleted = 1,
+                    last_updated_on = CURRENT_TIMESTAMP,
+                    updated_by = :updated_by
+                WHERE category = :id";
+            $stmt = $this->pdo->prepare($sql);
+            $stmt->bindParam(':id', $id, PDO::PARAM_INT);
+            $stmt->bindParam(':updated_by', $updatedBy, PDO::PARAM_INT);
+            $stmt->execute();
+            $this->logQuery($stmt, [':id' => $id, ':updated_by' => $updatedBy], "Update postings");
+
+            $this->pdo->commit();
+            return true;
+        } catch (PDOException $e) {
+            $this->pdo->rollBack();
+            $this->logError($e->getMessage(), "Transaction failed");
+            return false;
+        }
+    }
+
+    // Function to log the last executed query
+    private function logQuery($stmt, $params, $operation)
+    {
+        $query = $stmt->queryString;
+        foreach ($params as $param => $value) {
+            $query = str_replace($param, is_numeric($value) ? $value : "'" . $value . "'", $query);
+        }
+        echo "Operation: $operation\nLast Executed Query: $query\n";
+    }
+
+    // Function to log errors
+    private function logError($message, $context)
+    {
+        // Implement your error logging here (e.g., write to a file, database, etc.)
+        echo "Error in $context: $message\n";
+    }
+}

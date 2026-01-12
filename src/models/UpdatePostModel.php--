@@ -1,0 +1,49 @@
+<?php
+class UpdatePostModel {
+    private $pdo;
+
+    public function __construct($pdo) {
+        $this->pdo = $pdo;
+    }
+
+    public function updatePosting($data) {
+        // print_r($data);
+        // die;
+        $sql = "UPDATE postings SET
+                    -- type = :type,
+                    category = :category,
+                    sub_category = :sub_category,
+                    document_no = :document_no,
+                    dated = :dated,
+                    reference_no = :reference_no,
+                    reference_date = :reference_date,
+                    title = :title,
+                    attachment = :attachment,
+                    new_flag = :new_flag,
+                    new_no_of_days = :new_no_of_days,
+                    status = :status,
+                    ip_address = :ip_address,
+                    last_updated_on = CURRENT_TIMESTAMP
+                    -- updated_by = :updated_by
+                WHERE id = :id";
+
+        $stmt = $this->pdo->prepare($sql);
+
+        $stmt->bindParam(':id', $data['id'], PDO::PARAM_INT);
+        // $stmt->bindParam(':type', $data['type'], PDO::PARAM_STR);
+        $stmt->bindParam(':category', $data['category'], PDO::PARAM_INT);
+        $stmt->bindParam(':sub_category', $data['sub_category'], PDO::PARAM_INT);
+        $stmt->bindParam(':document_no', $data['document_no'], PDO::PARAM_STR);
+        $stmt->bindParam(':dated', $data['dated'], PDO::PARAM_STR);
+        $stmt->bindParam(':reference_no', $data['reference_no'], PDO::PARAM_STR);
+        $stmt->bindParam(':reference_date', $data['reference_date'], PDO::PARAM_STR);
+        $stmt->bindParam(':title', $data['title'], PDO::PARAM_STR);
+        $stmt->bindParam(':attachment', $data['attachment'], PDO::PARAM_STR);
+        $stmt->bindParam(':new_flag', $data['new_flag'], PDO::PARAM_STR);
+        $stmt->bindParam(':new_no_of_days', $data['new_no_of_days'], PDO::PARAM_INT);
+        $stmt->bindParam(':status', $data['status'], PDO::PARAM_STR);
+        $stmt->bindParam(':ip_address', $data['ip_address'], PDO::PARAM_STR);
+        // $stmt->bindParam(':updated_by', $data['updated_by'], PDO::PARAM_INT);
+        return $stmt->execute();
+    }
+}
