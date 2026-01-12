@@ -1,12 +1,11 @@
 <?php
-session_start();
-include('./timeout.php');
 
-if (!isset($_SESSION['user_id'])) {
-    $_SESSION['login_error'] = 'Session Timeout, Please Login Again.';
-    header('Location: index.php');
-    exit;
-}
+/**
+ * Manage Notices Page
+ * Protected page with session check
+ */
+require_once __DIR__ . '/src/helpers/session_helper.php';
+requireLogin(); // This will redirect if not logged in or session expired
 
 require_once __DIR__ . '/src/database/Database.php';
 
@@ -22,8 +21,14 @@ require_once __DIR__ . '/layouts/header.php'; ?>
 <div class="container-fluid">
 
     <div class="card">
-        <div class="card-body">
-            <h5 class="card-title fw-semibold mb-4">Manage Notices</h5>
+        <div class="card-body p-0">
+            <div class="card-header-modern">
+                Manage Notices
+            </div>
+
+            <div class="p-3">
+                <!-- rest form / content -->
+            </div>
             <?php if (isset($_SESSION['message'])) { ?>
                 <div class="alert alert-success alert-dismissible fade show mt-3" role="alert">
                     <strong>Success!</strong> <?php echo $_SESSION['message']; ?>.
@@ -48,8 +53,8 @@ require_once __DIR__ . '/layouts/header.php'; ?>
                         <th>Ref. No.</th>
                         <th>Domain</th>
                         <th>Category</th>
-                        <th style="white-space: nowrap;" >Sub Category</th>
-                        <th style="white-space: nowrap;" >Notice Title</th>
+                        <th style="white-space: nowrap;">Sub Category</th>
+                        <th style="white-space: nowrap;">Notice Title</th>
                         <th>Dated</th>
                         <th>Actions</th>
                     </tr>

@@ -70,10 +70,14 @@ if (isset($_SESSION['user_id'])) {
 
     <div class="container-fluid">
         <div class="card">
-            <div class="card-header bg-success">
-                <h5 class="text-white">Manage Press Clips</h5>
-            </div>
-            <div class="card-body">
+            <div class="card-body p-0">
+                <div class="card-header-modern">
+                    Edit Press Clip
+                </div>
+
+                <div class="p-3">
+                    <!-- rest form / content -->
+                </div>
                 <div id="msg"></div>
                 <?php if (isset($_SESSION['message'])) { ?>
                     <div class="alert alert-success alert-dismissible fade show mt-3" role="alert">

@@ -1,11 +1,29 @@
 <?php
 
 /**
- * Update Password Page
+ * Manage Profile Page
  * Protected page with session check
  */
 require_once __DIR__ . '/src/helpers/session_helper.php';
 requireLogin();
+
+require_once __DIR__ . '/src/database/Database.php';
+
+$database = new Database();
+$pdo = $database->getConnection();
+
+// Get current user data
+$userId = $_SESSION['user_id'];
+$stmt = $pdo->prepare("SELECT id, email, username FROM users WHERE id = :userId");
+$stmt->bindParam(':userId', $userId, PDO::PARAM_INT);
+$stmt->execute();
+$user = $stmt->fetch(PDO::FETCH_ASSOC);
+
+if (!$user) {
+    $_SESSION['error'] = 'User not found.';
+    header("Location: dashboard_view.php");
+    exit;
+}
 
 require_once __DIR__ . '/layouts/header.php'; ?>
 
@@ -13,7 +31,7 @@ require_once __DIR__ . '/layouts/header.php'; ?>
     <div class="card">
         <div class="card-body p-0">
             <div class="card-header-modern">
-                Update Password
+                Manage Profile
             </div>
 
             <div class="p-3">
@@ -34,29 +52,27 @@ require_once __DIR__ . '/layouts/header.php'; ?>
                 </div>
             <?php } ?>
 
-            <form action="<?= $base_url ?>/src/controllers/UpdatePasswordController.php" method="post" id="updatePass">
+            <form action="<?= $base_url ?>/src/controllers/ProfileController.php" method="post" id="profileForm">
+                <input type="hidden" name="user_id" value="<?= htmlspecialchars($user['id']); ?>">
 
                 <div class="mb-4">
-                    <label for="UserPassword" class="form-label">Password:</label>
-                    <input type="password" class="form-control" name="password" id="UserPassword"
-                        placeholder="Enter your password" />
-                    <small id="passwordHelp" class="form-text text-info">
-                        Note : Password should be 8 char(min) and contain one special character, number, Upper Case and Lower Case.
-                    </small>
-                    <div id="passwordError" class="text-danger mt-2" style="display: none;">Invalid password format.</div>
-                </div>
-                <div class="mb-4">
-                    <label for="confirmPassword" class="form-label">Confirm Password:</label>
-                    <input type="password" class="form-control" name="confirmPassword" id="confirmPassword"
-                        placeholder="Enter your confirm password" />
-                    <div id="passwordMismatch" class="text-danger mt-2" style="display: none;">Passwords do not match.</div>
+                    <label for="username" class="form-label">Username:</label>
+                    <input type="text" class="form-control" name="username" id="username"
+                        value="<?= htmlspecialchars($user['username'] ?? ''); ?>"
+                        placeholder="Enter your username" required />
                 </div>
 
-                <button type="submit" class="btn btn-primary">Update</button>
+                <div class="mb-4">
+                    <label for="email" class="form-label">Email:</label>
+                    <input type="email" class="form-control" name="email" id="email"
+                        value="<?= htmlspecialchars($user['email'] ?? ''); ?>"
+                        placeholder="Enter your email" required />
+                </div>
+
+                <button type="submit" class="btn btn-primary">Update Profile</button>
             </form>
         </div>
     </div>
 </div>
-
 
 <?php require_once __DIR__ . '/layouts/footer.php'; ?>

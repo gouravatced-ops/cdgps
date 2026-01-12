@@ -1,321 +1,330 @@
 <aside class="left-sidebar with-vertical">
-    <div><!-- ---------------------------------- -->
-        <!-- Start Vertical Layout Sidebar -->
-        <!-- ---------------------------------- -->
+    <div style="display: flex; flex-direction: column; height: 100%;">
+        <!-- Brand Logo -->
         <div class="brand-logo d-flex align-items-center justify-content-between">
-            <a href="index.html" class="text-nowrap logo-img">
-
-                <h3 class="dark-logo text-primary"><?= $app_name; ?></h3>
-                <h3 class="light-logo text-light"><?= $app_name; ?></h3>
-
-                <!-- <img src="https://bootstrapdemos.adminmart.com/modernize/dist/assets/images/logos/dark-logo.svg"
-                    class="dark-logo" alt="Logo-Dark" />
-                <img src="https://bootstrapdemos.adminmart.com/modernize/dist/assets/images/logos/light-logo.svg"
-                    class="light-logo" alt="Logo-light" /> -->
+            <a href="<?= $base_url ?>/dashboard_view.php" class="text-nowrap logo-img text-decoration-none">
+                <h3 class="mb-0"><?= $app_name; ?></h3>
             </a>
-            <a href="javascript:void(0)" class="sidebartoggler ms-auto text-decoration-none fs-5 d-block d-xl-none">
+            <a href="javascript:void(0)" class="sidebartoggler ms-auto text-decoration-none d-block d-xl-none" id="mobileSidebarToggle">
                 <i class="ti ti-x"></i>
             </a>
         </div>
 
-        <nav class="sidebar-nav scroll-sidebar" data-simplebar>
-            <ul id="sidebarnav">
-                <!-- ---------------------------------- -->
-                <!-- Home -->
-                <!-- ---------------------------------- -->
+        <!-- Sidebar Navigation -->
+        <nav class="sidebar-nav">
+            <ul id="sidebarnav" class="list-unstyled mb-0">
+                <!-- Dashboard Section -->
                 <li class="nav-small-cap">
-                    <i class="ti ti-dots nav-small-cap-icon fs-4"></i>
-                    <span class="hide-menu">DASHBOARD</span>
+                    <span>DASHBOARD</span>
                 </li>
-                <!-- ---------------------------------- -->
-                <!-- Dashboard -->
-                <!-- ---------------------------------- -->
                 <li class="sidebar-item">
-                    <a class="sidebar-link" href="<?= $base_url ?>/dashboard_view.php" id="get-url"
+                    <a class="sidebar-link" href="<?= $base_url ?>/dashboard_view.php" data-page="dashboard">
+                        <i class="ti ti-dashboard"></i>
+                        <span>Dashboard</span>
+                    </a>
+                </li>
+
+                <!-- Domains Section -->
+                <li class="nav-small-cap">
+                    <span>DOMAINS</span>
+                </li>
+                <li class="sidebar-item">
+                    <a class="sidebar-link has-arrow" href="javascript:void(0)" data-bs-toggle="collapse" data-bs-target="#domainsMenu" aria-expanded="false">
+                        <i class="ti ti-world"></i>
+                        <span>Add & Manage</span>
+                    </a>
+                    <ul class="collapse" style="padding:0px !important;" id="domainsMenu">
+                        <li class="sidebar-item">
+                            <a class="sidebar-link" href="<?= $base_url ?>/add-domain.php" data-page="add-domain">
+                                <i class="ti ti-plus"></i>
+                                <span>Add Domain</span>
+                            </a>
+                        </li>
+                        <li class="sidebar-item">
+                            <a class="sidebar-link" href="<?= $base_url ?>/manage-domain.php" data-page="manage-domain">
+                                <i class="ti ti-list"></i>
+                                <span>Manage Domain</span>
+                            </a>
+                        </li>
+                    </ul>
+                </li>
+
+                <!-- Category & Subcategory Section -->
+                <li class="nav-small-cap">
+                    <span>CATEGORY & SUBCATEGORY</span>
+                </li>
+                <li class="sidebar-item">
+                    <a class="sidebar-link has-arrow" href="javascript:void(0)" data-bs-toggle="collapse" data-bs-target="#categoryMenu" aria-expanded="false">
+                        <i class="ti ti-category"></i>
+                        <span>Category & more</span>
+                    </a>
+                    <ul class="collapse" style="padding:0px !important;" id="categoryMenu">
+                        <li class="sidebar-item">
+                            <a class="sidebar-link" href="<?= $base_url ?>/create-category.php" data-page="create-category">
+                                <i class="ti ti-plus"></i>
+                                <span>Create Category</span>
+                            </a>
+                        </li>
+                        <li class="sidebar-item">
+                            <a class="sidebar-link" href="<?= $base_url ?>/manage-category.php" data-page="manage-category">
+                                <i class="ti ti-list"></i>
+                                <span>Manage Category</span>
+                            </a>
+                        </li>
+                        <li class="sidebar-item">
+                            <a class="sidebar-link" href="<?= $base_url ?>/create-sub-category.php" data-page="create-sub-category">
+                                <i class="ti ti-plus"></i>
+                                <span>Create Sub-Category</span>
+                            </a>
+                        </li>
+                        <li class="sidebar-item">
+                            <a class="sidebar-link" href="<?= $base_url ?>/manage-sub-category.php" data-page="manage-sub-category">
+                                <i class="ti ti-list"></i>
+                                <span>Manage Sub-Category</span>
+                            </a>
+                        </li>
+                        <li class="sidebar-item">
+                            <a class="sidebar-link" href="<?= $base_url ?>/create-child-sub-category.php" data-page="create-child-sub-category">
+                                <i class="ti ti-plus"></i>
+                                <span>Create Child-Sub-Cate</span>
+                            </a>
+                        </li>
+                        <li class="sidebar-item">
+                            <a class="sidebar-link" href="<?= $base_url ?>/manage-child-sub-category.php" data-page="manage-child-sub-category">
+                                <i class="ti ti-list"></i>
+                                <span>Manage Child-Sub-Cate</span>
+                            </a>
+                        </li>
+                    </ul>
+                </li>
+
+                <!-- News Section -->
+                <li class="nav-small-cap">
+                    <span>NEWS</span>
+                </li>
+                <li class="sidebar-item">
+                    <a class="sidebar-link has-arrow" href="javascript:void(0)" data-bs-toggle="collapse" data-bs-target="#newsMenu" aria-expanded="false">
+                        <i class="ti ti-news"></i>
+                        <span>News & manage</span>
+                    </a>
+                    <ul class="collapse" style="padding:0px !important;" id="newsMenu">
+                        <li class="sidebar-item">
+                            <a class="sidebar-link" href="<?= $base_url ?>/post-news.php" data-page="post-news">
+                                <i class="ti ti-plus"></i>
+                                <span>Post News</span>
+                            </a>
+                        </li>
+                        <li class="sidebar-item">
+                            <a class="sidebar-link" href="<?= $base_url ?>/manage-news.php" data-page="manage-news">
+                                <i class="ti ti-list"></i>
+                                <span>Manage News</span>
+                            </a>
+                        </li>
+                    </ul>
+                </li>
+
+                <!-- General Postings Section -->
+                <li class="nav-small-cap">
+                    <span>GENERAL POSTINGS</span>
+                </li>
+                <li class="sidebar-item">
+                    <a class="sidebar-link has-arrow" href="javascript:void(0)" data-bs-toggle="collapse" data-bs-target="#noticesMenu" aria-expanded="false">
+                        <i class="ti ti-file-text"></i>
+                        <span>Notices & manage</span>
+                    </a>
+                    <ul class="collapse" style="padding:0px !important;" id="noticesMenu">
+                        <li class="sidebar-item">
+                            <a class="sidebar-link" href="<?= $base_url ?>/create-notice.php" data-page="create-notice">
+                                <i class="ti ti-plus"></i>
+                                <span>Post Notice</span>
+                            </a>
+                        </li>
+                        <li class="sidebar-item">
+                            <a class="sidebar-link" href="<?= $base_url ?>/manage-notices.php" data-page="manage-notices">
+                                <i class="ti ti-list"></i>
+                                <span>Manage Notice</span>
+                            </a>
+                        </li>
+                    </ul>
+                </li>
+
+                <!-- Gallery Section -->
+                <li class="nav-small-cap">
+                    <span>GALLERY</span>
+                </li>
+                <li class="sidebar-item">
+                    <a class="sidebar-link has-arrow" href="javascript:void(0)" data-bs-toggle="collapse" data-bs-target="#galleryMenu" aria-expanded="false">
+                        <i class="ti ti-photo"></i>
+                        <span>Galleries & manage</span>
+                    </a>
+                    <ul class="collapse" style="padding:0px !important;" id="galleryMenu">
+                        <li class="sidebar-item">
+                            <a class="sidebar-link" href="<?= $base_url ?>/post-album.php" data-page="post-album">
+                                <i class="ti ti-plus"></i>
+                                <span>Post Albums</span>
+                            </a>
+                        </li>
+                        <li class="sidebar-item">
+                            <a class="sidebar-link" href="<?= $base_url ?>/manage-photos.php" data-page="manage-photos">
+                                <i class="ti ti-photo"></i>
+                                <span>Manage Photos</span>
+                            </a>
+                        </li>
+                        <li class="sidebar-item">
+                            <a class="sidebar-link" href="<?= $base_url ?>/manage-videos.php" data-page="manage-videos">
+                                <i class="ti ti-video"></i>
+                                <span>Manage Videos</span>
+                            </a>
+                        </li>
+                        <li class="sidebar-item">
+                            <a class="sidebar-link" href="<?= $base_url ?>/manage-press-clips.php" data-page="manage-press-clips">
+                                <i class="ti ti-clipboard"></i>
+                                <span>Manage Press Clips</span>
+                            </a>
+                        </li>
+                    </ul>
+                </li>
+
+                <!-- Tenders Section -->
+                <li class="nav-small-cap">
+                    <span>TENDERS</span>
+                </li>
+                <li class="sidebar-item">
+                    <a class="sidebar-link has-arrow" href="javascript:void(0)" data-bs-toggle="collapse" data-bs-target="#tendersMenu" aria-expanded="false">
+                        <i class="ti ti-file-invoice"></i>
+                        <span>Tenders & manage</span>
+                    </a>
+                    <ul class="collapse" style="padding:0px !important;" id="tendersMenu">
+                        <li class="sidebar-item">
+                            <a class="sidebar-link" href="<?= $base_url ?>/create-tender.php" data-page="create-tender">
+                                <i class="ti ti-plus"></i>
+                                <span>Post Tender</span>
+                            </a>
+                        </li>
+                        <li class="sidebar-item">
+                            <a class="sidebar-link" href="<?= $base_url ?>/manage-tenders.php" data-page="manage-tenders">
+                                <i class="ti ti-list"></i>
+                                <span>Manage Tenders</span>
+                            </a>
+                        </li>
+                    </ul>
+                </li>
+
+                <!-- Profile Section -->
+                <li class="nav-small-cap">
+                    <span>PROFILE</span>
+                </li>
+                <li class="sidebar-item">
+                    <a class="sidebar-link has-arrow" href="javascript:void(0)" data-bs-toggle="collapse" data-bs-target="#profileMenu" aria-expanded="false">
+                        <i class="ti ti-user"></i>
+                        <span>Profile & Settings</span>
+                    </a>
+                    <ul class="collapse" style="padding:0px !important;" id="profileMenu">
+                        <li class="sidebar-item">
+                            <a class="sidebar-link" href="<?= $base_url ?>/manage-profile.php" data-page="manage-profile">
+                                <i class="ti ti-user-circle"></i>
+                                <span>Manage Profile</span>
+                            </a>
+                        </li>
+                        <li class="sidebar-item">
+                            <a class="sidebar-link" href="<?= $base_url ?>/update-password.php" data-page="update-password">
+                                <i class="ti ti-key"></i>
+                                <span>Update Password</span>
+                            </a>
+                        </li>
+                    </ul>
+                </li>
+
+                <!-- User Management Section -->
+                <li class="nav-small-cap">
+                    <span>USER MANAGEMENT</span>
+                </li>
+
+                <li class="sidebar-item">
+                    <a class="sidebar-link has-arrow"
+                        href="javascript:void(0)"
+                        data-bs-toggle="collapse"
+                        data-bs-target="#userModule"
                         aria-expanded="false">
-                        <span>
-                            <i class="ti ti-aperture"></i>
-                        </span>
-                        <span class="hide-menu">Dashboard</span>
+
+                        <i class="ti ti-users"></i>
+                        <span>User Management</span>
                     </a>
-                </li>
 
-
-                <li class="nav-small-cap">
-                    <i class="ti ti-dots nav-small-cap-icon fs-4"></i>
-                    <span class="hide-menu">DOMAINS</span>
-                </li>
-
-                <li class="sidebar-item">
-                    <a class="sidebar-link has-arrow" href="javascript:void(0)" aria-expanded="false">
-                        <span class="d-flex">
-                            <i class="ti ti-layout-grid"></i>
-                        </span>
-                        <span class="hide-menu">Add & Manage</span>
-                    </a>
-                    <ul aria-expanded="false" class="collapse first-level">
+                    <ul class="collapse p-0" id="userModule">
                         <li class="sidebar-item">
-                            <a class="sidebar-link" href="<?= $base_url ?>/add-domain.php" aria-expanded="false">
-                                <span>
-                                    <i class="ti ti-article"></i>
-                                </span>
-                                <span class="hide-menu">Add Domain</span>
+                            <a class="sidebar-link"
+                                href="<?= $base_url ?>/add-user.php"
+                                data-page="add-user">
+                                <i class="ti ti-user-plus"></i>
+                                <span>Add User</span>
                             </a>
                         </li>
+
                         <li class="sidebar-item">
-                            <a class="sidebar-link" href="<?= $base_url ?>/manage-domain.php" aria-expanded="false">
-                                <span>
-                                    <i class="ti ti-file-description"></i>
-                                </span>
-                                <span class="hide-menu">Manage Domain</span>
+                            <a class="sidebar-link"
+                                href="<?= $base_url ?>/manage-user.php"
+                                data-page="manage-user">
+                                <i class="ti ti-list-details"></i>
+                                <span>User List</span>
                             </a>
                         </li>
                     </ul>
                 </li>
 
+                <!-- Settings Section -->
                 <li class="nav-small-cap">
-                    <i class="ti ti-dots nav-small-cap-icon fs-4"></i>
-                    <span class="hide-menu">CATEGORY & SUBCATEGORY</span>
+                    <span>SETTINGS</span>
                 </li>
 
                 <li class="sidebar-item">
-                    <a class="sidebar-link has-arrow" href="javascript:void(0)" aria-expanded="false">
-                        <span class="d-flex">
-                            <i class="ti ti-layout-grid"></i>
-                        </span>
-                        <span class="hide-menu">Category & more</span>
+                    <a class="sidebar-link has-arrow"
+                        href="javascript:void(0)"
+                        data-bs-toggle="collapse"
+                        data-bs-target="#permissionModule"
+                        aria-expanded="false">
+
+                        <i class="ti ti-shield-lock"></i>
+                        <span>Access Control</span>
                     </a>
-                    <ul aria-expanded="false" class="collapse first-level">
+
+                    <ul class="collapse p-0" id="permissionModule">
                         <li class="sidebar-item">
-                            <a class="sidebar-link" href="<?= $base_url ?>/create-category.php" aria-expanded="false">
-                                <span>
-                                    <i class="ti ti-article"></i>
-                                </span>
-                                <span class="hide-menu">Create Category</span>
+                            <a class="sidebar-link"
+                                href="<?= $base_url ?>/add-permission.php"
+                                data-page="add-permission">
+                                <i class="ti ti-plus"></i>
+                                <span>Create Permission</span>
                             </a>
                         </li>
+
                         <li class="sidebar-item">
-                            <a class="sidebar-link" href="<?= $base_url ?>/manage-category.php" aria-expanded="false">
-                                <span>
-                                    <i class="ti ti-file-description"></i>
-                                </span>
-                                <span class="hide-menu">Manage Category</span>
-                            </a>
-                        </li>
-                        <li class="sidebar-item">
-                            <a class="sidebar-link" href="<?= $base_url ?>/create-sub-category.php"
-                                aria-expanded="false">
-                                <span>
-                                    <i class="ti ti-cards"></i>
-                                </span>
-                                <span class="hide-menu">Create Sub-Category</span>
-                            </a>
-                        </li>
-                        <li class="sidebar-item">
-                            <a class="sidebar-link" href="<?= $base_url ?>/manage-sub-category.php"
-                                aria-expanded="false">
-                                <span>
-                                    <i class="ti ti-file-description"></i>
-                                </span>
-                                <span class="hide-menu">Manage Sub-Category</span>
-                            </a>
-                        </li>
-                        <li class="sidebar-item">
-                            <a class="sidebar-link" href="<?= $base_url ?>/create-child-sub-category.php" aria-expanded="false">
-                                <span>
-                                    <i class="ti ti-cards"></i>
-                                </span>
-                                <span class="hide-menu">Create Child-Sub-Cate</span>
-                            </a>
-                        </li>
-                        <li class="sidebar-item">
-                            <a class="sidebar-link" href="<?= $base_url ?>/manage-child-sub-category.php" aria-expanded="false">
-                                <span>
-                                    <i class="ti ti-file-description"></i>
-                                </span>
-                                <span class="hide-menu">Manage Child-Sub-Cate</span>
+                            <a class="sidebar-link"
+                                href="<?= $base_url ?>/manage-permission.php"
+                                data-page="manage-permission">
+                                <i class="ti ti-list-check"></i>
+                                <span>Permission List</span>
                             </a>
                         </li>
                     </ul>
                 </li>
-
-                <!-- News -->
-                <li class="nav-small-cap">
-                    <i class="ti ti-dots nav-small-cap-icon fs-4"></i>
-                    <span class="hide-menu">News</span>
-                </li>
-
-                <li class="sidebar-item">
-                    <a class="sidebar-link has-arrow" href="javascript:void(0)" aria-expanded="false">
-                        <span class="d-flex">
-                            <i class="ti ti-layout-grid"></i>
-                        </span>
-                        <span class="hide-menu">News & manage</span>
-                    </a>
-                    <ul aria-expanded="false" class="collapse first-level">
-                        <li class="sidebar-item">
-                            <a class="sidebar-link" href="<?= $base_url ?>/post-news.php" aria-expanded="false">
-                                <span>
-                                    <i class="ti ti-cards"></i>
-                                </span>
-                                <span class="hide-menu">Post News</span>
-                            </a>
-                        </li>
-                        <li class="sidebar-item">
-                            <a class="sidebar-link" href="<?= $base_url ?>/manage-news.php" aria-expanded="false">
-                                <span>
-                                    <i class="ti ti-file-description"></i>
-                                </span>
-                                <span class="hide-menu">Manage News</span>
-                            </a>
-                        </li>
-                    </ul>
-                </li>
-
-                <li class="nav-small-cap">
-                    <i class="ti ti-dots nav-small-cap-icon fs-4"></i>
-                    <span class="hide-menu">General Postings</span>
-                </li>
-
-                <li class="sidebar-item">
-                    <a class="sidebar-link has-arrow" href="javascript:void(0)" aria-expanded="false">
-                        <span class="d-flex">
-                            <i class="ti ti-layout-grid"></i>
-                        </span>
-                        <span class="hide-menu">Notices & manage</span>
-                    </a>
-                    <ul aria-expanded="false" class="collapse first-level">
-                        <li class="sidebar-item">
-                            <a class="sidebar-link" href="<?= $base_url ?>/create-notice.php" aria-expanded="false">
-                                <span>
-                                    <i class="ti ti-cards"></i>
-                                </span>
-                                <span class="hide-menu">Post Notice</span>
-                            </a>
-                        </li>
-                        <li class="sidebar-item">
-                            <a class="sidebar-link" href="<?= $base_url ?>/manage-notices.php" aria-expanded="false">
-                                <span>
-                                    <i class="ti ti-file-description"></i>
-                                </span>
-                                <span class="hide-menu">Manage Notice</span>
-                            </a>
-                        </li>
-                    </ul>
-                </li>
-
-                <!-- Gallery -->
-                <li class="nav-small-cap">
-                    <i class="ti ti-dots nav-small-cap-icon fs-4"></i>
-                    <span class="hide-menu">Gallery</span>
-                </li>
-
-                <li class="sidebar-item">
-                    <a class="sidebar-link has-arrow" href="javascript:void(0)" aria-expanded="false">
-                        <span class="d-flex">
-                            <i class="ti ti-layout-grid"></i>
-                        </span>
-                        <span class="hide-menu">Galleries & manage</span>
-                    </a>
-                    <ul aria-expanded="false" class="collapse first-level">
-                        <li class="sidebar-item">
-                            <a class="sidebar-link" href="<?= $base_url ?>/post-album.php" aria-expanded="false">
-                                <span>
-                                    <i class="ti ti-cards"></i>
-                                </span>
-                                <span class="hide-menu">Post Albums</span>
-                            </a>
-                        </li>
-
-                        <li class="sidebar-item">
-                            <a class="sidebar-link" href="<?= $base_url ?>/manage-photos.php" aria-expanded="false">
-                                <span>
-                                    <i class="ti ti-cards"></i>
-                                </span>
-                                <span class="hide-menu">Manage Photos</span>
-                            </a>
-                        </li>
-
-                        <li class="sidebar-item">
-                            <a class="sidebar-link" href="<?= $base_url ?>/manage-videos.php" aria-expanded="false">
-                                <span>
-                                    <i class="ti ti-cards"></i>
-                                </span>
-                                <span class="hide-menu">Manage Videos</span>
-                            </a>
-                        </li>
-
-                        <li class="sidebar-item">
-                            <a class="sidebar-link" href="<?= $base_url ?>/manage-press-clips.php" aria-expanded="false">
-                                <span>
-                                    <i class="ti ti-file-description"></i>
-                                </span>
-                                <span class="hide-menu">Manage Press Clips</span>
-                            </a>
-                        </li>
-                    </ul>
-                </li>
-
-                <!-- Tender Post -->
-
-                <li class="nav-small-cap">
-                    <i class="ti ti-dots nav-small-cap-icon fs-4"></i>
-                    <span class="hide-menu">Tenders</span>
-                </li>
-
-                <li class="sidebar-item">
-                    <a class="sidebar-link has-arrow" href="javascript:void(0)" aria-expanded="false">
-                        <span class="d-flex">
-                            <i class="ti ti-layout-grid"></i>
-                        </span>
-                        <span class="hide-menu">Tenders & manage</span>
-                    </a>
-                    <ul aria-expanded="false" class="collapse first-level">
-                        <li class="sidebar-item">
-                            <a class="sidebar-link" href="<?= $base_url ?>/create-tender.php" aria-expanded="false">
-                                <span>
-                                    <i class="ti ti-cards"></i>
-                                </span>
-                                <span class="hide-menu">Post Tender</span>
-                            </a>
-                        </li>
-                        <li class="sidebar-item">
-                            <a class="sidebar-link" href="<?= $base_url ?>/manage-tenders.php" aria-expanded="false">
-                                <span>
-                                    <i class="ti ti-file-description"></i>
-                                </span>
-                                <span class="hide-menu">Manage Tenders</span>
-                            </a>
-                        </li>
-                    </ul>
-                </li>
-
             </ul>
         </nav>
 
-        <div class="fixed-profile p-3 mx-2 mb-2 bg-secondary-subtle rounded mt-3">
-            <div class="hstack gap-3">
+        <!-- User Profile Section -->
+        <div class="fixed-profile">
+            <div class="d-flex align-items-center gap-3">
                 <div class="john-img">
-                    <img src="<?= $base_url ?>/assets/images/profile/user-1.jpg" class="rounded-circle" width="40"
-                        height="40" alt="alt-img" />
+                    <img src="<?= $base_url ?>/assets/images/profile/user-1.jpg" class="rounded-circle" width="40" height="40" alt="User" />
                 </div>
-                <div class="john-title">
-                    <h6 class="mb-0 fs-4 fw-semibold"><?= $_SESSION['user_name']; ?></h6>
-                    <span class="fs-2"><?= $_SESSION['user_mail']; ?></span>
+                <div class="john-title flex-grow-1">
+                    <h6 class="mb-0 fw-semibold"><?= $_SESSION['user_name']; ?></h6>
+                    <span class="small"><?= $_SESSION['user_mail']; ?></span>
                 </div>
-                <!-- <button class="border-0 bg-transparent text-primary ms-auto" tabindex="0" type="button"
-                    aria-label="logout" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="logout">
-                    <i class="ti ti-power fs-6"></i>
-                </button> -->
-
-                <a href="<?= $base_url ?>/src/controllers/LogoutController.php"
-                    class="border-0 bg-transparent text-primary ms-auto" data-bs-toggle="tooltip"
-                    data-bs-placement="top" data-bs-title="logout"><i class="ti ti-power fs-6"></i></a>
+                <a href="<?= $base_url ?>/src/controllers/LogoutController.php" class="text-decoration-none" data-bs-toggle="tooltip" data-bs-placement="top" title="Logout">
+                    <i class="ti ti-power"></i>
+                </a>
             </div>
         </div>
-
-        <!-- ---------------------------------- -->
-        <!-- Start Vertical Layout Sidebar -->
-        <!-- ---------------------------------- -->
     </div>
 </aside>

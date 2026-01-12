@@ -61,11 +61,14 @@ if (isset($_SESSION['login']) && $_SESSION['login'] == true) {
     <div class="container">
 
         <div class="card my-3">
-            <div class="card-header" style="background-color: #901c8e;">
-                <h4 class="text-light text-center">Edit Video Album</h4>
-            </div>
+            <div class="card-body p-0">
+                <div class="card-header-modern">
+                    Edit Video Album
+                </div>
 
-            <div class="card-body">
+                <div class="p-3">
+                    <!-- rest form / content -->
+                </div>
                 <div id="msg"></div>
 
                 <div class="row">

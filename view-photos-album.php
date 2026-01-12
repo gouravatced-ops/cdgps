@@ -55,11 +55,14 @@ if (isset($_SESSION['user_id'])) {
 
     <div class="container-fluid">
         <div class="card">
-            <div class="card-header bg-primary ">
-                <h3 class="text-light text-center"><strong>Photo Album View</strong></h3>
-            </div>
+            <div class="card-body p-0">
+                <div class="card-header-modern">
+                    Photo Album View
+                </div>
 
-            <div class="card-body">
+                <div class="p-3">
+                    <!-- rest form / content -->
+                </div>
                 <div class="row">
 
                     <div class="col-md-12">

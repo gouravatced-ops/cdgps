@@ -1,12 +1,10 @@
 <?php
-session_start();
-include('./timeout.php');
-
-if (!isset($_SESSION['user_id'])) {
-    $_SESSION['login_error'] = 'Session Timeout, Please Login Again.';
-    header('Location: index.php');
-    exit;
-}
+/**
+ * Create Notice Page
+ * Protected page with session check
+ */
+require_once __DIR__ . '/src/helpers/session_helper.php';
+requireLogin(); // This will redirect if not logged in or session expired
 
 require_once __DIR__ . '/src/database/Database.php';
 
@@ -24,9 +22,15 @@ require_once __DIR__ . '/layouts/header.php';
 
 <div class="container-fluid">
     <div class="card">
-        <div class="card-body">
-            <div class="col-md-12">
-                <h5 class="card-title fw-semibold mb-4">Create Notice</h5>
+            <div class="card-body p-0">
+                <div class="col-md-12">
+                    <div class="card-header-modern">
+                        Create Notice
+                    </div>
+
+                    <div class="p-3">
+                        <!-- rest form / content -->
+                    </div>
 
                 <?php if (isset($_SESSION['message'])) { ?>
                     <div class="alert alert-success alert-dismissible fade show mt-3" role="alert">

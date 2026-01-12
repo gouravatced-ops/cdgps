@@ -21,8 +21,14 @@ require_once __DIR__ . '/layouts/header.php'; ?>
 <div class="container-fluid">
 
     <div class="card">
-        <div class="card-body">
-            <h5 class="card-title fw-semibold mb-4">Manage Tenders</h5>
+                    <div class="card-body p-0">
+                <div class="card-header-modern">
+                    Manage Tenders
+                </div>
+
+                <div class="p-3">
+                    <!-- rest form / content -->
+                </div>
             <?php if (isset($_SESSION['message'])) { ?>
                 <div class="alert alert-success alert-dismissible fade show mt-3" role="alert">
                     <strong>Success!</strong> <?php echo $_SESSION['message']; ?>.

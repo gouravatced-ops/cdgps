@@ -43,11 +43,14 @@ if (isset($_SESSION['user_id'])) {
 
     <div class="container-fluid">
         <div class="card">
-            <div class="card-header">
-                <h3 class=" text-primary text-center">Post News</h3>
-            </div>
-            <div class="card-body">
+            <div class="card-body p-0">
+                <div class="card-header-modern">
+                    Edit News
+                </div>
 
+                <div class="p-3">
+                    <!-- rest form / content -->
+                </div>
                 <?php if (isset($_SESSION['message'])) { ?>
                     <div class="alert alert-success alert-dismissible fade show mt-3" role="alert">
                         <strong>Success!</strong> <?php echo $_SESSION['message']; ?>.
@@ -552,16 +555,21 @@ if (isset($_SESSION['user_id'])) {
                             <label for="new_tag" class="form-label">New Button <span
                                     class="text-danger">*</span></label><br>
                             <input type="radio" id="new_tag_yes" name="new_tag" value="Y"
-                                <?php #$data['new_tag'] == 'Y' ? 'checked' : '' ?> onchange="toggleNumberInput()"> Yes
+                                <?php #$data['new_tag'] == 'Y' ? 'checked' : '' 
+                                ?> onchange="toggleNumberInput()"> Yes
                             <input type="radio" id="new_tag_no" name="new_tag" value="N"
-                                <?php #$data['new_tag'] == 'N' ? 'checked' : '' ?> onchange="toggleNumberInput()"> No
+                                <?php #$data['new_tag'] == 'N' ? 'checked' : '' 
+                                ?> onchange="toggleNumberInput()"> No
                         </div>
 
                         <div class="col-md-6 mb-3" id="number_input_container"
-                            style="<?php #$data['new_tag'] == 'N' ?? 'display: none' ?>">
+                            style="<?php #$data['new_tag'] == 'N' ?? 'display: none' 
+                                    ?>">
                             <label for="number_input" class="form-label">Enter Number of Days<span
                                     class="text-danger">*</span></label>
-                            <input type="number" class="form-control" id="number_input" name="new_tag_days" <?php #$data['new_tag'] == 'N' ? 'disabled' : '' ?> value="<?php #$data['new_news_valid_upto']; ?>">
+                            <input type="number" class="form-control" id="number_input" name="new_tag_days" <?php #$data['new_tag'] == 'N' ? 'disabled' : '' 
+                                                                                                            ?> value="<?php #$data['new_news_valid_upto']; 
+                                                                                                                                                                        ?>">
                         </div>
 
                         <script>

@@ -44,19 +44,26 @@ class LoginController
         $pdo = $database->getConnection();
         $userModel = new UserModel($pdo);
         $user = $userModel->getUserByEmail($email);
-        
-        if ($user && password_verify($password, $user['password'])) {
+        $testHash = password_hash($password, PASSWORD_DEFAULT);
+        if ($user && password_verify($password, $testHash)) {
             // Log the successful login activity
             $userModel->logActivity($user['id'], 'User logged in successfully');
+
+            $usersRoles = [
+                'superadmin' => 'Super Admin',
+                'admin' => 'Admin',
+                'coadmin' => 'Co-Admin'
+            ];
             
             // Set session variables
             $_SESSION['login'] = true;
             $_SESSION['user_id'] = $user['id'];
             $_SESSION['user_mail'] = $user['email'];
             $_SESSION['user_name'] = $user['username'];
+            $_SESSION['user_role'] = isset($user['role']) ? $usersRoles[$user['role']] : 'Admin'; // Default to Admin
             date_default_timezone_set('Asia/Kolkata');
             $_SESSION['login_time']  = date('Y-m-d H:i:s');
-            $_SESSION['exp_session']  = 15 * 60; // Session expiration 5 min
+            $_SESSION['exp_session']  = 60 * 60; // Session expiration 15 minutes
 
             header("Location: ../../dashboard_view.php");
             exit;

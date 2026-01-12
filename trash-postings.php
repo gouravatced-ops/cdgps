@@ -20,8 +20,14 @@ require_once __DIR__ . '/layouts/header.php'; ?>
 
 <div class="container-fluid">
     <div class="card">
-        <div class="card-body">
-            <h5 class="card-title fw-semibold mb-4">Trash Postings</h5>
+        <div class="card-body p-0">
+            <div class="card-header-modern">
+                Trash Posting
+            </div>
+
+            <div class="p-3">
+                <!-- rest form / content -->
+            </div>
 
             <?php if (isset($_SESSION['message'])) { ?>
                 <div class="alert alert-success alert-dismissible fade show mt-3" role="alert">

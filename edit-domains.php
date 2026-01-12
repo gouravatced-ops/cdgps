@@ -29,9 +29,15 @@ if (isset($_SESSION['user_id'])) {
 
     <div class="container-fluid">
         <div class="card">
-            <div class="card-body">
+            <div class="card-body p-0">
                 <div class="col-md-12">
-                    <h5 class="card-title fw-semibold mb-4">Edit Domain</h5>
+                    <div class="card-header-modern">
+                        Edit Domain
+                    </div>
+
+                    <div class="p-3">
+                        <!-- rest form / content -->
+                    </div>
 
                     <?php if (isset($_SESSION['message'])) { ?>
                         <div class="alert alert-success alert-dismissible fade show mt-3" role="alert">

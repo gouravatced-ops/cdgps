@@ -50,8 +50,14 @@ if ((isset($_SESSION['login'])) && ($_SESSION['login'] == true)) {
     </script>
     <div class="container-fluid">
         <div class="card shadow-sm border-0">
-            <div class="card-body">
-                <h4 class="text-primary text-center mb-4">Manage Video Album</h4>
+            <div class="card-body p-0">
+                <div class="card-header-modern">
+                    Edit Video Album
+                </div>
+
+                <div class="p-3">
+                    <!-- rest form / content -->
+                </div>
 
                 <div id="msg"></div>
 

@@ -1,6 +1,13 @@
 <?php
-session_start();
-if (isset($_SESSION['user_id'])) {
+
+/**
+ * Post News Page
+ * Protected page with session check
+ */
+require_once __DIR__ . '/src/helpers/session_helper.php';
+requireLogin(); // This will redirect if not logged in or session expired
+
+if (isLoggedIn()) {
     $title = "Admin - Post News";
 
     require_once __DIR__ . '/src/database/Database.php';
@@ -17,11 +24,14 @@ if (isset($_SESSION['user_id'])) {
 
     <div class="container-fluid">
         <div class="card">
-            <div class="card-header">
-                <h3 class=" text-primary text-center">Post News</h3>
-            </div>
-            <div class="card-body">
+            <div class="card-body p-0">
+                <div class="card-header-modern">
+                    Post News
+                </div>
 
+                <div class="p-3">
+                    <!-- rest form / content -->
+                </div>
                 <?php if (isset($_SESSION['message'])) { ?>
                     <div class="alert alert-success alert-dismissible fade show mt-3" role="alert">
                         <strong>Success!</strong> <?php echo $_SESSION['message']; ?>.

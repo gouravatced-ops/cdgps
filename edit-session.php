@@ -25,8 +25,14 @@ require_once __DIR__ . '/layouts/header.php'; ?>
 
 <div class="container-fluid">
     <div class="card">
-        <div class="card-body">
-            <h5 class="card-title fw-semibold mb-4">Edit Session & Financial Year</h5>
+        <div class="card-body p-0">
+            <div class="card-header-modern">
+                Edit Session & Financial Year
+            </div>
+
+            <div class="p-3">
+                <!-- rest form / content -->
+            </div>
 
             <?php if (isset($_SESSION['message'])) { ?>
                 <div class="alert alert-success alert-dismissible fade show mt-3" role="alert">
@@ -66,7 +72,7 @@ require_once __DIR__ . '/layouts/header.php'; ?>
 
                         <select class="form-control" id="sessionYear" name="sessionYear">
                             <option value="">Choose Session Year...</option>
-                        </select>   
+                        </select>
                     </div>
                 <?php }
                 if ($data['type'] == 'fy') { ?>

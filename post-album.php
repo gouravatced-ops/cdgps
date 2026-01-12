@@ -27,10 +27,14 @@ if ((isset($_SESSION['login'])) && ($_SESSION['login'] == true)) {
 
     <div class="container-fluid">
         <div class="card">
-            <div class="card-header">
-                <h3 class="text-primary text-center">Post Album</h3>
-            </div>
-            <div class="card-body">
+            <div class="card-body p-0">
+                <div class="card-header-modern">
+                    Post Album
+                </div>
+
+                <div class="p-3">
+                    <!-- rest form / content -->
+                </div>
 
                 <?php if (isset($_SESSION['message'])) { ?>
                     <div class="alert alert-success alert-dismissible fade show mt-3" role="alert">

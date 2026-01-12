@@ -25,8 +25,14 @@ require_once __DIR__ . '/layouts/header.php'; ?>
 
 <div class="container-fluid">
     <div class="card">
-        <div class="card-body">
-            <h5 class="card-title fw-semibold mb-4">Manage Postings</h5>
+        <div class="card-body p-0">
+            <div class="card-header-modern">
+                Manage Posting
+            </div>
+
+            <div class="p-3">
+                <!-- rest form / content -->
+            </div>
 
             <div class="row">
                 <div class="col-md-3 my-3">

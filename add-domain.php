@@ -18,20 +18,22 @@ if (isset($_SESSION['user_id'])) {
 
     $catId = isset($_GET['id']) ? intval($_GET['id']) : 0;
 
-    // $sql = $pdo->prepare("SELECT * FROM type ");
     $sql_cat = "SELECT * FROM `type`";
     $data = $pdo->query($sql_cat)->fetchAll(PDO::FETCH_ASSOC);
-
-    // -- $data = $sql->fetch(PDO::FETCH_ASSOC);
-
     require_once __DIR__ . '/layouts/header.php';
 ?>
 
     <div class="container-fluid">
         <div class="card">
-            <div class="card-body">
+            <div class="card-body p-0">
                 <div class="col-md-12">
-                    <h5 class="card-title fw-semibold mb-4">Add Domain</h5>
+                    <div class="card-header-modern">
+                        Add Domain
+                    </div>
+
+                    <div class="p-3">
+                        <!-- rest form / content -->
+                    </div>
 
                     <?php if (isset($_SESSION['message'])) { ?>
                         <div class="alert alert-success alert-dismissible fade show mt-3" role="alert">

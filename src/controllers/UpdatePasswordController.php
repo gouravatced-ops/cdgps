@@ -5,7 +5,7 @@ require_once __DIR__ . '/../database/Database.php';
 session_start();
 
 if (!isset($_SESSION['user_id'])) {
-    header("Location: /cdrms");
+    header("Location: ../../index.php");
     exit;
 }
 
@@ -26,7 +26,7 @@ try {
     $database = new Database();
     $pdo = $database->getConnection();
 
-    $stmt = $pdo->prepare("UPDATE users SET password = ? WHERE user_id = ?");
+    $stmt = $pdo->prepare("UPDATE users SET password = ? WHERE id = ?");
 
     if ($stmt->execute([$hashedPassword, $userId])) {
         $_SESSION['message'] = 'Password updated successfully';

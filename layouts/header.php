@@ -1,16 +1,23 @@
 <?php
-$protocol = isset($_SERVER['HTTPS']) &&
-    $_SERVER['HTTPS'] === 'on' ? 'https://' : 'http://';
-$base_url = $protocol . $_SERVER['HTTP_HOST'] . '/cdgps';
+// Start session if not already started
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
 
-$app_name = "Central GST";
+include('./system-config.php');
 
-$full_app_name = "Central GST & Central Excise, India";
-//echo $base_url;
-//die; 
+// $themeKey = array_rand($dashboardThemes);
+$themeKey = 'purple';
+$projectTheme = $dashboardThemes[$themeKey];
 
+// Generate CSRF token if not exists
 if (!isset($_SESSION['csrf_token'])) {
     $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
+}
+
+// Set default user role if not set
+if (isset($_SESSION['user_id']) && !isset($_SESSION['user_role'])) {
+    $_SESSION['user_role'] = 'Admin';
 }
 
 ?>
@@ -29,8 +36,14 @@ if (!isset($_SESSION['csrf_token'])) {
     <link rel="shortcut icon" type="image/png" href="<?= $base_url ?>/assets/images/logos/cgst-logo.png" />
     <!-- <link rel="stylesheet" href="<?= $base_url ?>/assets/css/styles.min.css"> -->
 
-    <!-- Core Css -->
-    <link rel="stylesheet" href="<?= $base_url ?>/assets/css/styles.css">
+    <!-- Bootstrap 5.3.0 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Bootstrap Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
+
+    <!-- Tabler Icons -->
+    <link rel="stylesheet" href="<?= $base_url ?>/assets/css/icons/tabler-icons/tabler-icons.css" />
 
     <!-- Loader Css -->
     <link rel="stylesheet" href="<?= $base_url ?>/assets/css/loader.css">
@@ -40,9 +53,24 @@ if (!isset($_SESSION['csrf_token'])) {
     <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.css" />
 
     <link rel="stylesheet" href="https://code.jquery.com/ui/1.13.2/themes/base/jquery-ui.css">
-    <link rel="stylesheet" href="<?= $base_url ?>/assets/css/icons/tabler-icons/tabler-icons.css" />
+
+    <!-- Custom Modern Styles -->
+    <link rel="stylesheet" href="<?= $base_url ?>/assets/css/modern-admin.css">
 
 </head>
+<style>
+    :root {
+        --primary-color: <?= $projectTheme['primary-color'] ?>;
+        --primary-hover: <?= $projectTheme['primary-hover'] ?>;
+        /* Sidebar */
+        --sidebar-bg: <?= $projectTheme['sidebar-bg'] ?>;
+        --sidebar-secondary: <?= $projectTheme['sidebar-secondary'] ?>;
+        /* Govt blue */
+        --sidebar-hover: <?= $projectTheme['sidebar-hover'] ?>;
+        --sidebar-active: <?= $projectTheme['sidebar-active'] ?>;
+        --sidebar-active-secondary: <?= $projectTheme['sidebar-active-secondary'] ?>;
+    }
+</style>
 
 <body>
     <div class="overlay" id="loader" style="display:none">
@@ -75,308 +103,104 @@ if (!isset($_SESSION['csrf_token'])) {
         <!-- Sidebar End -->
 
         <div class="page-wrapper">
-            <!--  Header Start -->
+            <!-- Header Start -->
             <header class="topbar">
-                <div class="with-vertical"><!-- ---------------------------------- -->
-                    <!-- Start Vertical Layout Header -->
-                    <!-- ---------------------------------- -->
-                    <nav class="navbar navbar-expand-lg p-0">
-                        <ul class="navbar-nav">
-                            <li class="nav-item nav-icon-hover-bg rounded-circle ms-n2">
-                                <a class="nav-link sidebartoggler" id="headerCollapse" href="javascript:void(0)">
-                                    <i class="ti ti-menu-2"></i>
-                                </a>
-                            </li>
-                            
-                        </ul>
+                <nav class="navbar navbar-expand-lg">
+                    <div class="d-flex align-items-center">
+                        <button class="btn btn-link nav-icon-hover-bg p-2 me-3"
+                            id="headerCollapse"
+                            type="button">
+                            <i class="ti ti-menu-2"></i>
+                        </button>
 
-                        <h3 class="text-center"><img src="<?= $base_url ?>/assets/images/logos/cgst-logo.png" class="" width="50" alt="admin-img" /> <?= $full_app_name; ?></h3>
+                        <div class="d-flex align-items-center gap-2">
+                            <img src="<?= $base_url ?>/assets/images/logos/cgst-logo.png"
+                                width="40"
+                                height="40"
+                                alt="Logo"
+                                class="rounded" />
 
-                        <div class="d-block d-lg-none py-4">
-                            <a href="index.html" class="text-nowrap logo-img">
-                                <!-- <h3 class="dark-logo"><?= $app_name; ?></h3>
-                                <h3 class="light-logo"><?= $app_name; ?></h3> -->
+                            <div class="lh-sm">
+                                <!-- Main Title -->
+                                <h3 class="mb-0 fw-semibold">
+                                    <span class="d-none d-md-inline"><?= $full_app_name; ?></span>
+                                    <span class="d-md-none"><?= $app_name; ?></span>
+                                </h3>
 
-                                <!-- <img src="https://bootstrapdemos.adminmart.com/modernize/dist/assets/images/logos/dark-logo.svg"
-                                    class="dark-logo" alt="Logo-Dark" />
-                                <img src="https://bootstrapdemos.adminmart.com/modernize/dist/assets/images/logos/light-logo.svg"
-                                    class="light-logo" alt="Logo-light" /> -->
-                            </a>
-                        </div>
-                        <a class="navbar-toggler nav-icon-hover-bg rounded-circle p-0 mx-0 border-0"
-                            href="javascript:void(0)" data-bs-toggle="collapse" data-bs-target="#navbarNav"
-                            aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-                            <i class="ti ti-dots fs-7"></i>
-                        </a>
-                        <div class="collapse navbar-collapse justify-content-end" id="navbarNav">
-                            <div class="d-flex align-items-center justify-content-between">
-
-                                <ul class="navbar-nav flex-row ms-auto align-items-center justify-content-center">
-                                    <!-- ------------------------------- -->
-                                    <!-- start language Dropdown -->
-                                    <!-- ------------------------------- -->
-                                    <li class="nav-item nav-icon-hover-bg rounded-circle">
-                                        <a class="nav-link moon dark-layout" href="javascript:void(0)">
-                                            <i class="ti ti-moon moon"></i>
-                                        </a>
-                                        <a class="nav-link sun light-layout" href="javascript:void(0)">
-                                            <i class="ti ti-sun sun"></i>
-                                        </a>
-                                    </li>
-
-                                    <!-- ------------------------------- -->
-                                    <!-- start profile Dropdown -->
-                                    <!-- ------------------------------- -->
-                                    <li class="nav-item dropdown">
-                                        <a class="nav-link pe-0" href="javascript:void(0)" id="drop1"
-                                            aria-expanded="false">
-                                            <div class="d-flex align-items-center">
-                                                <div class="user-profile-img">
-                                                    <img src="<?= $base_url ?>/assets/images/profile/user-1.jpg"
-                                                        class="rounded-circle" width="35" height="35"
-                                                        alt="modernize-img" />
-                                                </div>
-                                            </div>
-                                        </a>
-                                        <div class="dropdown-menu content-dd dropdown-menu-end dropdown-menu-animate-up"
-                                            aria-labelledby="drop1">
-                                            <div class="profile-dropdown position-relative" data-simplebar>
-                                                <div class="py-3 px-7 pb-0">
-                                                    <h5 class="mb-0 fs-5 fw-semibold">User Profile</h5>
-                                                </div>
-                                                <div class="d-flex align-items-center py-9 mx-7 border-bottom">
-                                                    <img src="<?= $base_url ?>/assets/images/profile/user-1.jpg"
-                                                        class="rounded-circle" width="80" height="80"
-                                                        alt="modernize-img" />
-                                                    <div class="ms-3">
-                                                        <h5 class="mb-1 fs-3"><?= $_SESSION['user_name'] ?></h5>
-                                                        <span class="mb-1 d-block">Admin</span>
-                                                        <p class="mb-0 d-flex align-items-center gap-2">
-                                                            <i class="ti ti-mail fs-4"></i> <?= $_SESSION['user_mail']; ?>
-                                                        </p>
-                                                    </div>
-                                                </div>
-                                                <!-- <div class="message-body">
-                                                    <a href="https://bootstrapdemos.adminmart.com/modernize/dist/main/page-user-profile.html"
-                                                        class="py-8 px-7 mt-8 d-flex align-items-center">
-                                                        <span
-                                                            class="d-flex align-items-center justify-content-center text-bg-light rounded-1 p-6">
-                                                            <img src="https://bootstrapdemos.adminmart.com/modernize/dist/assets/images/svgs/icon-account.svg"
-                                                                alt="modernize-img" width="24" height="24" />
-                                                        </span>
-                                                        <div class="w-100 ps-3">
-                                                            <h6 class="mb-1 fs-3 fw-semibold lh-base">My Profile</h6>
-                                                            <span class="fs-2 d-block text-body-secondary">Account
-                                                                Settings</span>
-                                                        </div>
-                                                    </a>
-                                                    <a href="https://bootstrapdemos.adminmart.com/modernize/dist/main/app-email.html"
-                                                        class="py-8 px-7 d-flex align-items-center">
-                                                        <span
-                                                            class="d-flex align-items-center justify-content-center text-bg-light rounded-1 p-6">
-                                                            <img src="https://bootstrapdemos.adminmart.com/modernize/dist/assets/images/svgs/icon-inbox.svg"
-                                                                alt="modernize-img" width="24" height="24" />
-                                                        </span>
-                                                        <div class="w-100 ps-3">
-                                                            <h6 class="mb-1 fs-3 fw-semibold lh-base">My Inbox</h6>
-                                                            <span class="fs-2 d-block text-body-secondary">Messages &
-                                                                Emails</span>
-                                                        </div>
-                                                    </a>
-                                                    <a href="https://bootstrapdemos.adminmart.com/modernize/dist/main/app-notes.html"
-                                                        class="py-8 px-7 d-flex align-items-center">
-                                                        <span
-                                                            class="d-flex align-items-center justify-content-center text-bg-light rounded-1 p-6">
-                                                            <img src="https://bootstrapdemos.adminmart.com/modernize/dist/assets/images/svgs/icon-tasks.svg"
-                                                                alt="modernize-img" width="24" height="24" />
-                                                        </span>
-                                                        <div class="w-100 ps-3">
-                                                            <h6 class="mb-1 fs-3 fw-semibold lh-base">My Task</h6>
-                                                            <span class="fs-2 d-block text-body-secondary">To-do and
-                                                                Daily Tasks</span>
-                                                        </div>
-                                                    </a>
-                                                </div> -->
-                                                <div class="d-grid py-4 px-7 pt-8">
-                                                  
-                                                    <a href="<?= $base_url ?>/src/controllers/LogoutController.php"
-                                                        class="btn btn-outline-primary">Log Out</a>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </li>
-                                    <!-- ------------------------------- -->
-                                    <!-- end profile Dropdown -->
-                                    <!-- ------------------------------- -->
-                                </ul>
+                                <!-- Subtitle -->
+                                <small class="d-none d-md-inline text-body-secondary fw-normal">
+                                    Administration Dashboard
+                                </small>
                             </div>
                         </div>
-                    </nav>
-                    <!-- ---------------------------------- -->
-                    <!-- End Vertical Layout Header -->
-                    <!-- ---------------------------------- -->
+                    </div>
 
-                </div>
 
-                <div class="app-header with-horizontal">
-                    <nav class="navbar navbar-expand-xl container-fluid p-0">
-                        <ul class="navbar-nav align-items-center">
-                            <li class="nav-item nav-icon-hover-bg rounded-circle d-flex d-xl-none ms-n2">
-                                <a class="nav-link sidebartoggler" id="sidebarCollapse" href="javascript:void(0)">
-                                    <i class="ti ti-menu-2"></i>
-                                </a>
-                            </li>
-                            <li class="nav-item d-none d-xl-block">
-                                <a href="index.html" class="text-nowrap nav-link">
-                                    <h3 class="dark-logo"><?= $app_name; ?></h3>
-                                    <h3 class="light-logo"><?= $app_name; ?></h3>
+                    <div class="d-flex align-items-center ms-auto">
 
-                                    <!-- <img src="https://bootstrapdemos.adminmart.com/modernize/dist/assets/images/logos/dark-logo.svg"
-                                        class="dark-logo" width="180" alt="modernize-img" />
-                                    <img src="https://bootstrapdemos.adminmart.com/modernize/dist/assets/images/logos/light-logo.svg"
-                                        class="light-logo" width="180" alt="modernize-img" /> -->
-                                </a>
-                            </li>
-                            <li class="nav-item nav-icon-hover-bg rounded-circle d-none d-xl-flex">
-                                <a class="nav-link" href="javascript:void(0)" data-bs-toggle="modal"
-                                    data-bs-target="#exampleModal">
-                                    <i class="ti ti-search"></i>
-                                </a>
-                            </li>
-                        </ul>
+                        <!-- Session Timer (Optional) -->
+                        <div class="me-3 d-none d-md-block">
+                            <small class="text-muted" id="sessionTimer"></small>
+                        </div>
 
-                        <div class="d-block d-xl-none">
-                            <a href="index.html" class="text-nowrap nav-link">
-                                <h3 class="dark-logo"><?= $app_name; ?></h3>
-                                <h3 class="light-logo"><?= $app_name; ?></h3>
+                        <!-- User Role Badge -->
+                        <?php if (isset($_SESSION['user_role'])): ?>
+                            <span class="badge bg-primary me-3 d-none d-md-inline-block"><?= htmlspecialchars(strtoupper($_SESSION['user_role'])); ?></span>
+                        <?php endif; ?>
 
-                                <!-- <img src="https://bootstrapdemos.adminmart.com/modernize/dist/assets/images/logos/dark-logo.svg"
-                                    width="180" alt="modernize-img" /> -->
+                        <!-- Session Timer Data (hidden) -->
+                        <?php
+                        if (!function_exists('getRemainingSessionTime')) {
+                            require_once __DIR__ . '/../src/helpers/session_helper.php';
+                        }
+                        $remainingTime = getRemainingSessionTime();
+                        $loginTime = isset($_SESSION['login_time']) ? strtotime($_SESSION['login_time']) : 0;
+                        $sessionDuration = isset($_SESSION['exp_session']) ? $_SESSION['exp_session'] : 900;
+                        ?>
+                        <script>
+                            window.sessionRemainingTime = <?= max(0, $remainingTime); ?>;
+                            window.sessionLoginTime = <?= $loginTime; ?>;
+                            window.sessionDuration = <?= $sessionDuration; ?>;
+                            window.serverTime = <?= time(); ?>;
+                        </script>
+
+                        <!-- Theme Toggle -->
+                        <button class="btn btn-link nav-icon-hover-bg p-2 me-2" type="button" id="themeToggle" title="Toggle Theme">
+                            <i class="ti ti-moon" id="themeIcon"></i>
+                        </button>
+
+                        <!-- User Profile Dropdown -->
+                        <div class="dropdown">
+                            <a class="nav-link dropdown-toggle d-flex align-items-center p-0" href="#" role="button" id="userDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                                <img src="<?= $base_url ?>/assets/images/profile/user-1.jpg" class="rounded-circle" width="40" height="40" alt="User" />
                             </a>
-                        </div>
-                        <a class="navbar-toggler nav-icon-hover-bg rounded-circle p-0 mx-0 border-0"
-                            href="javascript:void(0)" data-bs-toggle="collapse" data-bs-target="#navbarNav"
-                            aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-                            <span class="p-2">
-                                <i class="ti ti-dots fs-7"></i>
-                            </span>
-                        </a>
-                        <div class="collapse navbar-collapse justify-content-end" id="navbarNav">
-                            <div class="d-flex align-items-center justify-content-between px-0 px-xl-8">
-
-                                <ul class="navbar-nav flex-row ms-auto align-items-center justify-content-center">
-
-                                    <li class="nav-item nav-icon-hover-bg rounded-circle">
-                                        <a class="nav-link moon dark-layout" href="javascript:void(0)">
-                                            <i class="ti ti-moon moon"></i>
-                                        </a>
-                                        <a class="nav-link sun light-layout" href="javascript:void(0)">
-                                            <i class="ti ti-sun sun"></i>
-                                        </a>
-                                    </li>
-
-                                    <li class="nav-item dropdown">
-                                        <a class="nav-link pe-0" href="javascript:void(0)" id="drop1"
-                                            aria-expanded="false">
-                                            <div class="d-flex align-items-center">
-                                                <div class="user-profile-img">
-                                                    <img src="<?= $base_url ?>/assets/images/profile/user-1.jpg"
-                                                        class="rounded-circle" width="35" height="35"
-                                                        alt="modernize-img" />
-                                                </div>
-                                            </div>
-                                        </a>
-                                        <div class="dropdown-menu content-dd dropdown-menu-end dropdown-menu-animate-up"
-                                            aria-labelledby="drop1">
-                                            <div class="profile-dropdown position-relative" data-simplebar>
-                                                <div class="py-3 px-7 pb-0">
-                                                    <h5 class="mb-0 fs-5 fw-semibold">User Profile</h5>
-                                                </div>
-                                                <div class="d-flex align-items-center py-9 mx-7 border-bottom">
-                                                    <img src="<?= $base_url ?>/assets/images/profile/user-1.jpg"
-                                                        class="rounded-circle" width="80" height="80"
-                                                        alt="modernize-img" />
-                                                    <div class="ms-3">
-                                                        <h5 class="mb-1 fs-3">Mathew Anderson</h5>
-                                                        <span class="mb-1 d-block">Designer</span>
-                                                        <p class="mb-0 d-flex align-items-center gap-2">
-                                                            <i class="ti ti-mail fs-4"></i> info@modernize.com
-                                                        </p>
-                                                    </div>
-                                                </div>
-                                                <div class="message-body">
-                                                    <a href="https://bootstrapdemos.adminmart.com/modernize/dist/main/page-user-profile.html"
-                                                        class="py-8 px-7 mt-8 d-flex align-items-center">
-                                                        <span
-                                                            class="d-flex align-items-center justify-content-center text-bg-light rounded-1 p-6">
-                                                            <img src="https://bootstrapdemos.adminmart.com/modernize/dist/assets/images/svgs/icon-account.svg"
-                                                                alt="modernize-img" width="24" height="24" />
-                                                        </span>
-                                                        <div class="w-100 ps-3">
-                                                            <h6 class="mb-1 fs-3 fw-semibold lh-base">My Profile</h6>
-                                                            <span class="fs-2 d-block text-body-secondary">Account
-                                                                Settings</span>
-                                                        </div>
-                                                    </a>
-                                                    <a href="https://bootstrapdemos.adminmart.com/modernize/dist/main/app-email.html"
-                                                        class="py-8 px-7 d-flex align-items-center">
-                                                        <span
-                                                            class="d-flex align-items-center justify-content-center text-bg-light rounded-1 p-6">
-                                                            <img src="https://bootstrapdemos.adminmart.com/modernize/dist/assets/images/svgs/icon-inbox.svg"
-                                                                alt="modernize-img" width="24" height="24" />
-                                                        </span>
-                                                        <div class="w-100 ps-3">
-                                                            <h6 class="mb-1 fs-3 fw-semibold lh-base">My Inbox</h6>
-                                                            <span class="fs-2 d-block text-body-secondary">Messages &
-                                                                Emails</span>
-                                                        </div>
-                                                    </a>
-                                                    <a href="https://bootstrapdemos.adminmart.com/modernize/dist/main/app-notes.html"
-                                                        class="py-8 px-7 d-flex align-items-center">
-                                                        <span
-                                                            class="d-flex align-items-center justify-content-center text-bg-light rounded-1 p-6">
-                                                            <img src="https://bootstrapdemos.adminmart.com/modernize/dist/assets/images/svgs/icon-tasks.svg"
-                                                                alt="modernize-img" width="24" height="24" />
-                                                        </span>
-                                                        <div class="w-100 ps-3">
-                                                            <h6 class="mb-1 fs-3 fw-semibold lh-base">My Task</h6>
-                                                            <span class="fs-2 d-block text-body-secondary">To-do and
-                                                                Daily Tasks</span>
-                                                        </div>
-                                                    </a>
-                                                </div>
-                                                <div class="d-grid py-4 px-7 pt-8">
-                                                    <div
-                                                        class="upgrade-plan bg-primary-subtle position-relative overflow-hidden rounded-4 p-4 mb-9">
-                                                        <div class="row">
-                                                            <div class="col-6">
-                                                                <h5 class="fs-4 mb-3 fw-semibold">Unlimited Access</h5>
-                                                                <button class="btn btn-primary">Upgrade</button>
-                                                            </div>
-                                                            <div class="col-6">
-                                                                <div class="m-n4 unlimited-img">
-                                                                    <img src="https://bootstrapdemos.adminmart.com/modernize/dist/assets/images/backgrounds/unlimited-bg.png"
-                                                                        alt="modernize-img" class="w-100" />
-                                                                </div>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                    <a href="https://bootstrapdemos.adminmart.com/modernize/dist/main/authentication-login.html"
-                                                        class="btn btn-outline-primary">Log Out</a>
-                                                </div>
-                                            </div>
+                            <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
+                                <li>
+                                    <div class="px-4 py-3 border-bottom">
+                                        <h6 class="mb-0 fw-semibold"><?= $_SESSION['user_name']; ?></h6>
+                                        <small class="text-muted"><?= $_SESSION['user_mail']; ?></small>
+                                    </div>
+                                </li>
+                                <li>
+                                    <div class="d-flex align-items-center px-4 py-3 border-bottom">
+                                        <img src="<?= $base_url ?>/assets/images/profile/user-1.jpg" class="rounded-circle me-3" width="60" height="60" alt="User" />
+                                        <div>
+                                            <h6 class="mb-0"><?= $_SESSION['user_name']; ?></h6>
+                                            <small class="text-muted"><?= isset($_SESSION['user_role']) ? strtoupper($_SESSION['user_role']) : 'Admin'; ?></small>
                                         </div>
-                                    </li>
-                                    <!-- ------------------------------- -->
-                                    <!-- end profile Dropdown -->
-                                    <!-- ------------------------------- -->
-                                </ul>
-                            </div>
+                                    </div>
+                                </li>
+                                <li>
+                                    <a class="dropdown-item p-2" href="<?= $base_url ?>/src/controllers/LogoutController.php">
+                                        <i class="ti ti-logout me-2"></i> Log Out
+                                    </a>
+                                </li>
+                            </ul>
                         </div>
-                    </nav>
-                </div>
+                    </div>
+                </nav>
             </header>
-            <!--  Header End -->
+            <!-- Header End -->
 
             <div class="body-wrapper">
                 <!-- <div class="container-fluid"> -->
