@@ -260,7 +260,7 @@ body {
   left: 0;
   right: 0;
   padding: 1rem;
-  margin: 1rem;
+  margin: 0.25rem;
   margin-top: auto;
   background: rgba(255, 255, 255, 0.1);
   backdrop-filter: blur(10px);

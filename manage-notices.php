@@ -13,7 +13,6 @@ $database = new Database();
 $pdo = $database->getConnection();
 
 $sql = "SELECT *, b.sub_category_name as category_name , dm.eng_name , csc.child_sub_category_name FROM notices a join sub_category b on a.notice_subcategory = b.id LEFT JOIN domains as dm ON dm.id = a.domain_id LEFT JOIN child_sub_category as csc ON csc.id = a.notice_childsubcategory WHERE  a.is_deleted='0' ORDER BY created_at";
-
 $categories = $pdo->query($sql)->fetchAll(PDO::FETCH_ASSOC);
 
 require_once __DIR__ . '/layouts/header.php'; ?>

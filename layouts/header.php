@@ -33,7 +33,7 @@ if (isset($_SESSION['user_id']) && !isset($_SESSION['user_role'])) {
     <title>Admin</title>
 
     <!-- Favicon icon-->
-    <link rel="shortcut icon" type="image/png" href="<?= $base_url ?>/assets/images/logos/cgst-logo.png" />
+    <link rel="shortcut icon" type="image/png" href="<?= $faviconIcon ?>" />
     <!-- <link rel="stylesheet" href="<?= $base_url ?>/assets/css/styles.min.css"> -->
 
     <!-- Bootstrap 5.3.0 CSS -->
@@ -114,7 +114,7 @@ if (isset($_SESSION['user_id']) && !isset($_SESSION['user_role'])) {
                         </button>
 
                         <div class="d-flex align-items-center gap-2">
-                            <img src="<?= $base_url ?>/assets/images/logos/cgst-logo.png"
+                            <img src="<?= $logo ?>"
                                 width="40"
                                 height="40"
                                 alt="Logo"

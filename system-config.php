@@ -13,6 +13,8 @@ if($_SERVER['HTTP_HOST'] == 'localhost') {
 
 $app_name = "Central GST";
 $full_app_name = "Central GST & Central Excise, India";
+$logo = $base_url ."/assets/images/logos/cgst-logo.png";
+$faviconIcon = $base_url .'/assets/images/logos/cgst-logo.png';
 
 $dashboardThemes = [
     'indigo' => [
@@ -86,9 +88,9 @@ $dashboardThemes = [
 
     'gov-indigo' => [
         'primary-color' => '#4f46e5',
-        'primary-hover' => '#4338ca',
+        'primary-hover' => '#2d2774',
         'sidebar-bg' => '#111827',
-        'sidebar-secondary' => 'rgb(17, 121, 60)',
+        'sidebar-secondary' => '#1b2e58',
         'sidebar-hover' => '#1f2937',
         'sidebar-active' => '#4f46e5',
         'sidebar-active-secondary' => '#818cf8',
@@ -96,7 +98,7 @@ $dashboardThemes = [
 
     'forest-green' => [
         'primary-color' => '#15803d',
-        'primary-hover' => '#166534',
+        'primary-hover' => '#1a7a3f',
         'sidebar-bg' => '#022c22',
         'sidebar-secondary' => 'rgb(35, 110, 67)',
         'sidebar-hover' => '#064e3b',

@@ -94,6 +94,10 @@ if ($user) {
     $isExpired = true;
 }
 
+// Notices
+$sql = "SELECT *, b.sub_category_name as category_name , dm.eng_name , csc.child_sub_category_name FROM notices a join sub_category b on a.notice_subcategory = b.id LEFT JOIN domains as dm ON dm.id = a.domain_id LEFT JOIN child_sub_category as csc ON csc.id = a.notice_childsubcategory WHERE  a.is_deleted='0' ORDER BY created_at limit 4";
+$categories = $pdo->query($sql)->fetchAll(PDO::FETCH_ASSOC);
+
 
 require_once __DIR__ . '/layouts/header.php'; ?>
 
@@ -287,6 +291,55 @@ require_once __DIR__ . '/layouts/header.php'; ?>
         </div>
     </div>
 </div>
+<div class="container-fluid mt-4">
+    <div class="card shadow-sm rounded-0">
+
+        <div class="card-header py-1 px-2 fw-semibold">
+            Recent Notices
+        </div>
+
+        <div class="table-responsive">
+            <table class="table table-sm table-hover mb-0 align-middle">
+
+                <thead class="table-light">
+                    <tr>
+                        <th class="px-2 py-1" style="width:5%">Sl.</th>
+                        <th class="px-2 py-1" style="width:15%">Domain</th>
+                        <th class="px-2 py-1" style="width:15%">Ref. No</th>
+                        <th class="px-2 py-1">Notice Title</th>
+                        <th class="px-2 py-1 text-end" style="width:15%">Publish Date</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    <?php $i = 1;
+                    foreach ($categories as $row): ?>
+                    <tr>
+                        <td class="px-2 py-1"><?php echo $i++; ?></td>
+                        <td class="px-2 py-1"><?php echo htmlspecialchars($row['eng_name']); ?></td>
+                        <td class="px-2 py-1"><?php echo htmlspecialchars($row['notice_ref_no']); ?></td>
+                        <td class="px-2 py-1 text-truncate" style="max-width:200px;">
+                            <?php echo htmlspecialchars($row['notice_title']); ?>
+                        </td>
+                        <td class="px-2 py-1 text-end text-muted small"><?= htmlspecialchars($row['notice_dated']); ?></td>
+                    </tr>
+                    <?php endforeach; ?>
+
+                    <!-- View More Row -->
+                    <tr>
+                        <td colspan="5" class="text-end py-2">
+                            <a href="manage-notices.php">
+                                View More
+                            </a>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+    </div>
+</div>
+
 <script>
     /* Live Time & Date */
     function updateTime() {
