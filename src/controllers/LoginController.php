@@ -52,7 +52,7 @@ class LoginController
             $_SESSION['user_id'] = $user['id'];
             date_default_timezone_set('Asia/Kolkata');
             $_SESSION['login_time']  = date('Y-m-d H:i:s');
-            $_SESSION['exp_session']  = 60 * 60; // Session expiration 1 hour
+            $_SESSION['exp_session']  = 15 * 60; // Session expiration 15 min
 
             header("Location: ../../dashboard_view.php");
             exit;

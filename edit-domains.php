@@ -7,14 +7,11 @@ if (!isset($_SESSION['user_id'])) {
     header('Location: index.php');
     exit;
 }
+require_once __DIR__ . '/layouts/header.php';
 if (isset($_SESSION['user_id'])) {
     $title = "Admin - Add Category";
 
-    require_once __DIR__ . '/src/database/Database.php';
-
-    $database = new Database();
-    $pdo = $database->getConnection();
-
+    
     $domainId = isset($_GET['id']) ? intval($_GET['id']) : 0;
 
     $sql = $pdo->prepare("SELECT * FROM domains WHERE id= :domainId #is_deleted = '0'");
@@ -24,7 +21,6 @@ if (isset($_SESSION['user_id'])) {
     $sql->execute();
     $data = $sql->fetch(PDO::FETCH_ASSOC);
 
-    require_once __DIR__ . '/layouts/header.php';
     ?>
 
     <div class="container-fluid">

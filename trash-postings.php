@@ -7,7 +7,7 @@ if (!isset($_SESSION['user_id'])) {
     exit;
 }
 
-require_once __DIR__ . '/src/database/Database.php';
+require_once __DIR__ . '/layouts/header.php';
 
 $database = new Database();
 $pdo = $database->getConnection();
@@ -16,7 +16,7 @@ $sql = "SELECT * FROM postings where is_deleted='1'";
 
 $postings = $pdo->query($sql)->fetchAll(PDO::FETCH_ASSOC);
 
-require_once __DIR__ . '/layouts/header.php'; ?>
+?>
 
 <div class="container-fluid">
     <div class="card">

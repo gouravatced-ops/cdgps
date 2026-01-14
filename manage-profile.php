@@ -7,11 +7,7 @@
 require_once __DIR__ . '/src/helpers/session_helper.php';
 requireLogin();
 
-require_once __DIR__ . '/src/database/Database.php';
-
-$database = new Database();
-$pdo = $database->getConnection();
-
+require_once __DIR__ . '/layouts/header.php';
 // Get current user data
 $userId = $_SESSION['user_id'];
 $stmt = $pdo->prepare("SELECT id, email, username FROM users WHERE id = :userId");
@@ -25,7 +21,7 @@ if (!$user) {
     exit;
 }
 
-require_once __DIR__ . '/layouts/header.php'; ?>
+?>
 
 <div class="container-fluid">
     <div class="card">

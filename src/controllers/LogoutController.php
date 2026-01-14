@@ -25,8 +25,7 @@ class LogoutController
         session_unset();
 
         session_destroy();
-        global $projectName;
-        header('Location: /' . $projectName);
+        header('Location: /');
         exit;
     }
 }

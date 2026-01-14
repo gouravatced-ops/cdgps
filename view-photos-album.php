@@ -5,12 +5,8 @@
 
 session_start();
 if (isset($_SESSION['user_id'])) {
-
-    require_once __DIR__ . '/src/database/Database.php';
-
-    $database = new Database();
-    $pdo = $database->getConnection();
-
+    
+    require_once __DIR__ . '/layouts/header.php';
     $albumId = $_GET['album_id'] ?? 0;
 
     $albumQuery = $pdo->prepare('SELECT * FROM albums WHERE uniq_id = ? AND is_deleted=0');
@@ -32,8 +28,6 @@ if (isset($_SESSION['user_id'])) {
     $dateOfEvent = htmlspecialchars($album['event_date']);
     $location = htmlspecialchars($album['location']);
     $coverId = $album['cover_photo_id'];
-
-    require_once __DIR__ . '/layouts/header.php';
     ?>
 
     <style>

@@ -10,16 +10,6 @@ if (!isset($_SESSION['user_id'])) {
 
 if (isset($_SESSION['user_id'])) {
     $title = "Admin - Add Category";
-
-    require_once __DIR__ . '/src/database/Database.php';
-
-    $database = new Database();
-    $pdo = $database->getConnection();
-
-    $catId = isset($_GET['id']) ? intval($_GET['id']) : 0;
-
-    $sql_cat = "SELECT * FROM `type`";
-    $data = $pdo->query($sql_cat)->fetchAll(PDO::FETCH_ASSOC);
     require_once __DIR__ . '/layouts/header.php';
 ?>
 

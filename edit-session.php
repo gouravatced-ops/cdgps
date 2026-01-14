@@ -7,12 +7,7 @@ if (!isset($_SESSION['user_id'])) {
     header('Location: index.php');
     exit;
 }
-
-require_once __DIR__ . '/src/database/Database.php';
-
-$database = new Database();
-$pdo = $database->getConnection();
-
+require_once __DIR__ . '/layouts/header.php';
 $sessionId = isset($_GET['id']) ? intval($_GET['id']) : 0;
 
 $stmt = $pdo->prepare("SELECT * FROM sy_fy WHERE id = :sessionId ");
@@ -21,7 +16,7 @@ $stmt->bindParam(':sessionId', $sessionId, PDO::PARAM_INT);
 $stmt->execute();
 $data = $stmt->fetch(PDO::FETCH_ASSOC);
 
-require_once __DIR__ . '/layouts/header.php'; ?>
+?>
 
 <div class="container-fluid">
     <div class="card">

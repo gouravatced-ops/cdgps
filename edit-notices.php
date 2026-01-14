@@ -8,12 +8,9 @@ if (!isset($_SESSION['user_id'])) {
     exit;
 }
 
+require_once __DIR__ . '/layouts/header.php';
+
 if (isset($_SESSION['user_id'])) {
-
-    require_once __DIR__ . '/src/database/Database.php';
-
-    $database = new Database();
-    $pdo = $database->getConnection();
     $postingId = isset($_GET['id']) ? intval($_GET['id']) : 0;
 
     $stmt = $pdo->prepare("SELECT a.* FROM notices a WHERE a.uniq_id = :postingId AND is_deleted='0'");
@@ -43,8 +40,6 @@ if (isset($_SESSION['user_id'])) {
     $subcategoryId = $data['notice_subcategory'];
     $sql = "SELECT * FROM child_sub_category WHERE subcategory_id = $subcategoryId";
     $childsubcategories = $pdo->query($sql)->fetchAll(PDO::FETCH_ASSOC);
-
-    require_once __DIR__ . '/layouts/header.php';
 ?>
 
     <div class="container-fluid">

@@ -6,7 +6,7 @@ if (!isset($_SESSION['user_id'])) {
     exit;
 }
 
-require_once __DIR__ . '/src/Database/Database.php';
+require './src/database/Database.php';
 $database = new Database();
 $pdo = $database->getConnection();
 

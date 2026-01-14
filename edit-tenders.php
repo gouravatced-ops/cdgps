@@ -18,10 +18,7 @@ if (!isset($_SESSION['user_id'])) {
     exit();
 }
 
-require_once __DIR__ . '/src/database/Database.php';
-
-$database = new Database();
-$pdo = $database->getConnection();
+require_once __DIR__ . '/layouts/header.php';
 
 $tenderId = $_GET['id'] ?? 0;
 
@@ -64,15 +61,8 @@ $financialYear = getFinancialYears();
 $latestFinancialYear = end($financialYear);
 
 
-// require_once __DIR__ . '/src/database/Database.php';
-
-// $database = new Database();
-// $pdo = $database->getConnection();
-
 $sql_subcat = "SELECT * FROM sub_category WHERE is_deleted='0' AND category_id=1";
 $subcategories = $pdo->query($sql_subcat)->fetchAll(PDO::FETCH_ASSOC);
-
-require_once __DIR__ . '/layouts/header.php';
 ?>
 
 <div class="container-fluid">

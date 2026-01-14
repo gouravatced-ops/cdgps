@@ -7,13 +7,10 @@ if (!isset($_SESSION['user_id'])) {
     header('Location: index.php');
     exit;
 }
+require_once __DIR__ . '/layouts/header.php';
+
 if (isset($_SESSION['user_id'])) {
     $title = "Admin - Add Category";
-
-    require_once __DIR__ . '/src/database/Database.php';
-
-    $database = new Database();
-    $pdo = $database->getConnection();
 
     $sql = "SELECT * FROM category_master";
 
@@ -37,7 +34,6 @@ if (isset($_SESSION['user_id'])) {
     $sql_domains = "SELECT * FROM `domains`";
     $domain_data = $pdo->query($sql_domains)->fetchAll(PDO::FETCH_ASSOC);
 
-    require_once __DIR__ . '/layouts/header.php';
 ?>
 
     <div class="container-fluid">
