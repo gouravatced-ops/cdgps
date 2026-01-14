@@ -7,15 +7,21 @@
 require_once __DIR__ . '/src/helpers/session_helper.php';
 requireLogin(); // This will redirect if not logged in or session expired
 
-require_once __DIR__ . '/src/database/Database.php';
+require_once __DIR__ . '/layouts/header.php'; 
 
-$database = new Database();
-$pdo = $database->getConnection();
+$params = [];
+$sql = "SELECT *, b.sub_category_name as category_name , dm.eng_name , csc.child_sub_category_name FROM notices a join sub_category b on a.notice_subcategory = b.id LEFT JOIN domains as dm ON dm.id = a.domain_id LEFT JOIN child_sub_category as csc ON csc.id = a.notice_childsubcategory WHERE  a.is_deleted='0' ";
 
-$sql = "SELECT *, b.sub_category_name as category_name , dm.eng_name , csc.child_sub_category_name FROM notices a join sub_category b on a.notice_subcategory = b.id LEFT JOIN domains as dm ON dm.id = a.domain_id LEFT JOIN child_sub_category as csc ON csc.id = a.notice_childsubcategory WHERE  a.is_deleted='0' ORDER BY created_at";
-$categories = $pdo->query($sql)->fetchAll(PDO::FETCH_ASSOC);
+if ($domainId > 0) {
+    $sql .= " AND a.domain_id = ?";
+    $params[] = $domainId;
+}
+$sql .= " ORDER BY created_at DESC";
 
-require_once __DIR__ . '/layouts/header.php'; ?>
+$stmt = $pdo->prepare($sql);
+$stmt->execute($params);
+$notices_data = $stmt->fetchAll(PDO::FETCH_ASSOC);
+?>
 
 <div class="container-fluid">
 
@@ -61,7 +67,7 @@ require_once __DIR__ . '/layouts/header.php'; ?>
 
                 <tbody>
                     <?php $i = 1;
-                    foreach ($categories as $row): ?>
+                    foreach ($notices_data as $row): ?>
                         <tr>
                             <td><?php echo $i++; ?></td>
                             <td><?php echo htmlspecialchars($row['notice_ref_no']); ?></td>

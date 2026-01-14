@@ -86,8 +86,8 @@ if (isset($_SESSION['user_id'])) {
                             <input type="hidden" name="page" id="currentPage" value="notice">
                             <div class="mb-3 col-md-6">
                                 <label for="domainId" class="form-label">Domains <span
-                                            class="text-danger">*</span></label>
-                                <select name="domainId" id="subCategoryList" class="form-select">
+                                        class="text-danger">*</span></label>
+                                <select name="domainId" id="subCategoryList" class="form-select" <?= ($domainId > 0) ? 'disabled' : '' ?>>
                                     <option value="">Choose Domain..</option>
                                     <?php foreach ($domains_data as $values): ?>
                                         <option value="<?php echo htmlspecialchars($values['id']); ?>" <?php if (!empty($data['domain_id']) && $data['domain_id'] == $values['id']) echo 'selected'; ?>>
@@ -95,10 +95,13 @@ if (isset($_SESSION['user_id'])) {
                                         </option>
                                     <?php endforeach; ?>
                                 </select>
+                                <?php if ($domainId > 0): ?>
+                                    <input type="hidden" name="domainId" value="<?= (int)$domainId; ?>">
+                                <?php endif; ?>
                             </div>
                             <div class="mb-3 col-md-6">
                                 <label for="subCategory" class="form-label">Category <span
-                                            class="text-danger">*</span></label>
+                                        class="text-danger">*</span></label>
                                 <select name="subCategory" id="postcategoryId" class="form-select">
                                     <option value="">Choose Category..</option>
                                     <?php foreach ($subcategories as $subcategory): ?>
@@ -113,7 +116,7 @@ if (isset($_SESSION['user_id'])) {
                                 <!-- News Date -->
                                 <div class="mb-3">
                                     <label for="childSubCategoryId" class="form-label">Sub Category</label>
-                                    <select name="childSubCategoryId" id="SubCategoryId" class="form-select" >
+                                    <select name="childSubCategoryId" id="SubCategoryId" class="form-select">
                                         <option value="">Choose Child Sub Category...</option>
                                         <?php foreach ($childsubcategories as $subcategory): ?>
                                             <option value="<?php echo htmlspecialchars($subcategory['id']); ?>" <?= $subcategory['id'] == $data['notice_childsubcategory'] ? 'selected' : '' ?>>

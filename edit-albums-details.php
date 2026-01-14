@@ -7,21 +7,14 @@ if (!isset($_SESSION['user_id'])) {
     header('Location: index.php');
     exit;
 }
+require_once __DIR__ . '/layouts/header.php';
 if (isset($_SESSION['user_id'])) {
-
-    require_once __DIR__ . '/src/database/Database.php';
-
-    $database = new Database();
-    $pdo = $database->getConnection();
 
     $albumId = $_GET['album_id'] ?? 0;
 
     $albumQuery = $pdo->prepare('SELECT * FROM albums WHERE uniq_id = ? AND is_deleted=0');
     $albumQuery->execute([$albumId]);
     $album = $albumQuery->fetch(PDO::FETCH_ASSOC);
-
-    $sql_domains = "SELECT * FROM `domains`";
-    $domain_data = $pdo->query($sql_domains)->fetchAll(PDO::FETCH_ASSOC);
 
     $album_id = $album['id'];
 
@@ -36,8 +29,6 @@ if (isset($_SESSION['user_id'])) {
     $dateOfEvent = htmlspecialchars($album['event_date']);
     $location = htmlspecialchars($album['location']);
     $coverId = $album['cover_photo_id'];
-
-    require_once __DIR__ . '/layouts/header.php';
 ?>
 
     <style>
@@ -95,14 +86,17 @@ if (isset($_SESSION['user_id'])) {
                                 <!-- Date of Event -->
                                 <div class="form-group">
                                     <label for="domainId">Domain: <span class="text-danger">*</span></label>
-                                    <select name="domainId" id="domainId" class="form-select" required>
+                                    <select name="domainId" id="domainId" class="form-select" required <?= ($domainId > 0) ? 'disabled' : '' ?>>
                                         <option value="">Choose domain...</option>
-                                        <?php foreach ($domain_data as $values): ?>
+                                        <?php foreach ($domains_data as $values): ?>
                                             <option value="<?php echo htmlspecialchars($values['id']); ?>" <?php if (!empty($album['domain_id']) && $album['domain_id'] == $values['id']) echo 'selected'; ?>>
                                                 <?php echo htmlspecialchars($values['eng_name']) . ' / ' . htmlspecialchars($values['hin_name']); ?>
                                             </option>
                                         <?php endforeach; ?>
                                     </select>
+                                    <?php if ($domainId > 0): ?>
+                                        <input type="hidden" name="domainId" value="<?= (int)$domainId; ?>">
+                                    <?php endif; ?>
                                 </div>
                             </div>
                             <div class="col-md-6">

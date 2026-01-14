@@ -14,13 +14,6 @@ if ((isset($_SESSION['login'])) && ($_SESSION['login'] == true)) {
 
 
     $title = "Admin - Add Photo Album";
-
-    require_once __DIR__ . '/src/database/Database.php';
-
-    $database = new Database();
-    $pdo = $database->getConnection();
-    $sql_domains = "SELECT * FROM `domains`";
-    $domain_data = $pdo->query($sql_domains)->fetchAll(PDO::FETCH_ASSOC);
     require_once __DIR__ . '/layouts/header.php';
 ?>
     <script src="https://cdn.ckeditor.com/4.9.2/standard/ckeditor.js"></script>
@@ -60,14 +53,17 @@ if ((isset($_SESSION['login'])) && ($_SESSION['login'] == true)) {
                         <label for="domainId" class="col-form-label col-md-4">Domains <span
                                 class="text-danger">*</span></label>
                         <div class="col-md-8">
-                            <select name="domainId" id="domainId" class="form-select">
+                            <select name="domainId" id="domainId" class="form-select" <?= ($domainId > 0) ? 'disabled' : '' ?>>
                                 <option value="">Select Domain</option>
-                                <?php foreach ($domain_data as $values): ?>
-                                    <option value="<?php echo htmlspecialchars($values['id']); ?>">
+                                <?php foreach ($domains_data as $values): ?>
+                                    <option value="<?php echo htmlspecialchars($values['id']); ?>" <?= (!empty($domainId) && $domainId == $values['id']) ? 'selected' : '' ?>>
                                         <?php echo htmlspecialchars($values['eng_name']) . ' / ' . htmlspecialchars($values['hin_name']); ?>
                                     </option>
                                 <?php endforeach; ?>
                             </select>
+                            <?php if ($domainId > 0): ?>
+                                <input type="hidden" name="domainId" value="<?= (int)$domainId; ?>">
+                            <?php endif; ?>
                         </div>
                     </div>
 
@@ -104,7 +100,7 @@ if ((isset($_SESSION['login'])) && ($_SESSION['login'] == true)) {
                     <div class="form-group row mt-3">
                         <label for="hin_cat" class="col-md-4 col-form-label">Album Name (Hindi)</label>
                         <div class="col-md-8">
-                            <input type="text" name="hin_cat" id="hin_cat" class="form-control" value="<?= $hin_cat ?>" placeholder="एल्बम का नाम" >
+                            <input type="text" name="hin_cat" id="hin_cat" class="form-control" value="<?= $hin_cat ?>" placeholder="एल्बम का नाम">
                         </div>
                     </div>
 

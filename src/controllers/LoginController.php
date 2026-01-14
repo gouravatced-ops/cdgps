@@ -7,7 +7,7 @@ require_once __DIR__ . '/../database/Database.php';
 class LoginController
 {
     private $recaptchaSecret = '6Le0XSErAAAAAPDVakBSJTbBnUqaybavXaaNsjwv';
-    
+
     public function login()
     {
         if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
@@ -15,11 +15,11 @@ class LoginController
             echo "Method Not Allowed";
             exit;
         }
-        
+
         session_start();
         $email = filter_input(INPUT_POST, 'email', FILTER_SANITIZE_EMAIL);
         $password = filter_input(INPUT_POST, 'password', FILTER_SANITIZE_STRING);
-        
+
         // Validate CAPTCHA
         // $captchaResponse = $_POST['g-recaptcha-response'] ?? '';
         // if (!$this->validateCaptcha($captchaResponse)) {
@@ -27,34 +27,32 @@ class LoginController
         //     header('Location: ../../index.php');
         //     exit;
         // }
-        
+
         if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
             $_SESSION['login_error'] = 'Invalid email address.';
             header('Location: ../../index.php');
             exit;
         }
-        
+
         if (empty($password)) {
             $_SESSION['login_error'] = 'Invalid password.';
             header('Location: ../../index.php');
             exit;
         }
-        
+
         $database = new Database();
         $pdo = $database->getConnection();
         $userModel = new UserModel($pdo);
         $user = $userModel->getUserByEmail($email);
-        $testHash = password_hash($password, PASSWORD_DEFAULT);
-        // if ($user && password_verify($user['password'], $testHash)) {
-        if ($user && password_verify($password, $testHash)) {
+        if ($user && password_verify($password, $user['password'])) {
             // Log the successful login activity
             $userModel->logActivity($user['id'], 'User logged in successfully');
-            // Set session variables
+
             $_SESSION['login'] = true;
             $_SESSION['user_id'] = $user['id'];
             date_default_timezone_set('Asia/Kolkata');
             $_SESSION['login_time']  = date('Y-m-d H:i:s');
-            $_SESSION['exp_session']  = 60 * 60; // Session expiration 15 minutes
+            $_SESSION['exp_session']  = 60 * 60; // Session expiration 1 hour
 
             header("Location: ../../dashboard_view.php");
             exit;
@@ -63,7 +61,7 @@ class LoginController
             if ($user) {
                 $userModel->logActivity($user['id'], 'Failed login attempt');
             }
-            
+
             $_SESSION['login_error'] = 'Invalid email or password.';
             header('Location: ../../index.php');
             exit;
@@ -71,14 +69,14 @@ class LoginController
     }
 
     public function getDomainNameById($domainId)
-    {   
+    {
         $database = new Database();
         $pdo = $database->getConnection();
         $stmt = $pdo->prepare("SELECT eng_name FROM domains WHERE id = ?");
         $stmt->execute([$domainId]);
         return $stmt->fetchColumn();
     }
-    
+
     /**
      * Validates reCAPTCHA response
      * 
@@ -90,14 +88,14 @@ class LoginController
         if (empty($captchaResponse)) {
             return false;
         }
-        
+
         $url = 'https://www.google.com/recaptcha/api/siteverify';
         $data = [
             'secret' => $this->recaptchaSecret,
             'response' => $captchaResponse,
             'remoteip' => $_SERVER['REMOTE_ADDR']
         ];
-        
+
         $options = [
             'http' => [
                 'header' => "Content-type: application/x-www-form-urlencoded\r\n",
@@ -105,14 +103,13 @@ class LoginController
                 'content' => http_build_query($data)
             ]
         ];
-        
+
         $context = stream_context_create($options);
         $result = file_get_contents($url, false, $context);
         $resultJson = json_decode($result);
-        
+
         return $resultJson->success;
     }
-    
 }
 
 $controller = new LoginController();

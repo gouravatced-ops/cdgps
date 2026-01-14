@@ -102,6 +102,92 @@ class UserModel
         }
     }
 
+    public function updateUser(array $data): bool
+    {
+        try {
+            $this->pdo->beginTransaction();
+            $now = date('Y-m-d H:i:s');
+            $ip  = $_SERVER['REMOTE_ADDR'] ?? null;
+
+            // Convert permissions array to JSON
+            $permissions = !empty($data['permission'])
+                ? json_encode($data['permission'], JSON_UNESCAPED_UNICODE)
+                : json_encode([]);
+
+            // Base SQL
+            $sql = "UPDATE users SET
+                    email = :email,
+                    role = :role,
+                    password_expire_in_days = :password_expire_in_days,
+                    permission = :permission,
+                    updated_by = :updated_by,
+                    updated_at = :updated_at,
+                    user_ip = :user_ip";
+
+            // Optional fields
+            if (!empty($data['username'])) {
+                $sql .= ", username = :username";
+            }
+
+            if (!empty($data['phone'])) {
+                $sql .= ", mobile = :mobile";
+            }
+
+            // Password update only if provided
+            if (!empty($data['password'])) {
+                $sql .= ", password = :password,
+                      password_set_date = :password_set_date";
+            }
+
+            $sql .= " WHERE id = :user_id AND is_deleted = '0'";
+            
+            $stmt = $this->pdo->prepare($sql);
+
+            // Required bindings
+            $params = [
+                ':email' => $data['email'],
+                ':username' => $data['username'],
+                ':role' => $data['role'],
+                ':password_expire_in_days' => $data['password_expire_in_days'],
+                ':permission' => $permissions,
+                ':updated_by' => $data['update_by'],
+                ':updated_at' => $now,
+                ':user_ip' => $ip,
+                ':user_id' => $data['user_id'],
+            ];
+
+            // Optional bindings
+            if (!empty($data['username'])) {
+                $params[':username'] = $data['username'];
+            }
+
+            if (!empty($data['phone'])) {
+                $params[':mobile'] = $data['phone'];
+            }
+
+            if (!empty($data['password'])) {
+                $params[':password'] = $data['password']; // already hashed
+                $params[':password_set_date'] = $now;
+            }
+
+            $stmt->execute($params);
+
+            $this->pdo->commit();
+            return true;
+        } catch (PDOException $e) {
+            $this->pdo->rollBack();
+            // Log this in real projects instead of echo
+            echo "<pre>";
+            echo "Message: {$e->getMessage()}\n";
+            echo "Code: {$e->getCode()}\n";
+            print_r($e->errorInfo);
+            echo "</pre>";
+
+            return false;
+        }
+    }
+
+
     public function emailExists(string $email): bool
     {
         $stmt = $this->pdo->prepare("SELECT id FROM users WHERE email = :email LIMIT 1");

@@ -223,7 +223,7 @@ require_once __DIR__ . '/layouts/header.php';
 
 
                     <!-- Submit Buttons -->
-                    <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                    <div class="d-grid gap-2 d-md-flex justify-content">
                         <button type="reset" class="btn btn-secondary me-md-2">Clear</button>
                         <button type="submit" class="btn btn-primary">Post Notice</button>
                     </div>

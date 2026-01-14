@@ -7,12 +7,10 @@ if (!isset($_SESSION['user_id'])) {
     header('Location: index.php');
     exit;
 }
+
+require_once __DIR__ . '/layouts/header.php';
 if (isset($_SESSION['user_id'])) {
     $title = "Admin - Post News";
-
-    require_once __DIR__ . '/src/database/Database.php';
-    $database = new Database();
-    $pdo = $database->getConnection();
 
     $postingId = isset($_GET['id']) ? intval($_GET['id']) : 0;
 
@@ -32,11 +30,6 @@ if (isset($_SESSION['user_id'])) {
     $subcategoryId = $data['sub_category_id'];
     $sql = "SELECT * FROM child_sub_category WHERE subcategory_id = $subcategoryId";
     $childsubcategories = $pdo->query($sql)->fetchAll(PDO::FETCH_ASSOC);
-
-    $sql_domains = "SELECT * FROM `domains`";
-    $domain_data = $pdo->query($sql_domains)->fetchAll(PDO::FETCH_ASSOC);
-
-    require_once __DIR__ . '/layouts/header.php';
 ?>
 
     <script src="https://cdn.ckeditor.com/4.9.2/standard/ckeditor.js"></script>
@@ -104,14 +97,17 @@ if (isset($_SESSION['user_id'])) {
                             <div class="mb-3">
                                 <label for="domainId" class="form-label">Domains<span
                                         class="text-danger">*</span></label>
-                                <select name="domainId" id="subCategoryList" class="form-select" required>
+                                <select name="domainId" id="subCategoryList" class="form-select" required <?= ($domainId > 0) ? 'disabled' : '' ?>>
                                     <option value="">Choose domain...</option>
-                                    <?php foreach ($domain_data as $values): ?>
+                                    <?php foreach ($domains_data as $values): ?>
                                         <option value="<?php echo htmlspecialchars($values['id']); ?>" <?php if (!empty($data['domain_id']) && $data['domain_id'] == $values['id']) echo 'selected'; ?>>
                                             <?php echo htmlspecialchars($values['eng_name']) . ' / ' . htmlspecialchars($values['hin_name']); ?>
                                         </option>
                                     <?php endforeach; ?>
                                 </select>
+                                <?php if ($domainId > 0): ?>
+                                    <input type="hidden" name="domainId" value="<?= (int)$domainId; ?>">
+                                <?php endif; ?>
                                 <?php if (isset($err['domainId'])) { ?>
                                     <div class="form-text text-danger"><?php echo $err['domainId']; ?></div>
                                 <?php } ?>
@@ -569,7 +565,7 @@ if (isset($_SESSION['user_id'])) {
                                     class="text-danger">*</span></label>
                             <input type="number" class="form-control" id="number_input" name="new_tag_days" <?php #$data['new_tag'] == 'N' ? 'disabled' : '' 
                                                                                                             ?> value="<?php #$data['new_news_valid_upto']; 
-                                                                                                                                                                        ?>">
+                                                                                                                        ?>">
                         </div>
 
                         <script>

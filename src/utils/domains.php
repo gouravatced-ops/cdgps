@@ -11,8 +11,7 @@ if ($domainId > 0) {
 } else {
     $stmt = $pdo->prepare(
         "SELECT id, eng_name , hin_name
-         FROM domains 
-         ORDER BY eng_name ASC"
+         FROM domains"
     );
     $stmt->execute();
 }

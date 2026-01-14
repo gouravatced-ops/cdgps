@@ -649,7 +649,7 @@ body {
 }
 
 .btn-primary {
-  background: linear-gradient(135deg, var(--primary-color) 0%, #616ff9 100%);
+  background: linear-gradient(135deg, var(--primary-color) 0%, var(--sidebar-active-secondary) 100%);
   border: none;
   box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
 }

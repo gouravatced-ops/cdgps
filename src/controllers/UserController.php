@@ -10,6 +10,7 @@ class UserController
     {
         $database = new Database();
         $this->pdo = $database->getConnection();
+        session_start();
     }
 
     public function createUser()
@@ -19,8 +20,6 @@ class UserController
             echo json_encode(['error' => 'Method Not Allowed']);
             exit;
         }
-
-        session_start();
         $errors = [];
 
         // Sanitize inputs
@@ -99,7 +98,72 @@ class UserController
             exit;
         }
     }
+
+    public function updateUsersDetails()
+    {
+        if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+            http_response_code(405);
+            echo json_encode(['error' => 'Method Not Allowed']);
+            exit;
+        }
+        $userId = filter_input(INPUT_POST, 'userId', FILTER_VALIDATE_INT);
+        // Sanitize inputs
+        $data = [
+            'user_id' => filter_input(INPUT_POST, 'userId', FILTER_VALIDATE_INT),
+            'username' => trim(filter_input(INPUT_POST, 'username', FILTER_SANITIZE_SPECIAL_CHARS)),
+            'email' => filter_input(INPUT_POST, 'email', FILTER_VALIDATE_EMAIL),
+            'phone' => trim(filter_input(INPUT_POST, 'mobile', FILTER_SANITIZE_SPECIAL_CHARS)),
+            'role' => trim(filter_input(INPUT_POST, 'role', FILTER_SANITIZE_SPECIAL_CHARS)),
+            'password' => $_POST['newpassword'] ?? '',
+            'password_expire_in_days' => filter_input(INPUT_POST, 'password_expire_in_days', FILTER_VALIDATE_INT),
+            'permission' => $_POST['permission'] ?? []
+        ];
+
+         if (empty($data['username'])) {
+            $errors['username'] = 'Username is required';
+        }
+
+        if (!$data['email']) {
+            $errors['email'] = 'Valid email is required';
+        }
+
+        if (empty($data['phone'])) {
+            $errors['phone'] = 'Phone is required';
+        }
+
+        if (empty($data['role'])) {
+            $errors['role'] = 'Role is required';
+        }
+
+        // Password validation
+        if (isset($data['newpassword']) && strlen($data['newpassword']) < 8) {
+            $errors['newpassword'] = 'Password must be at least 8 characters';
+        }
+
+        // Hash password
+        if (isset($data['newpassword'])) {
+            $data['password'] = password_hash($data['newpassword'], PASSWORD_BCRYPT);
+        }
+
+        // Updated by
+        $data['update_by'] = $_SESSION['user_id'] ?? null;
+
+        // print_r($data); die();
+        $userModel = new UserModel($this->pdo);
+        $result = $userModel->updateUser($data);
+        // print_r($result); die();
+
+        if ($result) {
+            $_SESSION['message'] = "User Update successfully.";
+            header("Location: ../../edit-user.php?id=$userId");
+        } else {
+            $_SESSION['error'] = "Failed to update user.";
+            header("Location: ../../edit-user.php?id=$userId");
+            exit;
+        }
+    }
 }
+
 
 $controller = new UserController();
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
@@ -107,8 +171,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if (isset($_POST['action'])) {
         $action = $_POST['action'];
 
-        if (!empty($action) && $action == 'updateDomains') {
-            // $controller->updateDomains();
+        if (!empty($action) && $action == 'actionUpdateUser') {
+            $controller->updateUsersDetails();
         } elseif (!empty($action) && $action == 'deleteDomains') {
             // $controller->softDeleteDomains();
         } elseif(!empty($action) && $action == 'actionCreateUser') {

@@ -72,7 +72,7 @@ if ((isset($_SESSION['login'])) && ($_SESSION['login'] == true)) {
                                 <div class="card-body">
 
                                     <?php if ($album['cover_video_id'] == $videoId): ?>
-                                        <span class="badge bg-success mb-2 d-block text-center">Cover Video</span>
+                                        <span class="badge bg-success mb-2 d-block text-center p-3">Cover Video</span>
                                     <?php endif; ?>
 
                                     <iframe class="w-100 rounded"
