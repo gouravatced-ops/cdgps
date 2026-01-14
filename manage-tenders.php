@@ -7,16 +7,13 @@ if (!isset($_SESSION['user_id'])) {
     exit;
 }
 
-require_once __DIR__ . '/src/database/Database.php';
-
-$database = new Database();
-$pdo = $database->getConnection();
+require_once __DIR__ . '/layouts/header.php';
 
 $sql = "SELECT *, b.sub_category_name as category_name FROM tenders a join sub_category b on a.tender_category = b.id WHERE  a.is_deleted='0' ORDER BY created_at";
 
 $categories = $pdo->query($sql)->fetchAll(PDO::FETCH_ASSOC);
 
-require_once __DIR__ . '/layouts/header.php'; ?>
+?>
 
 <div class="container-fluid">
 

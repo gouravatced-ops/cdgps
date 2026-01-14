@@ -4,16 +4,15 @@ if (!defined('APP_INIT')) {
     define('APP_INIT', true);
 }
 
+if($_SERVER['HTTP_HOST'] == 'localhost') {
+    $projectName = '/cdgps'; // local folder name
+} else {
+    $projectName = '/cgst/domains';
+}
+
 $protocol = isset($_SERVER['HTTPS']) &&
     $_SERVER['HTTPS'] === 'on' ? 'https://' : 'http://';
-$base_url = $protocol . $_SERVER['HTTP_HOST'];
-
-if($_SERVER['HTTP_HOST'] == 'localhost') {
-    $projectName = 'cdgps';
-    $base_url .= '/'. $projectName;
-} else {
-    $projectName = '';
-}
+$base_url = $protocol . $_SERVER['HTTP_HOST'].$projectName;
 
 $GLOBALS['baseUrl'] = $projectName;
 
@@ -183,7 +182,7 @@ $dashboardThemes = [
     ],
 ];
 
-// $themeKey = array_rand($dashboardThemes);
-$themeKey = 'forest-green';
+$themeKey = array_rand($dashboardThemes);
+// $themeKey = 'forest-green';
 $projectTheme = $dashboardThemes[$themeKey];
 ?>

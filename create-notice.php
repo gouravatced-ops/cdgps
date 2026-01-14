@@ -2,7 +2,6 @@
 require_once __DIR__ . '/src/helpers/session_helper.php';
 requireLogin(); // This will redirect if not logged in or session expired
 
-
 require_once __DIR__ . '/layouts/header.php';
 ?>
 

@@ -6,12 +6,7 @@ if (!isset($_SESSION['user_id'])) {
     header("Location: index.php");
     exit;
 }
-
-require_once __DIR__ . '/src/database/Database.php';
-
-$database = new Database();
-$pdo = $database->getConnection();
-
+require_once __DIR__ . '/layouts/header.php';
 
 $sql1 = "SELECT *  FROM category_master";
 
@@ -20,8 +15,7 @@ $categories = $pdo->query($sql1)->fetchAll(PDO::FETCH_ASSOC);
 $sql = "SELECT p.*, cm.category_name as cat_name, sc.sub_category_name  FROM postings p INNER JOIN category_master cm ON p.category = cm.id LEFT JOIN  sub_category sc on p.sub_category = sc.id where p.is_deleted='0' order by p.created_on asc";
 
 $postings = $pdo->query($sql)->fetchAll(PDO::FETCH_ASSOC);
-
-require_once __DIR__ . '/layouts/header.php'; ?>
+?>
 
 <div class="container-fluid">
     <div class="card">

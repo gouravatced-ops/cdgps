@@ -1,12 +1,9 @@
 <?php
 session_start();
 if (isset($_SESSION['user_id'])) {
-
-    require_once __DIR__ . '/src/database/Database.php';
-
-    $database = new Database();
-    $pdo = $database->getConnection();
-
+    
+    require_once __DIR__ . '/layouts/header.php';
+    
     $sql_type = "SELECT * FROM sy_fy ORDER BY id desc";
     $types = $pdo->query($sql_type)->fetchAll(PDO::FETCH_ASSOC);
 
@@ -22,8 +19,6 @@ if (isset($_SESSION['user_id'])) {
     $stmt->bindParam(':postingId', $postingId, PDO::PARAM_INT);
     $stmt->execute();
     $data = $stmt->fetch(PDO::FETCH_ASSOC);
-
-    require_once __DIR__ . '/layouts/header.php';
     ?>
 
     <div class="container-fluid">

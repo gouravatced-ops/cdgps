@@ -1,13 +1,9 @@
 <?php
 session_start();
+
+require_once __DIR__ . '/layouts/header.php';
 if (isset($_SESSION['user_id'])) {
     $title = "Admin - Add Category";
-
-    require_once __DIR__ . '/src/database/Database.php';
-
-    $database = new Database();
-    $pdo = $database->getConnection();
-
 
     $sql_type = "SELECT * FROM sy_fy ORDER BY id desc";
 
@@ -21,7 +17,6 @@ if (isset($_SESSION['user_id'])) {
 
     $subcategories = $pdo->query($sql_subcat)->fetchAll(PDO::FETCH_ASSOC);
 
-    require_once __DIR__ . '/layouts/header.php';
 ?>
     <div class="container-fluid">
         <div class="card">

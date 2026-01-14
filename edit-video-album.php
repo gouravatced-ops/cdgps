@@ -7,12 +7,10 @@ if (!isset($_SESSION['user_id'])) {
     header('Location: index.php');
     exit;
 }
+
+require_once __DIR__ . '/layouts/header.php';
+
 if ((isset($_SESSION['login'])) && ($_SESSION['login'] == true)) {
-
-    require_once __DIR__ . '/src/database/Database.php';
-
-    $database = new Database();
-    $pdo = $database->getConnection();
 
     $albumId = isset($_GET['album_id']) ? $_GET['album_id'] : null;
 
@@ -38,8 +36,6 @@ if ((isset($_SESSION['login'])) && ($_SESSION['login'] == true)) {
     $form_data = $_SESSION['form_data'] ?? [];
 
     $title = "Admin - Post Video Album";
-
-    require_once __DIR__ . '/layouts/header.php';
 ?>
 
     <script src="https://cdn.ckeditor.com/4.9.2/standard/ckeditor.js"></script>

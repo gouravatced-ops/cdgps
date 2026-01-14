@@ -13,11 +13,6 @@ if (!isset($_SESSION['csrf_token'])) {
     $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
 }
 
-// Set default user role if not set
-if (isset($_SESSION['user_id']) && !isset($_SESSION['user_role'])) {
-    $_SESSION['user_role'] = 'Admin';
-}
-
 ?>
 
 <!DOCTYPE html>
@@ -142,8 +137,8 @@ if (isset($_SESSION['user_id']) && !isset($_SESSION['user_role'])) {
                         </div>
 
                         <!-- User Role Badge -->
-                        <?php if (isset($_SESSION['user_role'])): ?>
-                            <span class="badge me-3 d-none d-md-inline-block role-badge"><?= htmlspecialchars(strtoupper($_SESSION['user_role'])); ?></span>
+                        <?php if (isset($role)): ?>
+                            <span class="badge me-3 d-none d-md-inline-block role-badge"><?= htmlspecialchars(strtoupper($role)); ?></span>
                         <?php endif; ?>
 
                         <!-- Session Timer Data (hidden) -->

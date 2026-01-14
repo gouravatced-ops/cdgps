@@ -5,12 +5,9 @@ if (!isset($_SESSION['user_id'])) {
     $_SESSION['login_error'] = 'Session Timeout, Please Login Again.';
     header('Location: index.php');
     exit;
-}
-
-require_once __DIR__ . '/src/database/Database.php';
-
-$database = new Database();
-$pdo = $database->getConnection();
+    }
+    
+require_once __DIR__ . '/layouts/header.php';
 
 $sql_subcat = "SELECT * FROM sub_category WHERE is_deleted='0'";
 $subcategories = $pdo->query($sql_subcat)->fetchAll(PDO::FETCH_ASSOC);
@@ -18,7 +15,6 @@ $subcategories = $pdo->query($sql_subcat)->fetchAll(PDO::FETCH_ASSOC);
 $sql_domains = "SELECT * FROM `domains`";
 $domain_data = $pdo->query($sql_domains)->fetchAll(PDO::FETCH_ASSOC);
 
-require_once __DIR__ . '/layouts/header.php';
 ?>
 
 <div class="container-fluid">

@@ -26,9 +26,11 @@ try {
     $database = new Database();
     $pdo = $database->getConnection();
 
-    $stmt = $pdo->prepare("UPDATE users SET password = ? WHERE id = ?");
+    date_default_timezone_set('Asia/Kolkata');
+    $passwordSet = date('Y-m-d H:i:s');
+    $stmt = $pdo->prepare("UPDATE users SET password = ? , password_set_date = ? WHERE id = ?");
 
-    if ($stmt->execute([$hashedPassword, $userId])) {
+    if ($stmt->execute([$hashedPassword, $passwordSet,  $userId])) {
         $_SESSION['message'] = 'Password updated successfully';
     } else {
         $_SESSION['error'] = 'Error updating password';
