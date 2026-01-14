@@ -8,17 +8,22 @@ if (!isset($_SESSION['user_id'])) {
     exit;
 }
 
-require_once __DIR__ . '/src/database/Database.php';
+require_once __DIR__ . '/layouts/header.php';
 
-$database = new Database();
-$pdo = $database->getConnection();
+$params = [];
+$sql = "SELECT cm.*, dm.eng_name , dm.hin_name FROM category_master cm JOIN domains as dm ON dm.id = cm.domain_id WHERE cm.is_deleted='0'";
 
-$sql = "SELECT cm.*, dm.eng_name , dm.hin_name FROM category_master cm JOIN domains as dm ON dm.id = cm.domain_id WHERE cm.is_deleted='0' ORDER BY cm.category_name";
+if ($domainId > 0) {
+    $sql .= " AND cm.domain_id = ?";
+    $params[] = $domainId;
+}
+$sql .= " ORDER BY cm.category_name ASC";
 
-$categories = $pdo->query($sql)->fetchAll(PDO::FETCH_ASSOC);
+$stmt = $pdo->prepare($sql);
+$stmt->execute($params);
+$categories = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-require_once __DIR__ . '/layouts/header.php'; ?>
-
+?>
 <div class="container-fluid">
 
     <div class="card">
@@ -27,7 +32,7 @@ require_once __DIR__ . '/layouts/header.php'; ?>
                 Manage Category
             </div>
 
-            <div class="p-3">
+            <div class="p-2">
                 <!-- rest form / content -->
             </div>
             <?php if (isset($_SESSION['message'])) { ?>

@@ -7,16 +7,11 @@ if (!isset($_SESSION['user_id'])) {
     header('Location: index.php');
     exit;
 }
+
+require_once __DIR__ . '/layouts/header.php';
+
 if (isset($_SESSION['user_id'])) {
     $title = "Admin - Add Category";
-
-    require_once __DIR__ . '/src/database/Database.php';
-
-    $database = new Database();
-    $pdo = $database->getConnection();
-
-    $sql_commissionerates = "SELECT * FROM `domains`";
-    $commr_data = $pdo->query($sql_commissionerates)->fetchAll(PDO::FETCH_ASSOC);
 
     $catId = isset($_GET['id']) ? intval($_GET['id']) : 0;
 
@@ -26,11 +21,8 @@ if (isset($_SESSION['user_id'])) {
     $data = $sql->fetch(PDO::FETCH_ASSOC);
 
     $domainId = $data['domain_id'];
-
     $sql = "SELECT * FROM category_master WHERE domain_id = $domainId";
     $categories = $pdo->query($sql)->fetchAll(PDO::FETCH_ASSOC);
-
-    require_once __DIR__ . '/layouts/header.php';
 ?>
 
     <div class="container-fluid">
@@ -41,7 +33,7 @@ if (isset($_SESSION['user_id'])) {
                         Edit Sub Category
                     </div>
 
-                    <div class="p-3">
+                    <div class="p-2">
                         <!-- rest form / content -->
                     </div>
 
@@ -69,9 +61,9 @@ if (isset($_SESSION['user_id'])) {
                         <input type="hidden" name="action" value="updateSubCategory">
                         <div class="mb-3">
                             <label for="domainId" class="form-label">Domains<span class="text-danger">*</span></label>
-                            <select name="domainId" id="pickDomainId" class="form-select" required>
+                            <select name="domainId" id="pickDomainId" class="form-select" required <?= ($domainId > 0) ? 'disabled' : '' ?>>
                                 <option value="">Choose Domain...</option>
-                                <?php foreach ($commr_data as $values): ?>
+                                <?php foreach ($domains_data as $values): ?>
                                     <option value="<?php echo htmlspecialchars($values['id']); ?>"
                                         <?php if (!empty($domainId) && $domainId == $values['id']) echo 'selected'; ?>>
                                         <?php
@@ -81,6 +73,9 @@ if (isset($_SESSION['user_id'])) {
                                     </option>
                                 <?php endforeach; ?>
                             </select>
+                            <?php if ($domainId > 0): ?>
+                                <input type="hidden" name="domainId" value="<?= (int)$domainId; ?>">
+                            <?php endif; ?>
                         </div>
                         <div class="mb-3">
                             <label for="categoryId" class="form-label">Category Name<span class="text-danger">*</span></label>

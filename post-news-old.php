@@ -9,8 +9,8 @@ if (isset($_SESSION['user_id'])) {
 
     $database = new Database();
     $pdo = $database->getConnection();
-    $sql_commissionerates = "SELECT * FROM `domains`";
-    $commr_data = $pdo->query($sql_commissionerates)->fetchAll(PDO::FETCH_ASSOC);
+    $sql_domains = "SELECT * FROM `domains`";
+    $domain_data = $pdo->query($sql_domains)->fetchAll(PDO::FETCH_ASSOC);
 ?>
 
     <script src="https://cdn.ckeditor.com/4.9.2/standard/ckeditor.js"></script>
@@ -76,7 +76,7 @@ if (isset($_SESSION['user_id'])) {
                                         class="text-danger">*</span></label>
                                 <select name="domainId" id="pickDomainId" class="form-select" required>
                                     <option value="">Choose Domain...</option>
-                                    <?php foreach ($commr_data as $values): ?>
+                                    <?php foreach ($domain_data as $values): ?>
                                         <option value="<?php echo htmlspecialchars($values['id']); ?>">
                                             <?php echo htmlspecialchars($values['eng_name']) . ' / ' . htmlspecialchars($values['hin_name']); ?>
                                         </option>

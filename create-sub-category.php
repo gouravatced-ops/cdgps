@@ -9,16 +9,7 @@ if (!isset($_SESSION['user_id'])) {
 }
 
 if (isset($_SESSION['user_id'])) {
-
-    require_once __DIR__ . '/src/database/Database.php';
-
-    $database = new Database();
-    $pdo = $database->getConnection();
-
-    $sql_domains = "SELECT * FROM `domains`";
-    $domains_data = $pdo->query($sql_domains)->fetchAll(PDO::FETCH_ASSOC);
-
-    require_once __DIR__ . '/layouts/header.php';
+require_once __DIR__ . '/layouts/header.php';
 ?>
 
     <div class="container-fluid">
@@ -29,7 +20,7 @@ if (isset($_SESSION['user_id'])) {
                         Create Sub Category
                     </div>
 
-                    <div class="p-3">
+                    <div class="p-2">
                         <!-- rest form / content -->
                     </div>
 

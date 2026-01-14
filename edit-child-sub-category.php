@@ -34,8 +34,8 @@ if (isset($_SESSION['user_id'])) {
     $sql = "SELECT * FROM sub_category WHERE category_id = $categoryId";
     $subcategories = $pdo->query($sql)->fetchAll(PDO::FETCH_ASSOC);
 
-    $sql_commissionerates = "SELECT * FROM `domains`";
-    $commr_data = $pdo->query($sql_commissionerates)->fetchAll(PDO::FETCH_ASSOC);
+    $sql_domains = "SELECT * FROM `domains`";
+    $domain_data = $pdo->query($sql_domains)->fetchAll(PDO::FETCH_ASSOC);
 
     require_once __DIR__ . '/layouts/header.php';
 ?>
@@ -48,7 +48,7 @@ if (isset($_SESSION['user_id'])) {
                         Edit Child Sub Category
                     </div>
 
-                    <div class="p-3">
+                    <div class="p-2">
                         <!-- rest form / content -->
                     </div>
 
@@ -78,7 +78,7 @@ if (isset($_SESSION['user_id'])) {
                             <label for="domainId" class="form-label">Domains<span class="text-danger">*</span></label>
                             <select name="domainId" id="pickDomainId" class="form-select" required>
                                 <option value="">Choose Domain...</option>
-                                <?php foreach ($commr_data as $values): ?>
+                                <?php foreach ($domain_data as $values): ?>
                                     <option value="<?php echo htmlspecialchars($values['id']); ?>"
                                         <?php if (!empty($domainId) && $domainId == $values['id']) echo 'selected'; ?>>
                                         <?php

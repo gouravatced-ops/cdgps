@@ -1,4 +1,8 @@
 <?php
+// Prevent direct access
+if (!defined('APP_INIT')) {
+    define('APP_INIT', true);
+}
 
 $protocol = isset($_SERVER['HTTPS']) &&
     $_SERVER['HTTPS'] === 'on' ? 'https://' : 'http://';
@@ -10,6 +14,8 @@ if($_SERVER['HTTP_HOST'] == 'localhost') {
 } else {
     $projectName = '';
 }
+
+$GLOBALS['baseUrl'] = $projectName;
 
 $app_name = "Central GST";
 $full_app_name = "Central GST & Central Excise, India";
@@ -177,4 +183,7 @@ $dashboardThemes = [
     ],
 ];
 
+// $themeKey = array_rand($dashboardThemes);
+$themeKey = 'forest-green';
+$projectTheme = $dashboardThemes[$themeKey];
 ?>

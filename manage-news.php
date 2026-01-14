@@ -1,22 +1,22 @@
 <?php
 
-/**
- * Manage News Page
- * Protected page with session check
- */
 require_once __DIR__ . '/src/helpers/session_helper.php';
-requireLogin(); // This will redirect if not logged in or session expired
+requireLogin();
 
-require_once __DIR__ . '/src/database/Database.php';
+require_once __DIR__ . '/layouts/header.php'; 
+$params = [];
+$sql = "SELECT cm.*, dm.eng_name FROM news cm LEFT JOIN domains dm ON dm.id = cm.domain_id WHERE cm.is_deleted='0' ";
 
-$database = new Database();
-$pdo = $database->getConnection();
+if ($domainId > 0) {
+    $sql .= " AND cm.domain_id = ?";
+    $params[] = $domainId;
+}
 
-$sql = "SELECT cm.*, dm.eng_name FROM news cm LEFT JOIN domains dm ON dm.id = cm.domain_id WHERE cm.is_deleted='0' ORDER BY cm.created_at desc";
-
-$categories = $pdo->query($sql)->fetchAll(PDO::FETCH_ASSOC);
-
-require_once __DIR__ . '/layouts/header.php'; ?>
+$sql .= " ORDER BY cm.created_at desc";
+$stmt = $pdo->prepare($sql);
+$stmt->execute($params);
+$news_data = $stmt->fetchAll(PDO::FETCH_ASSOC);
+?>
 
 <div class="container-fluid">
 
@@ -26,7 +26,7 @@ require_once __DIR__ . '/layouts/header.php'; ?>
                 Manage News
             </div>
 
-            <div class="p-3">
+            <div class="p-2">
                 <!-- rest form / content -->
             </div>
             <div class="mt-1">
@@ -62,7 +62,7 @@ require_once __DIR__ . '/layouts/header.php'; ?>
 
                     <tbody>
                         <?php $i = 1;
-                        foreach ($categories as $row): ?>
+                        foreach ($news_data as $row): ?>
                             <tr>
                                 <td><?php echo $i++; ?></td>
                                 <td><?= $row['eng_name'] ?></td>

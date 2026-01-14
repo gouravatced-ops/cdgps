@@ -1,6 +1,7 @@
 <?php
 require_once __DIR__ . '/../models/UserModel.php';
 require_once __DIR__ . '/../database/Database.php';
+require_once __DIR__ . '../../../system-config.php';
 
 class LogoutController
 {
@@ -19,13 +20,13 @@ class LogoutController
 
             // Log the logout activity
             $userModel->logActivity($_SESSION['user_id'], 'User logged out');
-        }   
+        }
 
         session_unset();
 
         session_destroy();
-
-        header('Location: /');
+        global $projectName;
+        header('Location: /' . $projectName);
         exit;
     }
 }
@@ -33,5 +34,3 @@ class LogoutController
 // Instantiate the controller and call the logout method
 $controller = new LogoutController();
 $controller->logout();
-
-?>

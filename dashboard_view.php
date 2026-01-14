@@ -1,106 +1,16 @@
 <?php
 
-/**
- * Protected page with session check
- */
 require_once __DIR__ . '/src/helpers/session_helper.php';
 requireLogin(); // This will redirect if not logged in or session expired
 
-require_once __DIR__ . '/src/database/Database.php';
+require_once __DIR__ . '/layouts/header.php';
 
+// thought of the day
 include('./src/utils/utlis.php');
 
-$database = new Database();
-$pdo = $database->getConnection();
-
-$stmt = $pdo->prepare("SELECT COUNT(*) FROM domains WHERE is_deleted='0'");
-$stmt->execute();
-$commrCount = $stmt->fetchColumn();
-
-$stmt = $pdo->prepare("SELECT COUNT(*) FROM category_master WHERE is_deleted='0'");
-$stmt->execute();
-$catCount = $stmt->fetchColumn();
-
-$stmt = $pdo->prepare("SELECT COUNT(*) FROM sub_category WHERE is_deleted='0'");
-$stmt->execute();
-$subCatCount = $stmt->fetchColumn();
-
-$stmt = $pdo->prepare("SELECT COUNT(*) FROM postings WHERE is_deleted='0'");
-$stmt->execute();
-$postCount = $stmt->fetchColumn();
-
-
-$stmt = $pdo->prepare("SELECT COUNT(*) FROM news WHERE is_deleted='0'");
-$stmt->execute();
-$newsCount = $stmt->fetchColumn();
-
-$stmt = $pdo->prepare("SELECT COUNT(*) FROM notices WHERE is_deleted='0'");
-$stmt->execute();
-$noticeCount = $stmt->fetchColumn();
-
-$stmt = $pdo->prepare("SELECT COUNT(*) FROM albums WHERE is_deleted='0' and type='Photos'");
-$stmt->execute();
-$photoCount = $stmt->fetchColumn();
-
-$stmt = $pdo->prepare("SELECT COUNT(*) FROM albums WHERE is_deleted='0' and type='Videos'");
-$stmt->execute();
-$vdoCount = $stmt->fetchColumn();
-
-$stmt = $pdo->prepare("SELECT COUNT(*) FROM albums WHERE is_deleted='0' and type='Press Clips'");
-$stmt->execute();
-$pressCount = $stmt->fetchColumn();
-
-// Assign consistent but varied colors for each card type
-$cardColors = [
-    'category' => '#6366f1',      // Indigo
-    'subcategory' => '#10b981',   // Emerald
-    'news' => '#ef4444',          // Red
-    'notices' => '#f59e0b',       // Amber
-    'photos' => '#0ea5e9',        // Sky
-    'videos' => '#8b5cf6',        // Purple
-    'pressclips' => '#64748b',    // Slate
-    'domains' => '#22c55e'        // Green
-];
-
-$todayThought = $thoughtsOfTheDay[array_rand($thoughtsOfTheDay)];
-
-/* Fetch password info for logged-in user */
-$stmt = $pdo->prepare("
-    SELECT password_set_date, password_expire_in_days 
-    FROM users 
-    WHERE id = :user_id 
-    LIMIT 1
-");
-
-$stmt->execute([
-    ':user_id' => $_SESSION['user_id'] // adjust as per your session
-]);
-
-$user = $stmt->fetch(PDO::FETCH_ASSOC);
-
-if ($user) {
-
-    $setDate   = new DateTime($user['password_set_date']);
-    $today    = new DateTime();
-    $interval = $setDate->diff($today);
-
-    $daysPassed = (int) $interval->format('%a');
-    $expireIn   = (int) $user['password_expire_in_days'];
-
-    $daysLeft  = max(0, $expireIn - $daysPassed);
-    $isExpired = ($daysLeft <= 0);
-} else {
-    $daysLeft  = null;
-    $isExpired = true;
-}
-
-// Notices
-$sql = "SELECT *, b.sub_category_name as category_name , dm.eng_name , csc.child_sub_category_name FROM notices a join sub_category b on a.notice_subcategory = b.id LEFT JOIN domains as dm ON dm.id = a.domain_id LEFT JOIN child_sub_category as csc ON csc.id = a.notice_childsubcategory WHERE  a.is_deleted='0' ORDER BY created_at limit 4";
-$categories = $pdo->query($sql)->fetchAll(PDO::FETCH_ASSOC);
-
-
-require_once __DIR__ . '/layouts/header.php'; ?>
-
+// dashboard details
+include('./src/utils/dashboard.php');
+?>
 <div class="container-fluid">
     <div class="row g-3">
         <!-- Time & Thought -->
@@ -272,23 +182,25 @@ require_once __DIR__ . '/layouts/header.php'; ?>
             </a>
         </div>
 
-        <div class="col-sm-6 col-xl-3 mb-3">
-            <a href="<?= $base_url ?>/manage-commr.php">
-                <div class="card overflow-hidden rounded-2 shadow-sm">
-                    <div class="card-header p-2 text-center" style="color:white !important; background : <?= $cardColors['domains']; ?>">
-                        <h6 class="fw-semibold" style="font-size: 22px;" style="color:white !important;">Total Domains</h6>
-                    </div>
-                    <div class="d-flex align-items-center justify-content-between p-2">
-                        <div>
-                            <h2 class="mb-0" style="font-size: 22px;"><?= $commrCount ?></h2>
+        <?php if ($authRole == 'superadmin') { ?>
+            <div class="col-sm-6 col-xl-3 mb-3">
+                <a href="<?= $base_url ?>/manage-domain.php">
+                    <div class="card overflow-hidden rounded-2 shadow-sm">
+                        <div class="card-header p-2 text-center" style="color:white !important; background : <?= $cardColors['domains']; ?>">
+                            <h6 class="fw-semibold" style="font-size: 22px;" style="color:white !important;">Total Domains</h6>
                         </div>
-                        <div class="bg-success bg-opacity-10 rounded-circle p-1">
-                            <i class="ti ti-world fs-3" style="color : <?= $cardColors['domains']; ?>"></i>
+                        <div class="d-flex align-items-center justify-content-between p-2">
+                            <div>
+                                <h2 class="mb-0" style="font-size: 22px;"><?= $domainCount ?></h2>
+                            </div>
+                            <div class="bg-success bg-opacity-10 rounded-circle p-1">
+                                <i class="ti ti-world fs-3" style="color : <?= $cardColors['domains']; ?>"></i>
+                            </div>
                         </div>
                     </div>
-                </div>
-            </a>
-        </div>
+                </a>
+            </div>
+        <?php } ?>
     </div>
 </div>
 <div class="container-fluid mt-4">
@@ -313,26 +225,31 @@ require_once __DIR__ . '/layouts/header.php'; ?>
 
                 <tbody>
                     <?php $i = 1;
-                    foreach ($categories as $row): ?>
-                    <tr>
-                        <td class="px-2 py-1"><?php echo $i++; ?></td>
-                        <td class="px-2 py-1"><?php echo htmlspecialchars($row['eng_name']); ?></td>
-                        <td class="px-2 py-1"><?php echo htmlspecialchars($row['notice_ref_no']); ?></td>
-                        <td class="px-2 py-1 text-truncate" style="max-width:200px;">
-                            <?php echo htmlspecialchars($row['notice_title']); ?>
-                        </td>
-                        <td class="px-2 py-1 text-end text-muted small"><?= htmlspecialchars($row['notice_dated']); ?></td>
-                    </tr>
+                    foreach ($recentNotices as $row): ?>
+                        <tr>
+                            <td class="px-2 py-1"><?php echo $i++; ?></td>
+                            <td class="px-2 py-1"><?php echo htmlspecialchars($row['eng_name']); ?></td>
+                            <td class="px-2 py-1"><?php echo htmlspecialchars($row['notice_ref_no']); ?></td>
+                            <td class="px-2 py-1 text-truncate" style="max-width:200px;">
+                                <?php echo htmlspecialchars($row['notice_title']); ?>
+                            </td>
+                            <td class="px-2 py-1 text-end text-muted small"><?= htmlspecialchars($row['notice_dated']); ?></td>
+                        </tr>
                     <?php endforeach; ?>
 
-                    <!-- View More Row -->
-                    <tr>
-                        <td colspan="5" class="text-end py-2">
-                            <a href="manage-notices.php">
-                                View More
-                            </a>
-                        </td>
-                    </tr>
+                    <?php if (!empty($recentNotices) && count($recentNotices) > 4) { ?>
+                        <tr>
+                            <td colspan="5" class="text-end py-2">
+                                <a href="manage-notices.php">View More</a>
+                            </td>
+                        </tr>
+                    <?php } else if(count($recentNotices) <= 0) { ?>
+                        <tr>
+                            <td colspan="5" class="text-center text-muted py-2">
+                                No notices generated yet
+                            </td>
+                        </tr>
+                    <?php } ?>
                 </tbody>
             </table>
         </div>

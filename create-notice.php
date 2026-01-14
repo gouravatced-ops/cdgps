@@ -1,21 +1,7 @@
 <?php
-/**
- * Create Notice Page
- * Protected page with session check
- */
 require_once __DIR__ . '/src/helpers/session_helper.php';
 requireLogin(); // This will redirect if not logged in or session expired
 
-require_once __DIR__ . '/src/database/Database.php';
-
-$database = new Database();
-$pdo = $database->getConnection();
-
-$sql_subcat = "SELECT * FROM sub_category WHERE is_deleted='0' AND sub_category_name LIKE '%notice%'";
-$subcategories = $pdo->query($sql_subcat)->fetchAll(PDO::FETCH_ASSOC);
-
-$sql_domains = "SELECT * FROM `domains`";
-$domain_data = $pdo->query($sql_domains)->fetchAll(PDO::FETCH_ASSOC);
 
 require_once __DIR__ . '/layouts/header.php';
 ?>
@@ -28,7 +14,7 @@ require_once __DIR__ . '/layouts/header.php';
                         Create Notice
                     </div>
 
-                    <div class="p-3">
+                    <div class="p-2">
                         <!-- rest form / content -->
                     </div>
 
@@ -88,7 +74,7 @@ require_once __DIR__ . '/layouts/header.php';
                                         class="text-danger">*</span></label>
                                 <select class="form-select" name="domainId" id="subCategoryList" required>
                                     <option value="">Select Domain</option>
-                                    <?php foreach ($domain_data as $values): ?>
+                                    <?php foreach ($domains_data as $values): ?>
                                         <option value="<?php echo htmlspecialchars($values['id']); ?>">
                                             <?php echo htmlspecialchars($values['eng_name']) . ' / ' . htmlspecialchars($values['hin_name']); ?>
                                         </option>
@@ -122,9 +108,8 @@ require_once __DIR__ . '/layouts/header.php';
                         <div class="col-md-6">
                             <!-- News Date -->
                             <div class="mb-3">
-                                <label for="childSubCategoryId" class="form-label">Sub Category<span
-                                        class="text-danger">*</span></label>
-                                <select name="childSubCategoryId" id="SubCategoryId" class="form-select" required>
+                                <label for="childSubCategoryId" class="form-label">Sub Category</label>
+                                <select name="childSubCategoryId" id="SubCategoryId" class="form-select" >
                                     <option value="">Choose Child Sub Category...</option>
                                 </select>
                             </div>

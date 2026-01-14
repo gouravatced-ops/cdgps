@@ -7,17 +7,21 @@ if (!isset($_SESSION['user_id'])) {
     exit;
 }
 
-require_once __DIR__ . '/src/database/Database.php';
+require_once __DIR__ . '/layouts/header.php';
 
-$database = new Database();
-$pdo = $database->getConnection();
-
+$params = [];
 $sql = "SELECT a.*, b.category_name , dm.eng_name FROM sub_category a INNER JOIN category_master b ON b.id = a.category_id LEFT JOIN domains as dm ON dm.id = a.domain_id WHERE a.is_deleted='0'";
 
-$postings = $pdo->query($sql)->fetchAll(PDO::FETCH_ASSOC);
+if ($domainId > 0) {
+    $sql .= " AND a.domain_id = ?";
+    $params[] = $domainId;
+}
 
-require_once __DIR__ . '/layouts/header.php'; ?>
+$stmt = $pdo->prepare($sql);
+$stmt->execute($params);
+$subcategories = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
+?>
 <div class="container-fluid">
     <div class="card">
         <div class="card-body p-0">
@@ -25,7 +29,7 @@ require_once __DIR__ . '/layouts/header.php'; ?>
                 Manage Sub Category
             </div>
 
-            <div class="p-3">
+            <div class="p-2">
                 <!-- rest form / content -->
             </div>
 
@@ -43,7 +47,7 @@ require_once __DIR__ . '/layouts/header.php'; ?>
 
                 <tbody>
                     <?php $i = 1;
-                    foreach ($postings as $row): ?>
+                    foreach ($subcategories as $row): ?>
                         <tr>
                             <td><?php echo $i++; ?></td>
                             <td><?php echo htmlspecialchars($row['eng_name']); ?></td>

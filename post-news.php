@@ -9,15 +9,7 @@ requireLogin(); // This will redirect if not logged in or session expired
 
 if (isLoggedIn()) {
     $title = "Admin - Post News";
-
-    require_once __DIR__ . '/src/database/Database.php';
-
     require_once __DIR__ . '/layouts/header.php';
-
-    $database = new Database();
-    $pdo = $database->getConnection();
-    $sql_domains = "SELECT * FROM `domains`";
-    $domain_data = $pdo->query($sql_domains)->fetchAll(PDO::FETCH_ASSOC);
 ?>
 
     <script src="https://cdn.ckeditor.com/4.9.2/standard/ckeditor.js"></script>
@@ -29,7 +21,7 @@ if (isLoggedIn()) {
                     Post News
                 </div>
 
-                <div class="p-3">
+                <div class="p-2">
                     <!-- rest form / content -->
                 </div>
                 <?php if (isset($_SESSION['message'])) { ?>
@@ -88,7 +80,7 @@ if (isLoggedIn()) {
                                         class="text-danger">*</span></label>
                                 <select name="domainId" id="subCategoryList" class="form-select" required>
                                     <option value="">Choose Domain...</option>
-                                    <?php foreach ($domain_data as $values): ?>
+                                    <?php foreach ($domains_data as $values): ?>
                                         <option value="<?php echo htmlspecialchars($values['id']); ?>">
                                             <?php echo htmlspecialchars($values['eng_name']) . ' / ' . htmlspecialchars($values['hin_name']); ?>
                                         </option>

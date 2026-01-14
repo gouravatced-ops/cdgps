@@ -7,6 +7,7 @@ class UserModel
     public function __construct($pdo)
     {
         $this->pdo = $pdo;
+        date_default_timezone_set('Asia/Kolkata');
     }
 
     public function isEmailRegistered($email)
@@ -33,11 +34,85 @@ class UserModel
         return $stmt->fetch(PDO::FETCH_ASSOC);
     }
 
+    public function create(array $data)
+    {
+        try {
+            // print_r($data); die();
+            $this->pdo->beginTransaction();
+            $passwordSet = date('Y-m-d H:i:s');
+            $ip = $_SERVER['REMOTE_ADDR'];
+
+            // Convert permission array to JSON
+            $permissions = json_encode($data['permission'], JSON_UNESCAPED_UNICODE);
+
+            // Insert user
+            $sql = "INSERT INTO users (
+                        domain_id,
+                        username,
+                        email,
+                        mobile,
+                        role,
+                        password,
+                        password_expire_in_days,
+                        password_set_date,
+                        permission,
+                        created_by,
+                        created_at,
+                        user_ip
+                    ) VALUES (
+                        :domain_id,
+                        :name,
+                        :email,
+                        :phone,
+                        :role,
+                        :password,
+                        :password_expire_in_days,
+                        :password_set_date,
+                        :permission,
+                        :created_by,
+                        :created_at,
+                        :userIp
+                    )";
+
+            $stmt = $this->pdo->prepare($sql);
+            $stmt->execute([
+                ':domain_id' => $data['domain_id'],
+                ':name' => $data['name'],
+                ':email' => $data['email'],
+                ':phone' => $data['phone'],
+                ':role' => $data['role'],
+                ':password' => $data['password'],
+                ':password_expire_in_days' => $data['password_expire_in_days'],
+                ':password_set_date' => $passwordSet,
+                ':permission' => $permissions,
+                ':created_by' => $data['created_by'],
+                ':created_at' => $passwordSet,
+                ':userIp' => $ip
+            ]);
+            $this->pdo->commit();
+            return true;
+        } catch (PDOException $e) {
+            $this->pdo->rollBack();
+            echo "<pre>";
+            echo "Message: " . $e->getMessage() . "\n";
+            echo "Code: " . $e->getCode() . "\n";
+            print_r($e->errorInfo);
+            echo "</pre>";
+            die();
+        }
+    }
+
+    public function emailExists(string $email): bool
+    {
+        $stmt = $this->pdo->prepare("SELECT id FROM users WHERE email = :email LIMIT 1");
+        $stmt->execute([':email' => $email]);
+        return (bool) $stmt->fetch();
+    }
+
     public function logActivity($userId, $action)
     {
 
         if ($action == 'User logged out' || $action == 'Session Timeout') {
-            date_default_timezone_set('Asia/Kolkata');
             $loginTime = $_SESSION['login_time'];
             $logoutTime = date('Y-m-d H:i:s');
             $diffInSeconds = strtotime($logoutTime) - strtotime($loginTime);

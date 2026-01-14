@@ -4,11 +4,9 @@ if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
 
-include('./system-config.php');
-
-// $themeKey = array_rand($dashboardThemes);
-$themeKey = 'purple';
-$projectTheme = $dashboardThemes[$themeKey];
+include('./system-config.php'); // system color theme or basic details
+include('./service.php'); // database connection and dashboard logged data
+include('./src/utils/domains.php'); // global domains list according role based
 
 // Generate CSRF token if not exists
 if (!isset($_SESSION['csrf_token'])) {
@@ -30,7 +28,7 @@ if (isset($_SESSION['user_id']) && !isset($_SESSION['user_role'])) {
     <meta name="csrf-token" content="<?= $_SESSION['csrf_token']; ?>">
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Admin</title>
+    <title><?=  $title; ?> </title>
 
     <!-- Favicon icon-->
     <link rel="shortcut icon" type="image/png" href="<?= $faviconIcon ?>" />
@@ -107,7 +105,7 @@ if (isset($_SESSION['user_id']) && !isset($_SESSION['user_role'])) {
             <header class="topbar">
                 <nav class="navbar navbar-expand-lg">
                     <div class="d-flex align-items-center">
-                        <button class="btn btn-link nav-icon-hover-bg p-2 me-3"
+                        <button class="d-md-none btn btn-link nav-icon-hover-bg p-2 me-3"
                             id="headerCollapse"
                             type="button">
                             <i class="ti ti-menu-2"></i>
@@ -129,7 +127,7 @@ if (isset($_SESSION['user_id']) && !isset($_SESSION['user_role'])) {
 
                                 <!-- Subtitle -->
                                 <small class="d-none d-md-inline text-body-secondary fw-normal">
-                                    Administration Dashboard
+                                    <?=  $title; ?> 
                                 </small>
                             </div>
                         </div>
@@ -177,16 +175,16 @@ if (isset($_SESSION['user_id']) && !isset($_SESSION['user_role'])) {
                             <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
                                 <li>
                                     <div class="px-4 py-3 border-bottom">
-                                        <h6 class="mb-0 fw-semibold"><?= $_SESSION['user_name']; ?></h6>
-                                        <small class="text-muted"><?= $_SESSION['user_mail']; ?></small>
+                                        <h6 class="mb-0 fw-semibold"><?= $username; ?></h6>
+                                        <small class="text-muted"><?= $email ?></small>
                                     </div>
                                 </li>
                                 <li>
                                     <div class="d-flex align-items-center px-4 py-3 border-bottom">
                                         <img src="<?= $base_url ?>/assets/images/profile/user-1.jpg" class="rounded-circle me-3" width="60" height="60" alt="User" />
                                         <div>
-                                            <h6 class="mb-0"><?= $_SESSION['user_name']; ?></h6>
-                                            <small class="text-muted"><?= isset($_SESSION['user_role']) ? strtoupper($_SESSION['user_role']) : 'Admin'; ?></small>
+                                            <h6 class="mb-0"><?= $username;; ?></h6>
+                                            <small class="text-muted"><?= isset($role) ? strtoupper($role) : 'Admin'; ?></small>
                                         </div>
                                     </div>
                                 </li>

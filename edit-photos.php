@@ -75,7 +75,7 @@ if (isset($_SESSION['user_id'])) {
                     Edit Photos
                 </div>
 
-                <div class="p-3">
+                <div class="p-2">
                     <!-- rest form / content -->
                 </div>
                 <div id="msg"></div>

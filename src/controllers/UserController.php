@@ -1,0 +1,120 @@
+<?php
+require_once __DIR__ . '/../models/UserModel.php';
+require_once __DIR__ . '/../database/Database.php';
+
+class UserController
+{
+    private $pdo;
+
+    public function __construct()
+    {
+        $database = new Database();
+        $this->pdo = $database->getConnection();
+    }
+
+    public function createUser()
+    {
+        if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+            http_response_code(405);
+            echo json_encode(['error' => 'Method Not Allowed']);
+            exit;
+        }
+
+        session_start();
+        $errors = [];
+
+        // Sanitize inputs
+        $data = [
+            'domain_id' => filter_input(INPUT_POST, 'domain_id', FILTER_VALIDATE_INT),
+            'name' => trim(filter_input(INPUT_POST, 'name', FILTER_SANITIZE_SPECIAL_CHARS)),
+            'email' => filter_input(INPUT_POST, 'email', FILTER_VALIDATE_EMAIL),
+            'phone' => trim(filter_input(INPUT_POST, 'phone', FILTER_SANITIZE_SPECIAL_CHARS)),
+            'role' => trim(filter_input(INPUT_POST, 'role', FILTER_SANITIZE_SPECIAL_CHARS)),
+            'password' => $_POST['password'] ?? '',
+            'confirm_password' => $_POST['confirm_password'] ?? '',
+            'password_expire_in_days' => filter_input(INPUT_POST, 'password_expire_in_days', FILTER_VALIDATE_INT),
+            'permission' => $_POST['permission'] ?? []
+        ];
+
+        // Required field validation
+        if (!$data['domain_id']) {
+            $errors['domain_id'] = 'Domain is required';
+        }
+
+        if (empty($data['name'])) {
+            $errors['name'] = 'Name is required';
+        }
+
+        if (!$data['email']) {
+            $errors['email'] = 'Valid email is required';
+        }
+
+        if (empty($data['phone'])) {
+            $errors['phone'] = 'Phone is required';
+        }
+
+        if (empty($data['role'])) {
+            $errors['role'] = 'Role is required';
+        }
+
+        // Password validation
+        if (strlen($data['password']) < 8) {
+            $errors['password'] = 'Password must be at least 8 characters';
+        }
+
+        if ($data['password'] !== $data['confirm_password']) {
+            $errors['confirm_password'] = 'Password and Confirm Password do not match';
+        }
+
+        // Permission validation
+        if (!is_array($data['permission']) || empty($data['permission'])) {
+            $errors['permission'] = 'At least one permission is required';
+        }
+
+        // If validation fails
+        if (!empty($errors)) {
+            $_SESSION['error_message'] = implode(" ", $errors);
+            header("Location: ../../add-user.php");
+            exit();
+        }
+
+        
+        // Hash password
+        $data['password'] = password_hash($data['password'], PASSWORD_BCRYPT);
+        
+        // Created by
+        $data['created_by'] = $_SESSION['user_id'] ?? null;
+        
+        // print_r($data); die();
+        // Save user
+        $userModel = new UserModel($this->pdo);
+        $result = $userModel->create($data);
+
+        if ($result) {
+            $_SESSION['message'] = "User Create successfully.";
+            header("Location: ../../add-user.php");
+        } else {
+            $_SESSION['error'] = "Failed to create user.";
+            header("Location: ../../add-user.php");
+            exit;
+        }
+    }
+}
+
+$controller = new UserController();
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+
+    if (isset($_POST['action'])) {
+        $action = $_POST['action'];
+
+        if (!empty($action) && $action == 'updateDomains') {
+            // $controller->updateDomains();
+        } elseif (!empty($action) && $action == 'deleteDomains') {
+            // $controller->softDeleteDomains();
+        } elseif(!empty($action) && $action == 'actionCreateUser') {
+            $controller->createUser();
+        }
+    }
+} else {
+    // $controller->showUsers();
+}

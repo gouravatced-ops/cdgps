@@ -66,7 +66,7 @@ if (isset($_SESSION['login']) && $_SESSION['login'] == true) {
                     Edit Video Album
                 </div>
 
-                <div class="p-3">
+                <div class="p-2">
                     <!-- rest form / content -->
                 </div>
                 <div id="msg"></div>

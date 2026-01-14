@@ -8,11 +8,8 @@ if (!isset($_SESSION['user_id'])) {
     exit;
 }
 
-require_once __DIR__ . '/src/database/Database.php';
-
-$database = new Database();
-$pdo = $database->getConnection();
-
+require_once __DIR__ . '/layouts/header.php';
+$params = [];
 $sql = "SELECT 
             a.*,
             dm.eng_name,
@@ -26,11 +23,17 @@ $sql = "SELECT
             ON c.id = a.subcategory_id
         LEFT JOIN domains dm 
             ON dm.id = a.domain_id
-        WHERE a.is_deleted = '0';";
+        WHERE a.is_deleted = '0'";
 
-$chsubcategories = $pdo->query($sql)->fetchAll(PDO::FETCH_ASSOC);
+if ($domainId > 0) {
+    $sql .= " AND a.domain_id = ?";
+    $params[] = $domainId;
+}
 
-require_once __DIR__ . '/layouts/header.php'; ?>
+$stmt = $pdo->prepare($sql);
+$stmt->execute($params);
+$chsubcategories = $stmt->fetchAll(PDO::FETCH_ASSOC);
+?>
 
 <div class="container-fluid">
     <div class="card">
@@ -39,7 +42,7 @@ require_once __DIR__ . '/layouts/header.php'; ?>
                 Manage Child Sub Category
             </div>
 
-            <div class="p-3">
+            <div class="p-2">
                 <!-- rest form / content -->
             </div>
             <?php if (isset($_SESSION['message'])) { ?>

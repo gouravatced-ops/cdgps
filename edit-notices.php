@@ -44,9 +44,6 @@ if (isset($_SESSION['user_id'])) {
     $sql = "SELECT * FROM child_sub_category WHERE subcategory_id = $subcategoryId";
     $childsubcategories = $pdo->query($sql)->fetchAll(PDO::FETCH_ASSOC);
 
-    $sql_commissionerates = "SELECT * FROM `domains`";
-    $domain_data = $pdo->query($sql_commissionerates)->fetchAll(PDO::FETCH_ASSOC);
-
     require_once __DIR__ . '/layouts/header.php';
 ?>
 
@@ -58,7 +55,7 @@ if (isset($_SESSION['user_id'])) {
                         Edit Notice
                     </div>
 
-                    <div class="p-3">
+                    <div class="p-2">
                         <!-- rest form / content -->
                     </div>
 
@@ -92,7 +89,7 @@ if (isset($_SESSION['user_id'])) {
                                             class="text-danger">*</span></label>
                                 <select name="domainId" id="subCategoryList" class="form-select">
                                     <option value="">Choose Domain..</option>
-                                    <?php foreach ($domain_data as $values): ?>
+                                    <?php foreach ($domains_data as $values): ?>
                                         <option value="<?php echo htmlspecialchars($values['id']); ?>" <?php if (!empty($data['domain_id']) && $data['domain_id'] == $values['id']) echo 'selected'; ?>>
                                             <?php echo htmlspecialchars($values['eng_name']) . ' / ' . htmlspecialchars($values['hin_name']); ?>
                                         </option>

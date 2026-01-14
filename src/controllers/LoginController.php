@@ -45,22 +45,13 @@ class LoginController
         $userModel = new UserModel($pdo);
         $user = $userModel->getUserByEmail($email);
         $testHash = password_hash($password, PASSWORD_DEFAULT);
+        // if ($user && password_verify($user['password'], $testHash)) {
         if ($user && password_verify($password, $testHash)) {
             // Log the successful login activity
             $userModel->logActivity($user['id'], 'User logged in successfully');
-
-            $usersRoles = [
-                'superadmin' => 'Super Admin',
-                'admin' => 'Admin',
-                'coadmin' => 'Co-Admin'
-            ];
-            
             // Set session variables
             $_SESSION['login'] = true;
             $_SESSION['user_id'] = $user['id'];
-            $_SESSION['user_mail'] = $user['email'];
-            $_SESSION['user_name'] = $user['username'];
-            $_SESSION['user_role'] = isset($user['role']) ? $usersRoles[$user['role']] : 'Admin'; // Default to Admin
             date_default_timezone_set('Asia/Kolkata');
             $_SESSION['login_time']  = date('Y-m-d H:i:s');
             $_SESSION['exp_session']  = 60 * 60; // Session expiration 15 minutes
@@ -77,6 +68,15 @@ class LoginController
             header('Location: ../../index.php');
             exit;
         }
+    }
+
+    public function getDomainNameById($domainId)
+    {   
+        $database = new Database();
+        $pdo = $database->getConnection();
+        $stmt = $pdo->prepare("SELECT eng_name FROM domains WHERE id = ?");
+        $stmt->execute([$domainId]);
+        return $stmt->fetchColumn();
     }
     
     /**

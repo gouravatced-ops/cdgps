@@ -48,7 +48,7 @@ if (isset($_SESSION['user_id'])) {
                     Edit News
                 </div>
 
-                <div class="p-3">
+                <div class="p-2">
                     <!-- rest form / content -->
                 </div>
                 <?php if (isset($_SESSION['message'])) { ?>

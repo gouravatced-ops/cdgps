@@ -16,7 +16,7 @@ require_once __DIR__ . '/layouts/header.php'; ?>
                 Update Password
             </div>
 
-            <div class="p-3">
+            <div class="p-2">
                 <!-- rest form / content -->
             </div>
 

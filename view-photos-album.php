@@ -60,7 +60,7 @@ if (isset($_SESSION['user_id'])) {
                     Photo Album View
                 </div>
 
-                <div class="p-3">
+                <div class="p-2">
                     <!-- rest form / content -->
                 </div>
                 <div class="row">
