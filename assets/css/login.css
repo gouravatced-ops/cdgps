@@ -30,8 +30,6 @@ a {
   display: flex;
   align-items: center;
   justify-content: center;
-  /* position: relative; */
-  padding: 2rem 0;
   background: linear-gradient(
     -45deg,
     #667eea,
@@ -42,6 +40,9 @@ a {
     #667eea
   );
   background-size: 400% 400%;
+  padding: 2rem 0;
+  position: relative;
+  overflow: hidden;
   animation: gradientShift 15s ease infinite;
 }
 
@@ -142,6 +143,24 @@ a {
   animation: slideDown 0.6s ease-out 0.2s both;
 }
 
+.administration-logo {
+  padding: 0.5rem;
+}
+
+.administration-logo img {
+  width: 100px;
+  height: 100px;
+  object-fit: contain; /* prevents distortion */
+  display: block; /* removes inline gap */
+}
+
+.administration-logo img {
+    max-height: 100px;
+    width: auto;
+    filter: drop-shadow(0 4px 6px rgba(0, 0, 0, 0.25));
+    image-rendering: auto;
+}
+
 @keyframes slideDown {
   0% {
     opacity: 0;
@@ -190,7 +209,7 @@ a {
 
 /* Form Right Section */
 .form-right {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%);
+  background: linear-gradient(135deg, #516ad8 0%, #905dc4 50%, #c84dd6 100%);
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -198,6 +217,13 @@ a {
   padding: 3.5rem;
   position: relative;
   overflow: hidden;
+}
+
+.form-right a {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
 }
 
 .form-right::before {
@@ -377,7 +403,7 @@ a {
 }
 
 .brand-logo {
-  max-width: 85%;
+  max-width: 70%;
   height: auto;
   border-radius: 12px;
   box-shadow: var(--shadow);
@@ -400,10 +426,9 @@ a {
 }
 
 .form-left {
-  background-size: cover;
-  background-position: center;
   position: relative;
-  /* z-index: 1; */
+  background-size: cover;
+  background-position: right;
   background-image: url("../images/backgrounds/bg1.jpg");
 }
 
@@ -423,7 +448,7 @@ a {
 .glass-form {
   background: rgba(255, 255, 255, 0.3);
   backdrop-filter: blur(5px);
-  padding: 2rem;
+  padding: 1rem;
   box-shadow: 0 8px 32px rgba(31, 38, 135, 0.2);
   border: 1px solid rgba(255, 255, 255, 0.18);
 }
@@ -436,6 +461,37 @@ a {
   .page-title {
     font-size: 2rem;
   }
+}
+
+.form-left-footer {
+  background-color: #ffffff;
+  padding: 0.75rem 1rem;
+  font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+}
+
+.footer-label {
+  font-size: 0.85rem;
+  color: #42464a; /* muted gray */
+  letter-spacing: 0.5px;
+}
+
+.footer-brand {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: #0d6efd; /* Bootstrap primary */
+  position: relative;
+}
+
+/* subtle highlight underline */
+.footer-brand::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  bottom: -3px;
+  width: 100%;
+  height: 2px;
+  background-color: #0d6efd;
+  border-radius: 2px;
 }
 
 /* ============================================
@@ -705,7 +761,7 @@ a {
   }
 
   .glass-form {
-    padding: 2.5rem;
+    padding: 1.25rem;
   }
 
   .page-header h3 {

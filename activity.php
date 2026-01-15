@@ -12,14 +12,14 @@ $page = isset($_GET['page']) && is_numeric($_GET['page']) && $_GET['page'] > 0
 $offset = ($page - 1) * $limit;
 
 $countSql = "SELECT COUNT(*) 
-             FROM activity_logs al 
+             FROM users_logs al 
              JOIN users u ON u.id = al.user_id";
 
 $totalRecords = (int) $pdo->query($countSql)->fetchColumn();
 $totalPages   = (int) ceil($totalRecords / $limit);
 
 $sql = "SELECT al.*, u.username
-        FROM activity_logs al
+        FROM users_logs al
         JOIN users u ON u.id = al.user_id
         ORDER BY al.created_at DESC
         LIMIT :limit OFFSET :offset";

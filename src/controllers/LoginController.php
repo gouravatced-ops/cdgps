@@ -1,13 +1,9 @@
 <?php
 require_once __DIR__ . '/../models/UserModel.php';
 require_once __DIR__ . '/../database/Database.php';
-// error_reporting(E_ALL);
-//   	ini_set('display_errors', '1');
 
 class LoginController
 {
-    private $recaptchaSecret = '6Le0XSErAAAAAPDVakBSJTbBnUqaybavXaaNsjwv';
-
     public function login()
     {
         if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
@@ -17,16 +13,25 @@ class LoginController
         }
 
         session_start();
+
+        // Verify CAPTCHA
+        if (!isset($_SESSION['captcha']) || empty($_POST['captcha'])) {
+            $_SESSION['login_error'] = 'Please complete the CAPTCHA.';
+            header('Location: ../../index.php');
+            exit;
+        }
+
+        if ($_POST['captcha'] !== $_SESSION['captcha']) {
+            $_SESSION['login_error'] = 'Invalid CAPTCHA code.';
+            header('Location: ../../index.php');
+            exit;
+        }
+
+        // Clear CAPTCHA session after verification
+        unset($_SESSION['captcha']);
+
         $email = filter_input(INPUT_POST, 'email', FILTER_SANITIZE_EMAIL);
         $password = filter_input(INPUT_POST, 'password', FILTER_SANITIZE_STRING);
-
-        // Validate CAPTCHA
-        // $captchaResponse = $_POST['g-recaptcha-response'] ?? '';
-        // if (!$this->validateCaptcha($captchaResponse)) {
-        //     $_SESSION['login_error'] = 'Please complete the CAPTCHA verification.';
-        //     header('Location: ../../index.php');
-        //     exit;
-        // }
 
         if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
             $_SESSION['login_error'] = 'Invalid email address.';
@@ -35,7 +40,7 @@ class LoginController
         }
 
         if (empty($password)) {
-            $_SESSION['login_error'] = 'Invalid password.';
+            $_SESSION['login_error'] = 'Password is required.';
             header('Location: ../../index.php');
             exit;
         }
@@ -43,26 +48,70 @@ class LoginController
         $database = new Database();
         $pdo = $database->getConnection();
         $userModel = new UserModel($pdo);
-        $user = $userModel->getUserByEmail($email);
-        if ($user && password_verify($password, $user['password'])) {
-            // Log the successful login activity
-            $userModel->logActivity($user['id'], 'User logged in successfully');
 
+        // Check if user is blocked
+        $user = $userModel->getUserByEmail($email);
+
+        if ($user) {
+            // Check if user is blocked
+            if ($userModel->isUserBlocked($user['id'])) {
+                $blockedUntil = new DateTime($user['blocked_until']);
+                $now = new DateTime();
+                $interval = $now->diff($blockedUntil);
+
+                if ($now < $blockedUntil) {
+                    $remainingMinutes = $interval->i + ($interval->h * 60);
+                    $_SESSION['login_error'] = "Account is blocked. Please try again after {$remainingMinutes} minutes.";
+                    header('Location: ../../index.php');
+                    exit;
+                } else {
+                    // Unblock user if block time has passed
+                    $userModel->resetFailedAttempts($user['id']);
+                }
+            }
+        }
+
+        // Verify password
+        if ($user && password_verify($password, $user['password'])) {
+            // Reset failed attempts on successful login
+            $userModel->resetFailedAttempts($user['id']);
+
+            // Log the successful login activity
+            $result = $userModel->logActivity($user['id'], 'User logged in successfully');
             $_SESSION['login'] = true;
             $_SESSION['user_id'] = $user['id'];
             date_default_timezone_set('Asia/Kolkata');
-            $_SESSION['login_time']  = date('Y-m-d H:i:s');
-            $_SESSION['exp_session']  = 15 * 60; // Session expiration 15 min
+            $_SESSION['login_time'] = date('Y-m-d H:i:s');
+            $_SESSION['exp_session'] = 15 * 60; // Session expiration 15 min
+            $_SESSION['login_id'] = $result;
 
             header("Location: ../../dashboard_view.php");
             exit;
         } else {
-            // Log failed login attempt if email exists
+            // Handle failed login attempt
             if ($user) {
+                // Increment failed attempts
+                $attempts = $userModel->incrementFailedAttempt($user['id']);
+
+                // Log failed attempt
                 $userModel->logActivity($user['id'], 'Failed login attempt');
+
+                // Check if should block user
+                if ($attempts >= 3) {
+                    $userModel->blockUser($user['id'], 60); // Block for 60 minutes
+
+                    $_SESSION['login_error'] = 'Too many failed attempts. Account blocked for 60 minutes.';
+                    header('Location: ../../index.php');
+                    exit;
+                } else {
+                    $remainingAttempts = 3 - $attempts;
+                    $_SESSION['login_error'] = "Invalid email or password. {$remainingAttempts} attempts remaining.";
+                }
+            } else {
+                // User doesn't exist
+                $_SESSION['login_error'] = 'Invalid email or password.';
             }
 
-            $_SESSION['login_error'] = 'Invalid email or password.';
             header('Location: ../../index.php');
             exit;
         }
@@ -75,40 +124,6 @@ class LoginController
         $stmt = $pdo->prepare("SELECT eng_name FROM domains WHERE id = ?");
         $stmt->execute([$domainId]);
         return $stmt->fetchColumn();
-    }
-
-    /**
-     * Validates reCAPTCHA response
-     * 
-     * @param string $captchaResponse The g-recaptcha-response from the form
-     * @return bool Whether the CAPTCHA is valid
-     */
-    private function validateCaptcha($captchaResponse)
-    {
-        if (empty($captchaResponse)) {
-            return false;
-        }
-
-        $url = 'https://www.google.com/recaptcha/api/siteverify';
-        $data = [
-            'secret' => $this->recaptchaSecret,
-            'response' => $captchaResponse,
-            'remoteip' => $_SERVER['REMOTE_ADDR']
-        ];
-
-        $options = [
-            'http' => [
-                'header' => "Content-type: application/x-www-form-urlencoded\r\n",
-                'method' => 'POST',
-                'content' => http_build_query($data)
-            ]
-        ];
-
-        $context = stream_context_create($options);
-        $result = file_get_contents($url, false, $context);
-        $resultJson = json_decode($result);
-
-        return $resultJson->success;
     }
 }
 

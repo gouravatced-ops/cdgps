@@ -4,7 +4,7 @@ if (!defined('APP_INIT')) {
     define('APP_INIT', true);
 }
 
-if($_SERVER['HTTP_HOST'] == 'localhost') {
+if ($_SERVER['HTTP_HOST'] == 'localhost') {
     $projectName = '/cdgps'; // local folder name
 } else {
     $projectName = '/cgst/domains';
@@ -12,14 +12,14 @@ if($_SERVER['HTTP_HOST'] == 'localhost') {
 
 $protocol = isset($_SERVER['HTTPS']) &&
     $_SERVER['HTTPS'] === 'on' ? 'https://' : 'http://';
-$base_url = $protocol . $_SERVER['HTTP_HOST'].$projectName;
+$base_url = $protocol . $_SERVER['HTTP_HOST'] . $projectName;
 
 $GLOBALS['baseUrl'] = $projectName;
 
 $app_name = "Central GST";
-$full_app_name = "Central GST & Central Excise, India";
-$logo = $base_url ."/assets/images/logos/cgst-logo.png";
-$faviconIcon = $base_url .'/assets/images/logos/cgst-logo.png';
+$full_app_name = "Central GST & Central Excise Ranchi Zone , Patna";
+$logo = $base_url . "/assets/images/logos/cgst-logo.png";
+$faviconIcon = $base_url . '/assets/images/logos/cgst-logo.png';
 
 $dashboardThemes = [
     'indigo' => [
@@ -81,7 +81,7 @@ $dashboardThemes = [
         'sidebar-active' => '#475569',
         'sidebar-active-secondary' => '#94a3b8',
     ],
-        'classic-blue' => [
+    'classic-blue' => [
         'primary-color' => '#1d4ed8',
         'primary-hover' => '#1e40af',
         'sidebar-bg' => '#0f172a',
@@ -182,7 +182,6 @@ $dashboardThemes = [
     ],
 ];
 
-$themeKey = array_rand($dashboardThemes);
-// $themeKey = 'forest-green';
+// $themeKey = array_rand($dashboardThemes);
+$themeKey = 'forest-green';
 $projectTheme = $dashboardThemes[$themeKey];
-?>

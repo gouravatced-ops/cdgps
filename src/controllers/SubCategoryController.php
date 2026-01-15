@@ -3,11 +3,6 @@
 require_once __DIR__ . '/../database/Database.php';
 require_once __DIR__ . '/../models/SubCategoryModel.php';
 
-// Display all errors, warnings, and notices
-ini_set('display_errors', 1);
-ini_set('display_startup_errors', 1);
-error_reporting(E_ALL);
-
 class SubCategoryController
 {
     public function insertSubCategory()
