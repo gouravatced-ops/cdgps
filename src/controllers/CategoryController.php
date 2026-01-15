@@ -13,8 +13,7 @@ class CategoryController
             echo "Method Not Allowed";
             exit;
         }
-
-        print_r($_POST); die();
+        
         session_start();
         $domainCatId = filter_input(INPUT_POST, 'domainId', FILTER_SANITIZE_STRING);
         $engCat = filter_input(INPUT_POST, 'eng_cat', FILTER_SANITIZE_STRING);

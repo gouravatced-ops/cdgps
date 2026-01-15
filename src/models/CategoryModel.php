@@ -1,13 +1,19 @@
 <?php
+require_once __DIR__ . '../../utils/ActivityLogger.php';
 
 class CategoryModel
 {
     private $pdo;
+    private $logger;
+    private $loggedId;
 
     public function __construct($pdo)
     {
         $this->pdo = $pdo;
+        $this->logger = new ActivityLogger($pdo);
+        $this->loggedId = $_SESSION['login_id'];
     }
+
     public function insertCategory($domainCatId, $engCat, $hinCat, $createdBy)
     {
         $sql = "INSERT INTO category_master (domain_id, category_name, hindi_category_name, created_by) VALUES (:domainCatId, :engCat, :hinCat, :createdBy)";
@@ -16,9 +22,18 @@ class CategoryModel
         $stmt->bindParam(':engCat', $engCat, PDO::PARAM_STR);
         $stmt->bindParam(':hinCat', $hinCat, PDO::PARAM_STR);
         $stmt->bindParam(':createdBy', $createdBy, PDO::PARAM_STR);
+        $stmt->execute();
+        $id = $this->pdo->lastInsertId();
 
-        return $stmt->execute();
+        $this->logger->log('category', $id, 'INSERT', null, null, json_encode([
+            'domain_id' => $domainCatId,
+            'category_name' => $engCat,
+            'hindi_category_name' => $hinCat,
+        ]), $createdBy , $this->loggedId);
+
+        return true;
     }
+
     public function getAllCategories()
     {
         $sql = "SELECT * FROM category_master";
@@ -26,7 +41,12 @@ class CategoryModel
         return $this->pdo->query($sql)->fetchAll(PDO::FETCH_ASSOC);
     }
     public function updateCategory($id, $domainId, $engCat, $hnCat, $updatedBy)
-    {
+    {   
+        // Fetch old data
+        $oldDataStmt = $this->pdo->prepare("SELECT * FROM category_master WHERE id = :id");
+        $oldDataStmt->execute([':id' => $id]);
+        $oldData = $oldDataStmt->fetch(PDO::FETCH_ASSOC);
+
         $sql = "UPDATE category_master SET
                     domain_id = :domainId,
                     category_name = :category,
@@ -40,7 +60,25 @@ class CategoryModel
         $stmt->bindParam(':category', $engCat, PDO::PARAM_INT);
         $stmt->bindParam(':hincategory', $hnCat, PDO::PARAM_INT);
         $stmt->bindParam(':updated_by', $updatedBy, PDO::PARAM_INT);
-        return $stmt->execute();
+        $stmt->execute();
+
+         $newData = json_encode([
+            'domain_id' => $domainId,
+            'category_name' => $engCat,
+            'hindi_category_name' => $hnCat,
+        ]);
+
+        $this->logger->log(
+            'category',
+            $id,
+            'UPDATE',
+            NULL,
+            json_encode($oldData),
+            $newData,
+            $updatedBy,
+            $this->loggedId
+        );
+        return true;
     }
     public function softDeleteCategory($id, $updatedBy)
     {
@@ -76,17 +114,17 @@ class CategoryModel
             $stmt->bindParam(':updated_by', $updatedBy, PDO::PARAM_INT);
             $stmt->execute();
 
-            // $sql = "UPDATE postings SET
-            //         is_deleted = '1',
-            //         last_updated_on = CURRENT_TIMESTAMP,
-            //         updated_by = :updated_by
-            //     WHERE category = :id";
-            // $stmt = $this->pdo->prepare($sql);
-            // $stmt->bindParam(':id', $id, PDO::PARAM_INT);
-            // $stmt->bindParam(':updated_by', $updatedBy, PDO::PARAM_INT);
-            // $stmt->execute();
-
             $this->pdo->commit();
+            $this->logger->log(
+                'category',
+                $id,
+                'DELETE',
+                'is_deleted',
+                '0',
+                '1',
+                $updatedBy,
+                $this->loggedId
+            );
             return true;
         } catch (PDOException $e) {
             $this->pdo->rollBack();

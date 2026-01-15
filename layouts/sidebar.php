@@ -52,45 +52,6 @@
                 <?php } ?>
 
 
-                <?php if (canAccess('users', $permissions, $authRole)) { ?>
-                    <!-- User Management Section -->
-                    <li class="nav-small-cap">
-                        <span>USER MANAGEMENT</span>
-                    </li>
-
-                    <li class="sidebar-item">
-                        <a class="sidebar-link has-arrow"
-                            href="javascript:void(0)"
-                            data-bs-toggle="collapse"
-                            data-bs-target="#userModule"
-                            aria-expanded="false">
-
-                            <i class="ti ti-users"></i>
-                            <span>User Management</span>
-                        </a>
-
-                        <ul class="collapse p-0" id="userModule">
-                            <li class="sidebar-item">
-                                <a class="sidebar-link"
-                                    href="<?= $base_url ?>/add-user.php"
-                                    data-page="add-user">
-                                    <i class="ti ti-user-plus"></i>
-                                    <span>Add User</span>
-                                </a>
-                            </li>
-
-                            <li class="sidebar-item">
-                                <a class="sidebar-link"
-                                    href="<?= $base_url ?>/manage-user.php"
-                                    data-page="manage-user">
-                                    <i class="ti ti-list-details"></i>
-                                    <span>User List</span>
-                                </a>
-                            </li>
-                        </ul>
-                    </li>
-                <?php } ?>
-
                 <?php if (canAccess('category', $permissions, $authRole) || canAccess('subcategory', $permissions, $authRole) || canAccess('childsubcategory', $permissions, $authRole)) { ?>
                     <!-- Category & Subcategory Section -->
                     <li class="nav-small-cap">
@@ -157,7 +118,7 @@
                     <li class="sidebar-item">
                         <a class="sidebar-link has-arrow" href="javascript:void(0)" data-bs-toggle="collapse" data-bs-target="#newsMenu" aria-expanded="false">
                             <i class="ti ti-news"></i>
-                            <span>News & manage</span>
+                            <span>News</span>
                         </a>
                         <ul class="collapse" style="padding:0px !important;" id="newsMenu">
                             <li class="sidebar-item">
@@ -184,7 +145,7 @@
                     <li class="sidebar-item">
                         <a class="sidebar-link has-arrow" href="javascript:void(0)" data-bs-toggle="collapse" data-bs-target="#noticesMenu" aria-expanded="false">
                             <i class="ti ti-file-text"></i>
-                            <span>Notices & manage</span>
+                            <span>Notices</span>
                         </a>
                         <ul class="collapse" style="padding:0px !important;" id="noticesMenu">
                             <li class="sidebar-item">
@@ -317,6 +278,47 @@
                         </a>
                     </li>
                 <?php } ?>
+
+                
+                <?php if (canAccess('users', $permissions, $authRole)) { ?>
+                    <!-- User Management Section -->
+                    <li class="nav-small-cap">
+                        <span>USER MANAGEMENT</span>
+                    </li>
+
+                    <li class="sidebar-item">
+                        <a class="sidebar-link has-arrow"
+                            href="javascript:void(0)"
+                            data-bs-toggle="collapse"
+                            data-bs-target="#userModule"
+                            aria-expanded="false">
+
+                            <i class="ti ti-users"></i>
+                            <span>User Management</span>
+                        </a>
+
+                        <ul class="collapse p-0" id="userModule">
+                            <li class="sidebar-item">
+                                <a class="sidebar-link"
+                                    href="<?= $base_url ?>/add-user.php"
+                                    data-page="add-user">
+                                    <i class="ti ti-user-plus"></i>
+                                    <span>Add User</span>
+                                </a>
+                            </li>
+
+                            <li class="sidebar-item">
+                                <a class="sidebar-link"
+                                    href="<?= $base_url ?>/manage-user.php"
+                                    data-page="manage-user">
+                                    <i class="ti ti-list-details"></i>
+                                    <span>User List</span>
+                                </a>
+                            </li>
+                        </ul>
+                    </li>
+                <?php } ?>
+                
                 <!-- Profile Section -->
                 <li class="nav-small-cap">
                     <span>PROFILE</span>

@@ -11,7 +11,7 @@ if ($domainId > 0) {
 } else {
     $stmt = $pdo->prepare(
         "SELECT id, eng_name , hin_name
-         FROM domains"
+         FROM domains WHERE is_deleted = '0'"
     );
     $stmt->execute();
 }

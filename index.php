@@ -8,6 +8,8 @@ if (isset($_SESSION['user_id'])) {
   header("Location: " . $base_url . "dashboard_view.php");
   exit; // Always exit after a redirect
 }
+
+include('./system-config.php')
 ?>
 <html lang="en">
 
@@ -38,9 +40,27 @@ if (isset($_SESSION['user_id'])) {
           <div class="col-md-7">
             <div class="form-left">
               <div class="glass-form">
+                <div class="administration-header d-flex align-items-center justify-content-between">
+
+                  <!-- Left Side : Heading -->
+                  <h4 class="administration-title mb-0">
+                    <?= htmlspecialchars($full_app_name); ?>
+                  </h4>
+
+                  <!-- Right Side : Logo -->
+                  <div class="administration-logo">
+                    <img
+                      src="<?= $logo; ?>"
+                      alt="CGST Administration Logo"
+                      class="img-fluid"
+                      loading="lazy"
+                      height="50">
+                  </div>
+
+                </div>
+
                 <div class="page-header">
-                  <h3>Welcome Back! 👋</h3>
-                  <p>Please sign in to access your admin dashboard</p>
+                  <p>Please sign in to access your dashboard</p>
                 </div>
 
                 <form action="src/controllers/LoginController.php" method="post">
@@ -54,7 +74,7 @@ if (isset($_SESSION['user_id'])) {
                   ?>
 
                   <div class="form-group">
-                    <label class="form-label">Email Address <span class="text-danger">*</span></label>
+                    <label class="form-label">Username (E-mail) <span class="text-danger">*</span></label>
                     <div class="input-group">
                       <div class="input-group-text"><i class="bi bi-person"></i></div>
                       <input type="email" name="email" class="form-control" id="email" placeholder="Enter your email">
@@ -75,9 +95,38 @@ if (isset($_SESSION['user_id'])) {
                     </div>
                   </div>
 
-                  <div class="form-group">
-                    <div class="g-recaptcha" data-sitekey="6Le0XSErAAAAAHgNYP936uIqoJmd48KfM23yyWMw"></div>
+                  <label class="form-label">Captcha <span class="text-danger">*</span></label>
+
+                  <div class="input-group">
+                    <!-- Left icon -->
+                    <span class="input-group-text">
+                      <i class="bi bi-shield-lock"></i>
+                    </span>
+
+                    <!-- CAPTCHA image -->
+                    <span class="input-group-text p-1 bg-white">
+                      <img src="captcha.php"
+                        alt="CAPTCHA Image"
+                        id="captchaImage"
+                        style="height:35px;">
+                    </span>
+
+                    <!-- CAPTCHA input -->
+                    <input type="text"
+                      name="captcha"
+                      class="form-control"
+                      placeholder="Enter CAPTCHA"
+                      autocomplete="off"
+                      required>
+
+                    <!-- Refresh button -->
+                    <button class="input-group-text btn-primary text-white border-0"
+                      type="button"
+                      onclick="refreshCaptcha()">
+                      <i class="bi bi-arrow-clockwise"></i>
+                    </button>
                   </div>
+
 
                   <div class="form-group mt-4">
                     <button type="submit" class="btn btn-primary w-100">
@@ -86,11 +135,20 @@ if (isset($_SESSION['user_id'])) {
                   </div>
                 </form>
               </div>
+              <div class="form-left-footer d-flex align-items-center justify-content-center gap-2">
+                <span class="footer-label">Technology Partner</span>
+                <a href="https://www.computered.in/"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  class="footer-brand">
+                  Computer Ed
+                </a>
+              </div>
             </div>
           </div>
           <div class="col-md-5 d-none d-md-block">
             <div class="form-right">
-              <img src="assets/images/logos/ced_right_mast.jpg" alt="Logo" class="brand-logo">
+              <a href="https://www.computered.in/" target="_blank" rel="noopener noreferrer"><img src="assets/images/logos/ced_right_mast.jpg" alt="Logo" class="brand-logo logo-container"></a>
               <div class="info-section">
                 <h4>Admin Control Panel</h4>
                 <p>Manage your resources efficiently with our powerful admin tools</p>
@@ -119,6 +177,13 @@ if (isset($_SESSION['user_id'])) {
         icon.classList.add('bi-eye');
       }
     });
+  </script>
+
+  <script>
+    function refreshCaptcha() {
+      const captchaImg = document.getElementById('captchaImage');
+      captchaImg.src = 'captcha.php?' + new Date().getTime();
+    }
   </script>
 </body>
 

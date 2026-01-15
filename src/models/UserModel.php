@@ -10,25 +10,113 @@ class UserModel
         date_default_timezone_set('Asia/Kolkata');
     }
 
-    public function isEmailRegistered($email)
+    public function isUserBlocked($userId)
     {
-        $stmt = $this->pdo->prepare("SELECT COUNT(*) FROM users WHERE email = :email");
-        $stmt->bindParam(':email', $email);
+        $stmt = $this->pdo->prepare("
+            SELECT blocked_until 
+            FROM users 
+            WHERE id = :user_id 
+            AND blocked_until > NOW()
+        ");
+        $stmt->bindParam(':user_id', $userId, PDO::PARAM_INT);
+        $stmt->execute();
+
+        return $stmt->fetchColumn() !== false;
+    }
+
+    public function incrementFailedAttempt($userId)
+    {
+        $stmt = $this->pdo->prepare("
+            UPDATE users 
+            SET failed_attempts = failed_attempts + 1,
+                last_failed_attempt = NOW()
+            WHERE id = :user_id
+        ");
+        $stmt->bindParam(':user_id', $userId, PDO::PARAM_INT);
+        $stmt->execute();
+
+        // Return current attempt count
+        $stmt = $this->pdo->prepare("SELECT failed_attempts FROM users WHERE id = :user_id");
+        $stmt->bindParam(':user_id', $userId, PDO::PARAM_INT);
+        $stmt->execute();
+
+        return (int) $stmt->fetchColumn();
+    }
+
+    public function blockUser($userId, $minutes = 60)
+    {
+        $blockUntil = date('Y-m-d H:i:s', strtotime("+{$minutes} minutes"));
+
+        $stmt = $this->pdo->prepare("
+            UPDATE users 
+            SET blocked_until = :block_until
+            WHERE id = :user_id
+        ");
+        $stmt->bindParam(':block_until', $blockUntil);
+        $stmt->bindParam(':user_id', $userId, PDO::PARAM_INT);
+
+        return $stmt->execute();
+    }
+
+    public function resetFailedAttempts($userId)
+    {
+        $stmt = $this->pdo->prepare("
+            UPDATE users 
+            SET failed_attempts = 0,
+                blocked_until = NULL,
+                last_failed_attempt = NULL
+            WHERE id = :user_id
+        ");
+        $stmt->bindParam(':user_id', $userId, PDO::PARAM_INT);
+
+        return $stmt->execute();
+    }
+
+    public function getBlockedTimeRemaining($userId)
+    {
+        $stmt = $this->pdo->prepare("
+            SELECT TIMESTAMPDIFF(MINUTE, NOW(), blocked_until) as minutes_remaining
+            FROM users 
+            WHERE id = :user_id 
+            AND blocked_until > NOW()
+        ");
+        $stmt->bindParam(':user_id', $userId, PDO::PARAM_INT);
+        $stmt->execute();
+
+        return $stmt->fetchColumn();
+    }
+
+    // Add this method to check both email and mobile
+    public function isEmailOrMobileExists($email, $mobile = null)
+    {
+        if ($mobile) {
+            $stmt = $this->pdo->prepare("
+                SELECT COUNT(*) 
+                FROM users 
+                WHERE email = :email OR mobile = :mobile
+            ");
+            $stmt->bindParam(':email', $email);
+            $stmt->bindParam(':mobile', $mobile);
+        } else {
+            $stmt = $this->pdo->prepare("
+                SELECT COUNT(*) 
+                FROM users 
+                WHERE email = :email
+            ");
+            $stmt->bindParam(':email', $email);
+        }
+
         $stmt->execute();
         return $stmt->fetchColumn() > 0;
     }
 
-    public function registerUser($email, $password)
-    {
-        $stmt = $this->pdo->prepare("INSERT INTO users (email, password) VALUES (:email, :password)");
-        $stmt->bindParam(':email', $email);
-        $stmt->bindParam(':password', $password);
-        return $stmt->execute();
-    }
-
     public function getUserByEmail($email)
     {
-        $stmt = $this->pdo->prepare("SELECT * FROM users WHERE email = :email");
+        $stmt = $this->pdo->prepare("
+            SELECT * FROM users 
+            WHERE email = :email 
+            AND is_deleted = '0'
+        ");
         $stmt->bindParam(':email', $email);
         $stmt->execute();
         return $stmt->fetch(PDO::FETCH_ASSOC);
@@ -37,7 +125,11 @@ class UserModel
     public function create(array $data)
     {
         try {
-            // print_r($data); die();
+            // Check if email or mobile already exists
+            if ($this->isEmailOrMobileExists($data['email'], $data['phone'])) {
+                throw new Exception("Email or mobile number already registered.");
+            }
+
             $this->pdo->beginTransaction();
             $passwordSet = date('Y-m-d H:i:s');
             $ip = $_SERVER['REMOTE_ADDR'];
@@ -140,7 +232,7 @@ class UserModel
             }
 
             $sql .= " WHERE id = :user_id AND is_deleted = '0'";
-            
+
             $stmt = $this->pdo->prepare($sql);
 
             // Required bindings
@@ -187,31 +279,29 @@ class UserModel
         }
     }
 
-
-    public function emailExists(string $email): bool
+    public function logActivity(int $userId, string $action, ?int $minutes = null)
     {
-        $stmt = $this->pdo->prepare("SELECT id FROM users WHERE email = :email LIMIT 1");
-        $stmt->execute([':email' => $email]);
-        return (bool) $stmt->fetch();
-    }
+        $ip = $_SERVER['HTTP_X_FORWARDED_FOR']
+            ?? $_SERVER['HTTP_CLIENT_IP']
+            ?? $_SERVER['REMOTE_ADDR']
+            ?? '0.0.0.0';
 
-    public function logActivity($userId, $action)
-    {
+        $sql = "INSERT INTO users_logs (user_id, ip, action, duration)
+            VALUES (:user_id, :ip, :action, :duration)";
 
-        if ($action == 'User logged out' || $action == 'Session Timeout') {
-            $loginTime = $_SESSION['login_time'];
-            $logoutTime = date('Y-m-d H:i:s');
-            $diffInSeconds = strtotime($logoutTime) - strtotime($loginTime);
-            $minutes = floor($diffInSeconds / 60);
-        } else {
-            $minutes = null;
+        $stmt = $this->pdo->prepare($sql);
+        $stmt->execute([
+            ':user_id'  => $userId,
+            ':ip'       => $ip,
+            ':action'   => $action,
+            ':duration' => $minutes
+        ]);
+
+        // No insert ID needed for logout or timeout
+        if (in_array($action, ['User logged out', 'Session Timeout'], true)) {
+            return true;
         }
-        $ip = $_SERVER['REMOTE_ADDR'];
-        $stmt = $this->pdo->prepare("INSERT INTO activity_logs (user_id, ip, action, duration) VALUES (:user_id, :ip, :action, :duration)");
-        $stmt->bindParam(':user_id', $userId, PDO::PARAM_INT);
-        $stmt->bindParam(':ip', $ip, PDO::PARAM_STR);
-        $stmt->bindParam(':action', $action, PDO::PARAM_STR);
-        $stmt->bindParam(':duration', $minutes, PDO::PARAM_STR);
-        return $stmt->execute();
+
+        return (int) $this->pdo->lastInsertId();
     }
 }

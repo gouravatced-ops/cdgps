@@ -45,7 +45,7 @@ if (isset($_SESSION['user_id'])) {
                         enctype='multipart/form-data'>
                         <div class="mb-3">
                             <label for="domainId" class="form-label">Domains<span class="text-danger">*</span></label>
-                            <select name="domainId_display" id="domainId" class="form-select"
+                            <select name="domainId" id="domainId" class="form-select"
                                 <?= ($domainId > 0) ? 'disabled' : '' ?>>
                                 <option value="">Choose Domain...</option>
                                 <?php foreach ($domains_data as $values): ?>
