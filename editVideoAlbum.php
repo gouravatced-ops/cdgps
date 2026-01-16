@@ -62,8 +62,11 @@ if (isset($_SESSION['login']) && $_SESSION['login'] == true) {
 
         <div class="card my-3">
             <div class="card-body p-0">
-                <div class="card-header-modern">
+                <div class="card-header-modern d-flex align-items-center justify-content-between">
                     Edit Video Album
+                    <a href="javascript:history.back()" class="btn btn-danger btn-sm">
+                        ← Back
+                    </a>
                 </div>
 
                 <div class="p-2">
@@ -79,23 +82,23 @@ if (isset($_SESSION['login']) && $_SESSION['login'] == true) {
                             <input type="date" id="dateOfEvent" class="form-control" value="<?= $dateOfEvent ?>" required>
                         </div>
                     </div>
-                        <div class="col-md-6">
-                            <div class="form-group">
-                                <label for="category" class="form-label">Category <span class="text-danger">*</span></label>
-                                <select class="form-control" name="category" id="category" required>
-                                    <option value="">Select Category</option>
-                                    <?php foreach ($subCat as $row): ?>
-                                        <option value="<?= htmlspecialchars($row['id']); ?>" <?= $sub_cat_id == $row['id'] ? 'selected' : '' ?>>
-                                            <?= htmlspecialchars($row['eng_sub_category_name']); ?>
-                                        </option>
-                                    <?php endforeach; ?>
-                                </select>
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label for="category" class="form-label">Category <span class="text-danger">*</span></label>
+                            <select class="form-control" name="category" id="category" required>
+                                <option value="">Select Category</option>
+                                <?php foreach ($subCat as $row): ?>
+                                    <option value="<?= htmlspecialchars($row['id']); ?>" <?= $sub_cat_id == $row['id'] ? 'selected' : '' ?>>
+                                        <?= htmlspecialchars($row['eng_sub_category_name']); ?>
+                                    </option>
+                                <?php endforeach; ?>
+                            </select>
 
-                                <?php if (isset($err['category'])) { ?>
-                                    <div class="form-text text-danger"><?php echo $err['category']; ?></div>
-                                <?php } ?>
-                            </div>
+                            <?php if (isset($err['category'])) { ?>
+                                <div class="form-text text-danger"><?php echo $err['category']; ?></div>
+                            <?php } ?>
                         </div>
+                    </div>
                 </div>
                 <div class="form-group">
                     <label for="enalbumTitle">Engligh Album Title:</label>
@@ -208,7 +211,7 @@ if (isset($_SESSION['login']) && $_SESSION['login'] == true) {
     </div>
 
     <script>
-        setTimeout(function () {
+        setTimeout(function() {
             $('.cke_notifications_area').remove();
         }, 1000);
 
@@ -244,10 +247,10 @@ if (isset($_SESSION['login']) && $_SESSION['login'] == true) {
                 data: formData,
                 processData: false,
                 contentType: false,
-                success: function (response) {
+                success: function(response) {
                     // location.reload();
                 },
-                error: function (xhr, status, error) {
+                error: function(xhr, status, error) {
                     console.error('Error adding Video:', error);
                     // location.reload();
                 }
@@ -269,8 +272,10 @@ if (isset($_SESSION['login']) && $_SESSION['login'] == true) {
             $.ajax({
                 url: 'deleteVideoAlnumPics.php',
                 type: 'POST',
-                data: { videoId: Video },
-                success: function (response) {
+                data: {
+                    videoId: Video
+                },
+                success: function(response) {
                     const alertType = response.includes("Success!") ? "success" : "danger";
                     const messageTemplate = `
                                                                                                     <div class="alert alert-${alertType} alert-dismissible fade show mt-3" role="alert">
@@ -281,10 +286,12 @@ if (isset($_SESSION['login']) && $_SESSION['login'] == true) {
                                                                                                     </div>`;
 
                     $("#msg").append(messageTemplate);
-                    $('html, body').animate({ scrollTop: 0 }, 'fast');
+                    $('html, body').animate({
+                        scrollTop: 0
+                    }, 'fast');
                     $(`#${videoId}`).remove();
                 },
-                error: function (xhr, status, error) {
+                error: function(xhr, status, error) {
                     console.error('Error deleting Video:', error);
                 }
             });
@@ -303,11 +310,11 @@ if (isset($_SESSION['login']) && $_SESSION['login'] == true) {
             const location = $("#location").val();
 
             const VideosData = [];
-            $("#VideoList .Video-row").each(function () {
+            $("#VideoList .Video-row").each(function() {
                 const videoId = $(this).attr("id").split("-")[1];
-                const videoLink = $(this).find("input[type='text']").eq(0).val();  // First input
-                const captionEn = $(this).find("input[type='text']").eq(1).val();  // Middle input
-                const captionHn = $(this).find("input[type='text']").eq(2).val();  // Last input
+                const videoLink = $(this).find("input[type='text']").eq(0).val(); // First input
+                const captionEn = $(this).find("input[type='text']").eq(1).val(); // Middle input
+                const captionHn = $(this).find("input[type='text']").eq(2).val(); // Last input
 
                 const isCover = $(this).find("input[type='radio']:checked").val();
 
@@ -338,7 +345,7 @@ if (isset($_SESSION['login']) && $_SESSION['login'] == true) {
                     Videos: VideosData
                 }),
                 // contentType: "application/json",
-                success: function (response) {
+                success: function(response) {
                     // console.log("Changes saved:", response);
                     const success = `<div class="alert alert-success alert-dismissible fade show mt-3" role="alert">
                                                                                                                                                 <strong>Success!</strong> Changes saved successfully.
@@ -348,9 +355,11 @@ if (isset($_SESSION['login']) && $_SESSION['login'] == true) {
                                                                                                                                             </div>`;
 
                     $("#msg").append(success);
-                    $('html, body').animate({ scrollTop: 0 }, 'fast');
+                    $('html, body').animate({
+                        scrollTop: 0
+                    }, 'fast');
                 },
-                error: function (xhr, status, error) {
+                error: function(xhr, status, error) {
 
                     const errorMsg = `<div class="alert alert-danger alert-dismissible fade show mt-3" role="alert">
                                                                                                                                                 <strong>Error!</strong> Something went wrong!.
@@ -360,7 +369,9 @@ if (isset($_SESSION['login']) && $_SESSION['login'] == true) {
                                                                                                                                             </div>`;
 
                     $("#msg").append(errorMsg);
-                    $('html, body').animate({ scrollTop: 0 }, 'slow');
+                    $('html, body').animate({
+                        scrollTop: 0
+                    }, 'slow');
                     // console.error("Error saving changes:", error);
                 }
             });

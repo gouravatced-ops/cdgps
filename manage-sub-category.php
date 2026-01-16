@@ -25,8 +25,11 @@ $subcategories = $stmt->fetchAll(PDO::FETCH_ASSOC);
 <div class="container-fluid">
     <div class="card">
         <div class="card-body p-0">
-            <div class="card-header-modern">
+            <div class="card-header-modern d-flex align-items-center justify-content-between">
                 Manage Sub Category
+                <a href="<?= $base_url ?>/create-sub-category.php" class="btn btn-warning btn-sm">
+                    <strong>+ Create</strong>
+                </a>
             </div>
 
             <div class="p-2">
@@ -56,7 +59,7 @@ $subcategories = $stmt->fetchAll(PDO::FETCH_ASSOC);
                             <td><?php echo htmlspecialchars($row['hindi_sub_category_name']); ?></td>
 
                             <td><a href="<?= $base_url ?>/edit-sub-category.php?id=<?= htmlspecialchars($row['id']) ?>"
-                                    class="btn btn-info btn-sm"><i class="ti ti-edit"></i></a>&nbsp;&nbsp;
+                                    class="btn btn-primary btn-sm"><i class="ti ti-edit"></i></a>&nbsp;&nbsp;
                                 <button class="btn btn-danger btn-sm delete-sub-category-button"
                                     data-id="<?php echo htmlspecialchars($row['id']); ?>">
                                     <i class="ti ti-trash"></i>

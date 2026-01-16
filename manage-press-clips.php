@@ -27,8 +27,11 @@ $categories = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
     <div class="card">
         <div class="card-body p-0">
-            <div class="card-header-modern">
+            <div class="card-header-modern d-flex align-items-center justify-content-between">
                 Manage Press Clips
+                <a href="<?= $base_url ?>/post-album.php" class="btn btn-warning btn-sm">
+                    <strong>+ Create</strong>
+                </a>
             </div>
 
             <div class="p-2">
@@ -74,7 +77,7 @@ $categories = $stmt->fetchAll(PDO::FETCH_ASSOC);
                             <td style="white-space: nowrap;"><?php echo htmlspecialchars(date("d-M-Y", strtotime($row['event_date']))); ?></td>
                             <td>
                                 <a href="<?= $base_url ?>/edit-albums-details.php?album_id=<?php echo htmlspecialchars($row['uniq_id']) ?>" title="Edit Press Clip Details"
-                                    class="btn btn-info btn-lg"><i class="ti ti-edit"></i></a>
+                                    class="btn btn-primary btn-lg"><i class="ti ti-edit"></i></a>
                             <td style="white-space: nowrap;">
                                 <a href="<?= $base_url ?>/edit-press-clips.php?album_id=<?php echo htmlspecialchars($row['uniq_id']) ?>" title="Add & Manage Press Clip"
                                     class="btn btn-primary btn-lg"><i class="ti ti-photo-edit"></i></a>&nbsp;&nbsp;

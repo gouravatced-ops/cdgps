@@ -67,15 +67,18 @@ $subcategories = $pdo->query($sql_subcat)->fetchAll(PDO::FETCH_ASSOC);
 
 <div class="container-fluid">
     <div class="card">
-            <div class="card-body p-0">
-                <div class="col-md-12">
-                    <div class="card-header-modern">
-                        Edit Tender
-                    </div>
+        <div class="card-body p-0">
+            <div class="col-md-12">
+                <div class="card-header-modern d-flex align-items-center justify-content-between">
+                    Edit Tender
+                    <a href="javascript:history.back()" class="btn btn-danger btn-sm">
+                        ← Back
+                    </a>
+                </div>
 
-                    <div class="p-2">
-                        <!-- rest form / content -->
-                    </div>
+                <div class="p-2">
+                    <!-- rest form / content -->
+                </div>
 
                 <?php if (isset($_SESSION['message'])) { ?>
                     <div class="alert alert-success alert-dismissible fade show mt-3" role="alert">
@@ -108,7 +111,10 @@ $subcategories = $pdo->query($sql_subcat)->fetchAll(PDO::FETCH_ASSOC);
                     <?php if (isset($_SESSION['success_message'])) { ?>
                         <div class="alert alert-success alert-dismissible fade show mt-3" role="alert">
                             <strong>Success!</strong> <?php echo $_SESSION['success_message']; ?>.
-                            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                            <button type="button"
+                                class="btn btn-sm btn-primary ml-3"
+                                aria-label="Close"
+                                onclick="closeAlert(this)">
                                 <span aria-hidden="true">&times;</span>
                             </button>
                             <?php unset($_SESSION['success_message']); ?>
@@ -116,7 +122,10 @@ $subcategories = $pdo->query($sql_subcat)->fetchAll(PDO::FETCH_ASSOC);
                     <?php } elseif (isset($_SESSION['error_message'])) { ?>
                         <div class="alert alert-danger alert-dismissible fade show mt-3" role="alert">
                             <?php echo $_SESSION['error']; ?>.
-                            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                            <button type="button"
+                                class="btn btn-sm btn-primary ml-3"
+                                aria-label="Close"
+                                onclick="closeAlert(this)">
                                 <span aria-hidden="true">&times;</span>
                             </button>
                             <?php unset($_SESSION['error']); ?>
@@ -281,7 +290,7 @@ $subcategories = $pdo->query($sql_subcat)->fetchAll(PDO::FETCH_ASSOC);
                             <?php } ?>
                         </div>
                         <div class="col-md-6 preview-container">
-                            <?php if(!empty($tender['tender_doc_path'])) { ?>
+                            <?php if (!empty($tender['tender_doc_path'])) { ?>
                                 <embed src="https://gpsimdega.ac.in/cdgps/src/<?= $tender['tender_doc_path'] ?>" class="preview" width="100%" height="150px" style="border:1px solid #ccc;">
                             <?php } ?>
                         </div>
@@ -313,14 +322,14 @@ $subcategories = $pdo->query($sql_subcat)->fetchAll(PDO::FETCH_ASSOC);
                             </label>
                         </div>
                         <div class="col-md-6 preview-container">
-                        <?php if(!empty($tender['tender_other_attach_1_path'])) { ?>
-                                <a class="btn btn-info my-2" href="https://gpsimdega.ac.in/cdgps/src/<?= $tender['tender_other_attach_1_path'] ?? '' ?>">See File</a>
-                           <?php } ?>
+                            <?php if (!empty($tender['tender_other_attach_1_path'])) { ?>
+                                <a class="btn btn-primary my-2" href="https://gpsimdega.ac.in/cdgps/src/<?= $tender['tender_other_attach_1_path'] ?? '' ?>">See File</a>
+                            <?php } ?>
                         </div> <!-- Preview Column -->
                     </div>
 
                     <!-- Attachment 2 (Initially Hidden) -->
-                    <div class="row mb-2" id="pdf2" style="<?= empty($tender['tender_other_attach_2_title']) && empty($tender['tender_other_attach_2_path']) ?'display: none' : ''; ?>">
+                    <div class="row mb-2" id="pdf2" style="<?= empty($tender['tender_other_attach_2_title']) && empty($tender['tender_other_attach_2_path']) ? 'display: none' : ''; ?>">
                         <div class="col-md-6">
                             <label class="w-100 pdf_attachment2">
                                 <span class="text">Other Attachment 2 <small class="text-muted">(Max 1MB, PDF, Excel,
@@ -337,14 +346,14 @@ $subcategories = $pdo->query($sql_subcat)->fetchAll(PDO::FETCH_ASSOC);
                             </label>
                         </div>
                         <div class="col-md-6 preview-container">
-                        <?php if(!empty($tender['tender_other_attach_2_path'])) { ?>
-                                <a class="btn btn-info my-2" href="https://gpsimdega.ac.in/cdgps/src/<?= $tender['tender_other_attach_2_path'] ?? '' ?>">See File</a>
-                           <?php } ?>
+                            <?php if (!empty($tender['tender_other_attach_2_path'])) { ?>
+                                <a class="btn btn-primary my-2" href="https://gpsimdega.ac.in/cdgps/src/<?= $tender['tender_other_attach_2_path'] ?? '' ?>">See File</a>
+                            <?php } ?>
                         </div> <!-- Preview Column -->
                     </div>
 
                     <!-- Attachment 3 (Initially Hidden) -->
-                    <div class="row" id="pdf3" style="<?= empty($tender['tender_other_attach_3_title']) && empty($tender['tender_other_attach_3_path']) ?'display: none' : ''; ?>">
+                    <div class="row" id="pdf3" style="<?= empty($tender['tender_other_attach_3_title']) && empty($tender['tender_other_attach_3_path']) ? 'display: none' : ''; ?>">
                         <div class="col-md-6">
                             <label class="w-100 pdf_attachment3">
                                 <span class="text">Other Attachment 3 <small class="text-muted">(Max 1MB, PDF, Excel,
@@ -361,10 +370,10 @@ $subcategories = $pdo->query($sql_subcat)->fetchAll(PDO::FETCH_ASSOC);
                             </label>
                         </div>
                         <div class="col-md-6 preview-container">
-                           <?php if(!empty($tender['tender_other_attach_3_path'])) { ?>
-                                <a class="btn btn-info my-2" href="https://gpsimdega.ac.in/cdgps/src/<?= $tender['tender_other_attach_3_path'] ?? '' ?>">See File</a>
-                           <?php } ?>
-                            
+                            <?php if (!empty($tender['tender_other_attach_3_path'])) { ?>
+                                <a class="btn btn-primary my-2" href="https://gpsimdega.ac.in/cdgps/src/<?= $tender['tender_other_attach_3_path'] ?? '' ?>">See File</a>
+                            <?php } ?>
+
                         </div> <!-- Preview Column -->
                     </div>
                 </div>
@@ -391,7 +400,7 @@ $subcategories = $pdo->query($sql_subcat)->fetchAll(PDO::FETCH_ASSOC);
                     <label for="newTagDays" class="form-label">New Tag Days <span class="text-danger">*</span></label>
                     <input type="number" class="form-control" class="form-control" id="newTagDays" name="newTagDays"
                         placeholder="Enter newTagDays" value="0" max="100"
-                        value="<?= $tender['tender_newtag_days']; ?>" <?= $tender['new_tag'] == 'Y' ? '' : 'readonly'; ?> >
+                        value="<?= $tender['tender_newtag_days']; ?>" <?= $tender['new_tag'] == 'Y' ? '' : 'readonly'; ?>>
                 </div>
                 <input type="hidden" name="tender_id" value="<?= $tenderId ?>">
                 <!-- Submit Buttons -->

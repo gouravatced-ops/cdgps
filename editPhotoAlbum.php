@@ -67,14 +67,17 @@ if (isset($_SESSION['login']) && $_SESSION['login'] == true) {
         <div class="container">
 
             <div class="card my-3">
-            <div class="card-body p-0">
-                <div class="card-header-modern">
-                    Edit Photo Album
-                </div>
+                <div class="card-body p-0">
+                    <div class="card-header-modern d-flex align-items-center justify-content-between">
+                        Edit Photo Album
+                        <a href="javascript:history.back()" class="btn btn-danger btn-sm">
+                            ← Back
+                        </a>
+                    </div>
 
-                <div class="p-2">
-                    <!-- rest form / content -->
-                </div>
+                    <div class="p-2">
+                        <!-- rest form / content -->
+                    </div>
                     <div id="msg"></div>
                     <div class="row">
                         <div class="col-md-6">
@@ -168,7 +171,7 @@ if (isset($_SESSION['login']) && $_SESSION['login'] == true) {
                                 <input type="radio" class="form-check-input" name="coverPhoto" value="<?= $photoId ?>"
                                     <?= $photoId == $coverId ? 'checked' : '' ?>>
 
-                                <?php echo ' <label for="coverPhoto1" class="form-check-label">Mark as Cover Photo</label>';
+                            <?php echo ' <label for="coverPhoto1" class="form-check-label">Mark as Cover Photo</label>';
                                 echo '</div>';
                                 echo '</div>';
                                 echo '</div></div>';
@@ -211,7 +214,7 @@ if (isset($_SESSION['login']) && $_SESSION['login'] == true) {
         </div>
     </footer>
     <script>
-        setTimeout(function () {
+        setTimeout(function() {
             $('.cke_notifications_area').remove();
         }, 1000);
 
@@ -255,10 +258,10 @@ if (isset($_SESSION['login']) && $_SESSION['login'] == true) {
                 data: formData,
                 processData: false,
                 contentType: false,
-                success: function (response) {
+                success: function(response) {
                     location.reload();
                 },
-                error: function (xhr, status, error) {
+                error: function(xhr, status, error) {
                     console.error('Error adding photo:', error);
                     // location.reload();
                 }
@@ -298,22 +301,29 @@ if (isset($_SESSION['login']) && $_SESSION['login'] == true) {
             $.ajax({
                 url: 'controllers/deletePhotoAlbumPics.php',
                 type: 'POST',
-                data: { photoId: photo },
-                success: function (response) {
+                data: {
+                    photoId: photo
+                },
+                success: function(response) {
                     const alertType = response.includes("Success!") ? "success" : "danger";
                     const messageTemplate = `
                         <div class="alert alert-success alert-dismissible fade show mt-3" role="alert">
                             <strong>${response}</strong>
-                            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                            <button type="button"
+                                class="btn btn-sm btn-primary ml-3"
+                                aria-label="Close"
+                                onclick="closeAlert(this)">
                                 <span aria-hidden="true">&times;</span>
                             </button>
                         </div>`;
 
                     $("#msg").append(messageTemplate);
-                    $('html, body').animate({ scrollTop: 0 }, 'fast');
+                    $('html, body').animate({
+                        scrollTop: 0
+                    }, 'fast');
                     $(`#${photoId}`).remove();
                 },
-                error: function (xhr, status, error) {
+                error: function(xhr, status, error) {
                     console.error('Error deleting photo:', error);
                 }
             });
@@ -330,7 +340,7 @@ if (isset($_SESSION['login']) && $_SESSION['login'] == true) {
             const location = $("#location").val();
 
             const photosData = [];
-            $("#photoList .photo-row").each(function () {
+            $("#photoList .photo-row").each(function() {
                 const photoId = $(this).attr("id").split("-")[1];
                 const captionEn = $(this).find("input[type='text']").first().val();
                 const captionHn = $(this).find("input[type='text']").last().val();
@@ -363,7 +373,7 @@ if (isset($_SESSION['login']) && $_SESSION['login'] == true) {
                     photos: photosData
                 }),
                 // contentType: "application/json",
-                success: function (response) {
+                success: function(response) {
                     // console.log("Changes saved:", response);
                     const success = `<div class="alert alert-success alert-dismissible fade show mt-3" role="alert">
                                                                                                                                                                 <strong>Success!</strong> Changes saved successfully.
@@ -373,9 +383,11 @@ if (isset($_SESSION['login']) && $_SESSION['login'] == true) {
                                                                                                                                                             </div>`;
 
                     $("#msg").append(success);
-                    $('html, body').animate({ scrollTop: 0 }, 'fast');
+                    $('html, body').animate({
+                        scrollTop: 0
+                    }, 'fast');
                 },
-                error: function (xhr, status, error) {
+                error: function(xhr, status, error) {
 
                     const errorMsg = `<div class="alert alert-danger alert-dismissible fade show mt-3" role="alert">
                                                                                                                                                                 <strong>Error!</strong> Something went wrong!.
@@ -385,7 +397,9 @@ if (isset($_SESSION['login']) && $_SESSION['login'] == true) {
                                                                                                                                                             </div>`;
 
                     $("#msg").append(errorMsg);
-                    $('html, body').animate({ scrollTop: 0 }, 'slow');
+                    $('html, body').animate({
+                        scrollTop: 0
+                    }, 'slow');
                     // console.error("Error saving changes:", error);
                 }
             });

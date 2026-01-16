@@ -35,10 +35,15 @@ if (isset($_SESSION['user_id'])) {
     <div class="container-fluid">
         <div class="card shadow-sm">
             <div class="card-body p-0">
-
-                <!-- Header -->
-                <div class="card-header-modern">
+                <div class="card-header-modern d-flex align-items-center justify-content-between">
                     Edit User
+                    <a href="javascript:history.back()" class="btn btn-danger btn-sm">
+                        ← Back
+                    </a>
+                </div>
+
+                <div class="p-2">
+                    <!-- rest form / content -->
                 </div>
 
                 <!-- Alerts -->

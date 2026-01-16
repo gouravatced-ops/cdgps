@@ -17,7 +17,7 @@ if (isLoggedIn()) {
     <div class="container-fluid">
         <div class="card">
             <div class="card-body p-0">
-                <div class="card-header-modern">
+                <div class="card-header-modern d-flex align-items-center justify-content-between">
                     Post News
                 </div>
 
@@ -56,7 +56,10 @@ if (isLoggedIn()) {
                     <?php if (isset($_SESSION['success_message'])) { ?>
                         <div class="alert alert-success alert-dismissible fade show mt-3" role="alert">
                             <strong>Success!</strong> <?php echo $_SESSION['success_message']; ?>.
-                            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                            <button type="button"
+                                class="btn btn-sm btn-primary ml-3"
+                                aria-label="Close"
+                                onclick="closeAlert(this)">
                                 <span aria-hidden="true">&times;</span>
                             </button>
                             <?php unset($_SESSION['success_message']); ?>
@@ -64,7 +67,10 @@ if (isLoggedIn()) {
                     <?php } elseif (isset($_SESSION['error_message'])) { ?>
                         <div class="alert alert-danger alert-dismissible fade show mt-3" role="alert">
                             <?php echo $_SESSION['error']; ?>.
-                            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                            <button type="button"
+                                class="btn btn-sm btn-primary ml-3"
+                                aria-label="Close"
+                                onclick="closeAlert(this)">
                                 <span aria-hidden="true">&times;</span>
                             </button>
                             <?php unset($_SESSION['error']); ?>
@@ -94,26 +100,19 @@ if (isLoggedIn()) {
                         <div class="col-md-6">
                             <!-- News Date -->
                             <div class="mb-3">
-                                <label for="subCategoryId" class="form-label">Category<span class="text-danger">*</span></label>
+                                <label for="subCategoryId" class="form-label">Sub Category</label>
                                 <select name="subCategoryId" id="postcategoryId" class="form-select" required>
                                     <option value="">Choose Category...</option>
                                 </select>
-                                <?php if (isset($err['subCategoryId'])) { ?>
-                                    <div class="form-text text-danger"><?php echo $err['subCategoryId']; ?></div>
-                                <?php } ?>
                             </div>
                         </div>
                         <div class="col-md-6">
                             <!-- News Date -->
                             <div class="mb-3">
-                                <label for="childSubCategoryId" class="form-label">Sub Category<span
-                                        class="text-danger">*</span></label>
-                                <select name="childSubCategoryId" id="SubCategoryId" class="form-select" required>
+                                <label for="childSubCategoryId" class="form-label">Child Sub Category</label>
+                                <select name="childSubCategoryId" id="SubCategoryId" class="form-select">
                                     <option value="">Choose Child Sub Category...</option>
                                 </select>
-                                <?php if (isset($err['childSubCategoryId'])) { ?>
-                                    <div class="form-text text-danger"><?php echo $err['childSubCategoryId']; ?></div>
-                                <?php } ?>
                             </div>
                         </div>
                         <div class="col-md-6">

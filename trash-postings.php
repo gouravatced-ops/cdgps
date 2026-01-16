@@ -21,7 +21,7 @@ $postings = $pdo->query($sql)->fetchAll(PDO::FETCH_ASSOC);
 <div class="container-fluid">
     <div class="card">
         <div class="card-body p-0">
-            <div class="card-header-modern">
+            <div class="card-header-modern d-flex align-items-center justify-content-between">
                 Trash Posting
             </div>
 
@@ -76,7 +76,7 @@ $postings = $pdo->query($sql)->fetchAll(PDO::FETCH_ASSOC);
                             <td><?php echo htmlspecialchars($row['title']); ?></td>
                             <td><?php echo htmlspecialchars($row['status']); ?></td>
                             <!-- <td><?php echo htmlspecialchars($row['ip_address']); ?></td> -->
-                            <td><a href="<?= $base_url ?>/view-trash-postings.php?id=<?= htmlspecialchars($row['id']) ?>" class="btn btn-info btn-sm" title="View and Restore Post"><i class="ti ti-eye"></i></a>&nbsp;&nbsp;
+                            <td><a href="<?= $base_url ?>/view-trash-postings.php?id=<?= htmlspecialchars($row['id']) ?>" class="btn btn-primary btn-sm" title="View and Restore Post"><i class="ti ti-eye"></i></a>&nbsp;&nbsp;
                                 <!-- <button class="btn btn-danger btn-sm delete-post-button" data-id="<?php echo htmlspecialchars($row['id']); ?>" title="Delete Post Permanently">
                                     <i class="ti ti-trash"></i>
                                 </button> -->

@@ -54,7 +54,10 @@ $domain_data = $pdo->query($sql_domains)->fetchAll(PDO::FETCH_ASSOC);
                     <?php if (isset($_SESSION['success_message'])) { ?>
                         <div class="alert alert-success alert-dismissible fade show mt-3" role="alert">
                             <strong>Success!</strong> <?php echo $_SESSION['success_message']; ?>.
-                            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                            <button type="button"
+                                class="btn btn-sm btn-primary ml-3"
+                                aria-label="Close"
+                                onclick="closeAlert(this)">
                                 <span aria-hidden="true">&times;</span>
                             </button>
                             <?php unset($_SESSION['success_message']); ?>
@@ -62,7 +65,10 @@ $domain_data = $pdo->query($sql_domains)->fetchAll(PDO::FETCH_ASSOC);
                     <?php } elseif (isset($_SESSION['error_message'])) { ?>
                         <div class="alert alert-danger alert-dismissible fade show mt-3" role="alert">
                             <?php echo $_SESSION['error']; ?>.
-                            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                            <button type="button"
+                                class="btn btn-sm btn-primary ml-3"
+                                aria-label="Close"
+                                onclick="closeAlert(this)">
                                 <span aria-hidden="true">&times;</span>
                             </button>
                             <?php unset($_SESSION['error']); ?>

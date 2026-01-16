@@ -25,6 +25,22 @@
     });
   }, 4000);
 </script>
+<script>
+function closeAlert(button) {
+    const alertBox = button.closest('.alert');
+    if (!alertBox) return;
+
+    // Fade out animation
+    alertBox.classList.remove('show');
+    alertBox.style.transition = 'opacity 0.3s ease';
+    alertBox.style.opacity = '0';
+
+    // Remove element after animation
+    setTimeout(() => {
+        alertBox.remove();
+    }, 300);
+}
+</script>
 <!-- jQuery -->
 <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
 

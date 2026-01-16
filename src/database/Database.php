@@ -16,7 +16,7 @@ class Database
         if ($isLocal) {
             // LOCAL
             $this->host     = 'localhost';
-            $this->dbname   = 'gpsimdega';
+            $this->dbname   = 'cgst_db';
             $this->username = 'root';
             $this->password = '';
         } else {

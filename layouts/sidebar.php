@@ -270,16 +270,16 @@
                     </li>
                 <?php } ?>
 
-                <?php if($authRole == 'superadmin') { ?>
+                <?php if ($authRole == 'superadmin') { ?>
                     <li class="sidebar-item">
-                        <a class="sidebar-link" href="<?= $base_url ?>/activity.php" data-page="dashboard">
+                        <a class="sidebar-link" href="<?= $base_url ?>/user_logs.php" data-page="dashboard">
                             <i class="ti ti-activity"></i>
                             <span>Activity Logs</span>
                         </a>
                     </li>
                 <?php } ?>
 
-                
+
                 <?php if (canAccess('users', $permissions, $authRole)) { ?>
                     <!-- User Management Section -->
                     <li class="nav-small-cap">
@@ -318,7 +318,7 @@
                         </ul>
                     </li>
                 <?php } ?>
-                
+
                 <!-- Profile Section -->
                 <li class="nav-small-cap">
                     <span>PROFILE</span>

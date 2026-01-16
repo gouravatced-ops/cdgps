@@ -17,7 +17,7 @@ if (isset($_SESSION['user_id'])) {
         <div class="card">
             <div class="card-body p-0">
                 <div class="col-md-12">
-                    <div class="card-header-modern">
+                    <div class="card-header-modern d-flex align-items-center justify-content-between">
                         Add Domain
                     </div>
 
@@ -28,7 +28,10 @@ if (isset($_SESSION['user_id'])) {
                     <?php if (isset($_SESSION['message'])) { ?>
                         <div class="alert alert-success alert-dismissible fade show mt-3" role="alert">
                             <strong>Success!</strong> <?php echo $_SESSION['message']; ?>.
-                            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                            <button type="button"
+                                class="btn btn-sm btn-primary ml-3"
+                                aria-label="Close"
+                                onclick="closeAlert(this)">
                                 <span aria-hidden="true">&times;</span>
                             </button>
                             <?php unset($_SESSION['message']); ?>
@@ -36,7 +39,10 @@ if (isset($_SESSION['user_id'])) {
                     <?php } elseif (isset($_SESSION['error'])) { ?>
                         <div class="alert alert-danger alert-dismissible fade show mt-3" role="alert">
                             <?php echo $_SESSION['error']; ?>.
-                            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                            <button type="button"
+                                class="btn btn-sm btn-primary ml-3"
+                                aria-label="Close"
+                                onclick="closeAlert(this)">
                                 <span aria-hidden="true">&times;</span>
                             </button>
                             <?php unset($_SESSION['error']); ?>
@@ -58,8 +64,8 @@ if (isset($_SESSION['user_id'])) {
                             <input type="text" name="domain_path" id="domain_path" placeholder="domainName.example.com" class="form-control" value="" required>
                         </div>
                         <div class="mb-3">
-                            <label for="domain_about" class="form-label">Description</label>
-                            <input type="text" name="domain_about" id="domain_about" placeholder="Domain is ..." class="form-control" value="">
+                            <label for="description" class="form-label">Description (optional)</label>
+                            <textarea name="domain_about" id="domain_about" class="form-control" placeholder="Describe domain here ..."></textarea>
                         </div>
                         <button type="submit" class="btn btn-primary">Submit</button>
                     </form>

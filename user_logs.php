@@ -2,7 +2,7 @@
 session_start();
 require_once __DIR__ . '/layouts/header.php';
 
-$limit = 20;
+$limit = 50;
 
 // current page
 $page = isset($_GET['page']) && is_numeric($_GET['page']) && $_GET['page'] > 0
@@ -18,11 +18,22 @@ $countSql = "SELECT COUNT(*)
 $totalRecords = (int) $pdo->query($countSql)->fetchColumn();
 $totalPages   = (int) ceil($totalRecords / $limit);
 
-$sql = "SELECT al.*, u.username
-        FROM users_logs al
-        JOIN users u ON u.id = al.user_id
-        ORDER BY al.created_at DESC
-        LIMIT :limit OFFSET :offset";
+$sql = "
+    SELECT 
+        ul.id AS login_id,
+        ul.action,
+        ul.created_at,
+        ul.ip,
+        u.username,
+        ul.duration,
+        COUNT(al.id) AS activity_count
+    FROM users_logs ul
+    JOIN users u ON u.id = ul.user_id
+    LEFT JOIN activity_logs al ON al.login_id = ul.id
+    GROUP BY ul.id
+    ORDER BY ul.created_at DESC
+    LIMIT :limit OFFSET :offset
+";
 
 $stmt = $pdo->prepare($sql);
 $stmt->bindValue(':limit', $limit, PDO::PARAM_INT);
@@ -47,7 +58,7 @@ if ($endPage > $totalPages) {
 
     <div class="card">
         <div class="card-body p-0">
-            <div class="card-header-modern">
+            <div class="card-header-modern d-flex align-items-center justify-content-between">
                 Activity Logs
             </div>
 
@@ -80,6 +91,8 @@ if ($endPage > $totalPages) {
                         <th>Duration</th>
                         <th>User IP</th>
                         <th>Date</th>
+                        <th>Action Counts</th>
+                        <th>Actvities</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -90,9 +103,28 @@ if ($endPage > $totalPages) {
                             <td><?= $i++; ?></td>
                             <td><?= htmlspecialchars($row['username']) ?></td>
                             <td><?= htmlspecialchars($row['action']) ?></td>
-                            <td><?= htmlspecialchars($row['duration']) ?></td>
+                            <?php
+                            $durationText = 'N/A';
+
+                            if (!empty($row['action'])) {
+                                if ($row['action'] === 'Session Timeout') {
+                                    $durationText = '15 minutes';
+                                } elseif ($row['action'] === 'User logged out' && isset($row['duration'])) {
+                                    $durationText = (int)$row['duration'] . ' minutes';
+                                }
+                            }
+                            ?>
+                            <td><?= htmlspecialchars($durationText) ?></td>
+
                             <td><?= htmlspecialchars($row['ip']) ?></td>
-                            <td><?= htmlspecialchars($row['created_at']) ?></td>
+                            <td><?= date('d/m/Y h:i A', strtotime($row['created_at'])) ?></td>
+                            <td><?= htmlspecialchars($row['activity_count']) ?></td>
+                            <?php if ($row['action'] == 'User logged in successfully') { ?>
+                                <td><a href="<?= $base_url ?>/activity_logs.php?id=<?php echo htmlspecialchars($row['login_id']) ?>"
+                                        class="btn btn-primary btn-sm"><i class="ti ti-list-details"></i></a>
+                                    </button>
+                                </td>
+                            <?php } ?>
                         </tr>
                     <?php endforeach; ?>
 

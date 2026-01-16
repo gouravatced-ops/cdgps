@@ -18,7 +18,7 @@ if (isset($_SESSION['user_id'])) {
             <div class="card-body p-0">
 
                 <!-- Header -->
-                <div class="card-header-modern">
+                <div class="card-header-modern d-flex align-items-center justify-content-between">
                     Add User
                 </div>
 

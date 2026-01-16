@@ -46,8 +46,11 @@ if (isset($_SESSION['user_id'])) {
         <div class="card">
             <div class="card-body p-0">
                 <div class="col-md-12">
-                    <div class="card-header-modern">
+                    <div class="card-header-modern d-flex align-items-center justify-content-between">
                         Edit Notice
+                        <a href="javascript:history.back()" class="btn btn-danger btn-sm">
+                            ← Back
+                        </a>
                     </div>
 
                     <div class="p-2">
@@ -57,7 +60,10 @@ if (isset($_SESSION['user_id'])) {
                     <?php if (isset($_SESSION['message'])) { ?>
                         <div class="alert alert-success alert-dismissible fade show mt-3" role="alert">
                             <strong>Success!</strong> <?php echo $_SESSION['message']; ?>.
-                            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                            <button type="button"
+                                class="btn btn-sm btn-primary ml-3"
+                                aria-label="Close"
+                                onclick="closeAlert(this)">
                                 <span aria-hidden="true">&times;</span>
                             </button>
                             <?php unset($_SESSION['message']); ?>
@@ -65,7 +71,10 @@ if (isset($_SESSION['user_id'])) {
                     <?php } elseif (isset($_SESSION['error'])) { ?>
                         <div class="alert alert-danger alert-dismissible fade show mt-3" role="alert">
                             <?php echo $_SESSION['error']; ?>.
-                            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                            <button type="button"
+                                class="btn btn-sm btn-primary ml-3"
+                                aria-label="Close"
+                                onclick="closeAlert(this)">
                                 <span aria-hidden="true">&times;</span>
                             </button>
                             <?php unset($_SESSION['error']); ?>

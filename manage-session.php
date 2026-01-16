@@ -40,7 +40,7 @@ $syfy = $pdo->query($sql)->fetchAll(PDO::FETCH_ASSOC);
                             <td><?php echo htmlspecialchars(empty($row['financial_year']) ? 'NA' : $row['financial_year']); ?>
                             </td>
                             <td><a href="<?= $base_url ?>/edit-session.php?id=<?= htmlspecialchars($row['id']) ?>"
-                                    class="btn btn-info btn-sm"><i class="ti ti-edit"></i></a>&nbsp;&nbsp;
+                                    class="btn btn-primary btn-sm"><i class="ti ti-edit"></i></a>&nbsp;&nbsp;
                                 <button class="btn btn-danger btn-sm delete-session-button"
                                     data-id="<?php echo htmlspecialchars($row['id']); ?>">
                                     <i class="ti ti-trash"></i>

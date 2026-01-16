@@ -116,12 +116,6 @@ class NewsController
         if (empty($_POST['domainId'])) {
             $errors['domainId'] = "Domain is required";
         }
-        if (empty($_POST['subCategoryId'])) {
-            $errors['subCategoryId'] = "Category is required";
-        }
-        if (empty($_POST['childSubCategoryId'])) {
-            $errors['childSubCategoryId'] = "Sub Category is required";
-        }
         if (empty($_POST['news_date'])) {
             $errors['news_date'] = "News Date is required";
         }
@@ -229,7 +223,7 @@ class NewsController
         // Generate unique ID and prepare paths
         $uniqueTenderID = $this->generateUniqueTenderID();
         $domainId = $_POST['domainId'];
-        $subCategoryId = $_POST['subCategoryId'];
+        $subCategoryId = $_POST['subCategoryId'] ?? NULL;
         $stmt = $this->pdo->prepare(
             "SELECT category_id 
             FROM sub_category 
@@ -240,7 +234,7 @@ class NewsController
 
         $stmt->execute(['subCategoryId' => $subCategoryId]);
         $categoryId = $stmt->fetchColumn();
-        $childSubCategoryId = $_POST['childSubCategoryId'];
+        $childSubCategoryId = $_POST['childSubCategoryId'] ?? NULL;
         $news_date = $_POST['news_date'];
         $news_title = $_POST['news_title'];
         $news_title_hin = $_POST['news_title_hin'];
@@ -426,12 +420,6 @@ class NewsController
         if (empty($_POST['domainId'])) {
             $errors['domainId'] = "Domain is required";
         }
-        if (empty($_POST['subCategoryId'])) {
-            $errors['subCategoryId'] = "Category is required";
-        }
-        if (empty($_POST['childSubCategoryId'])) {
-            $errors['childSubCategoryId'] = "Sub Category is required";
-        }
         if (empty($_POST['news_date'])) {
             $errors['news_date'] = "News Date is required";
         }
@@ -506,7 +494,7 @@ class NewsController
 
         $uniqueTenderID = $existingNews['uniq_id'];
         $domainId = $_POST['domainId'];
-        $subCategoryId = $_POST['subCategoryId'];
+        $subCategoryId = $_POST['subCategoryId'] ?? NULL;
         $stmt = $this->pdo->prepare(
             "SELECT category_id 
             FROM sub_category 
@@ -517,7 +505,7 @@ class NewsController
 
         $stmt->execute(['subCategoryId' => $subCategoryId]);
         $categoryId = $stmt->fetchColumn();
-        $childSubCategoryId = $_POST['childSubCategoryId'];
+        $childSubCategoryId = $_POST['childSubCategoryId'] ?? NULL;
         $news_date = $_POST['news_date'];
         $news_title = $_POST['news_title'];
         $news_title_hin = $_POST['news_title_hin'];

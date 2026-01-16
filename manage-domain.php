@@ -8,7 +8,7 @@ if (!isset($_SESSION['user_id'])) {
     exit;
 }
 
-require_once __DIR__ . '/layouts/header.php'; 
+require_once __DIR__ . '/layouts/header.php';
 $sql = "SELECT dm.* FROM domains dm  WHERE is_deleted='0' ORDER BY dm.created_date";
 $domains = $pdo->query($sql)->fetchAll(PDO::FETCH_ASSOC);
 
@@ -18,8 +18,11 @@ $domains = $pdo->query($sql)->fetchAll(PDO::FETCH_ASSOC);
 
     <div class="card">
         <div class="card-body p-0">
-            <div class="card-header-modern">
+            <div class="card-header-modern d-flex align-items-center justify-content-between">
                 Manage Domains
+                <a href="<?= $base_url ?>/add-domain.php" class="btn btn-warning btn-sm">
+                    <strong>+ Create</strong>
+                </a>
             </div>
 
             <div class="p-2">
@@ -67,7 +70,7 @@ $domains = $pdo->query($sql)->fetchAll(PDO::FETCH_ASSOC);
                             </td>
 
                             <td><a href="<?= $base_url ?>/edit-domains.php?id=<?php echo htmlspecialchars($row['id']) ?>"
-                                    class="btn btn-info btn-sm"><i class="ti ti-edit"></i></a>&nbsp;&nbsp;
+                                    class="btn btn-primary btn-sm"><i class="ti ti-edit"></i></a>&nbsp;&nbsp;
                                 <button class="btn btn-danger btn-sm delete-domains-button"
                                     data-id="<?php echo htmlspecialchars($row['id']); ?>">
                                     <i class="ti ti-trash"></i>

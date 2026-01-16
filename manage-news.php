@@ -3,7 +3,7 @@
 require_once __DIR__ . '/src/helpers/session_helper.php';
 requireLogin();
 
-require_once __DIR__ . '/layouts/header.php'; 
+require_once __DIR__ . '/layouts/header.php';
 $params = [];
 $sql = "SELECT cm.*, dm.eng_name FROM news cm LEFT JOIN domains dm ON dm.id = cm.domain_id WHERE cm.is_deleted='0' ";
 
@@ -22,8 +22,11 @@ $news_data = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
     <div class="card">
         <div class="card-body p-0">
-            <div class="card-header-modern">
+            <div class="card-header-modern d-flex align-items-center justify-content-between">
                 Manage News
+                <a href="<?= $base_url ?>/post-news.php" class="btn btn-warning btn-sm">
+                    <strong>+ Create</strong>
+                </a>
             </div>
 
             <div class="p-2">
@@ -71,7 +74,7 @@ $news_data = $stmt->fetchAll(PDO::FETCH_ASSOC);
                                 <td style="white-space: nowrap;"><?php echo htmlspecialchars(date("d-M-Y", strtotime($row['news_event_date']))); ?></td>
                                 </td>
                                 <td style="white-space: nowrap;"><a href="<?= $base_url ?>/edit-news.php?id=<?php echo htmlspecialchars($row['uniq_id']) ?>"
-                                        class="btn btn-info btn-lg" title="Edit News"><i class="ti ti-edit"></i></a>&nbsp;&nbsp;
+                                        class="btn btn-primary btn-lg" title="Edit News"><i class="ti ti-edit"></i></a>&nbsp;&nbsp;
                                     <button class="btn btn-danger btn-lg" title="Delete News"
                                         onclick="deleteNews(<?php echo htmlspecialchars($row['uniq_id']); ?>, 'dn', '')">
                                         <i class="ti ti-trash"></i>

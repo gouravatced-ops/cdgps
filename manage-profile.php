@@ -26,7 +26,7 @@ if (!$user) {
 <div class="container-fluid">
     <div class="card">
         <div class="card-body p-0">
-            <div class="card-header-modern">
+            <div class="card-header-modern d-flex align-items-center justify-content-between">
                 Manage Profile
             </div>
 

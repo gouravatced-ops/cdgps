@@ -289,6 +289,15 @@ class UserModel
         $sql = "INSERT INTO users_logs (user_id, ip, action, duration)
             VALUES (:user_id, :ip, :action, :duration)";
 
+        if ($action == 'User logged out' || $action == 'Session Timeout') {
+            $loginTime = $_SESSION['login_time'];
+            $logoutTime = date('Y-m-d H:i:s');
+            $diffInSeconds = strtotime($logoutTime) - strtotime($loginTime);
+            $minutes = floor($diffInSeconds / 60);
+        } else {
+            $minutes = null;
+        }
+
         $stmt = $this->pdo->prepare($sql);
         $stmt->execute([
             ':user_id'  => $userId,

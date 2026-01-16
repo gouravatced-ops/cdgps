@@ -59,8 +59,11 @@ if ($authRole == 'superadmin') {
 
     <div class="card">
         <div class="card-body p-0">
-            <div class="card-header-modern">
-                Manage Category
+            <div class="card-header-modern d-flex align-items-center justify-content-between">
+                Manage Users
+                <a href="<?= $base_url ?>/add-user.php" class="btn btn-warning btn-sm">
+                    <strong>+ Create</strong>
+                </a>
             </div>
 
             <div class="p-2">
@@ -129,7 +132,7 @@ if ($authRole == 'superadmin') {
                                 <td><?= $statusBadge; ?></td>
                                 <td>
                                     <a href="<?= $base_url ?>/edit-user.php?id=<?= (int)$row['id']; ?>"
-                                        class="btn btn-info btn-sm">
+                                        class="btn btn-primary btn-sm">
                                         <i class="ti ti-edit"></i>
                                     </a>
 

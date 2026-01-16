@@ -9,7 +9,7 @@ require_once __DIR__ . '/layouts/header.php';
     <div class="card">
             <div class="card-body p-0">
                 <div class="col-md-12">
-                    <div class="card-header-modern">
+                    <div class="card-header-modern d-flex align-items-center justify-content-between">
                         Create Notice
                     </div>
 
@@ -48,7 +48,10 @@ require_once __DIR__ . '/layouts/header.php';
                     <?php if (isset($_SESSION['success_message'])) { ?>
                         <div class="alert alert-success alert-dismissible fade show mt-3" role="alert">
                             <strong>Success!</strong> <?php echo $_SESSION['success_message']; ?>.
-                            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                            <button type="button"
+                                class="btn btn-sm btn-primary ml-3"
+                                aria-label="Close"
+                                onclick="closeAlert(this)">
                                 <span aria-hidden="true">&times;</span>
                             </button>
                             <?php unset($_SESSION['success_message']); ?>
@@ -56,7 +59,10 @@ require_once __DIR__ . '/layouts/header.php';
                     <?php } elseif (isset($_SESSION['error_message'])) { ?>
                         <div class="alert alert-danger alert-dismissible fade show mt-3" role="alert">
                             <?php echo $_SESSION['error']; ?>.
-                            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                            <button type="button"
+                                class="btn btn-sm btn-primary ml-3"
+                                aria-label="Close"
+                                onclick="closeAlert(this)">
                                 <span aria-hidden="true">&times;</span>
                             </button>
                             <?php unset($_SESSION['error']); ?>

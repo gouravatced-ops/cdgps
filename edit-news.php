@@ -37,8 +37,11 @@ if (isset($_SESSION['user_id'])) {
     <div class="container-fluid">
         <div class="card">
             <div class="card-body p-0">
-                <div class="card-header-modern">
+                <div class="card-header-modern d-flex align-items-center justify-content-between">
                     Edit News
+                    <a href="javascript:history.back()" class="btn btn-danger btn-sm">
+                        ← Back
+                    </a>
                 </div>
 
                 <div class="p-2">
@@ -75,7 +78,10 @@ if (isset($_SESSION['user_id'])) {
                     <?php if (isset($_SESSION['success_message'])) { ?>
                         <div class="alert alert-success alert-dismissible fade show mt-3" role="alert">
                             <strong>Success!</strong> <?php echo $_SESSION['success_message']; ?>.
-                            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                            <button type="button"
+                                class="btn btn-sm btn-primary ml-3"
+                                aria-label="Close"
+                                onclick="closeAlert(this)">
                                 <span aria-hidden="true">&times;</span>
                             </button>
                             <?php unset($_SESSION['success_message']); ?>
@@ -83,7 +89,10 @@ if (isset($_SESSION['user_id'])) {
                     <?php } elseif (isset($_SESSION['error_message'])) { ?>
                         <div class="alert alert-danger alert-dismissible fade show mt-3" role="alert">
                             <?php echo $_SESSION['error']; ?>.
-                            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                            <button type="button"
+                                class="btn btn-sm btn-primary ml-3"
+                                aria-label="Close"
+                                onclick="closeAlert(this)">
                                 <span aria-hidden="true">&times;</span>
                             </button>
                             <?php unset($_SESSION['error']); ?>
@@ -116,9 +125,8 @@ if (isset($_SESSION['user_id'])) {
                         <div class="col-md-6">
                             <!-- News Date -->
                             <div class="mb-3">
-                                <label for="subCategoryId" class="form-label">Category<span
-                                        class="text-danger">*</span></label>
-                                <select name="subCategoryId" id="postcategoryId" class="form-select" required>
+                                <label for="subCategoryId" class="form-label">Category</label>
+                                <select name="subCategoryId" id="postcategoryId" class="form-select">
                                     <option value="">Choose Sub Category...</option>
                                     <?php foreach ($subcategories as $subcategory): ?>
                                         <option value="<?php echo htmlspecialchars($subcategory['id']); ?>" <?= $subcategory['id'] == $data['sub_category_id'] ? 'selected' : '' ?>>
@@ -126,17 +134,13 @@ if (isset($_SESSION['user_id'])) {
                                         </option>
                                     <?php endforeach; ?>
                                 </select>
-                                <?php if (isset($err['subCategoryId'])) { ?>
-                                    <div class="form-text text-danger"><?php echo $err['subCategoryId']; ?></div>
-                                <?php } ?>
                             </div>
                         </div>
                         <div class="col-md-6">
                             <!-- News Date -->
                             <div class="mb-3">
-                                <label for="childSubCategoryId" class="form-label">Sub Category<span
-                                        class="text-danger">*</span></label>
-                                <select name="childSubCategoryId" id="SubCategoryId" class="form-select" required>
+                                <label for="childSubCategoryId" class="form-label">Sub Category</label>
+                                <select name="childSubCategoryId" id="SubCategoryId" class="form-select">
                                     <option value="">Choose Child Sub Category...</option>
                                     <?php foreach ($childsubcategories as $childsubcategory): ?>
                                         <option value="<?php echo htmlspecialchars($childsubcategory['id']); ?>" <?= $childsubcategory['id'] == $data['child_sub_category_id'] ? 'selected' : '' ?>>
@@ -144,9 +148,6 @@ if (isset($_SESSION['user_id'])) {
                                         </option>
                                     <?php endforeach; ?>
                                 </select>
-                                <?php if (isset($err['childSubCategoryId'])) { ?>
-                                    <div class="form-text text-danger"><?php echo $err['childSubCategoryId']; ?></div>
-                                <?php } ?>
                             </div>
                         </div>
 

@@ -5,7 +5,7 @@ if (!isset($_SESSION['user_id'])) {
     header("Location: index.php");
     exit;
 }
-require_once __DIR__ . '/layouts/header.php'; 
+require_once __DIR__ . '/layouts/header.php';
 
 $params = [];
 $sql = "SELECT cm.*, p.video_link, dm.eng_name FROM albums cm LEFT JOIN videos p on p.id = cm.cover_video_id JOIN domains as dm ON dm.id = cm.domain_id WHERE cm.type='Videos' AND cm.is_deleted='0'";
@@ -26,8 +26,11 @@ $categories = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
     <div class="card">
         <div class="card-body p-0">
-            <div class="card-header-modern">
+            <div class="card-header-modern d-flex align-items-center justify-content-between">
                 Manage Videos
+                <a href="<?= $base_url ?>/post-album.php" class="btn btn-warning btn-sm">
+                    <strong>+ Create</strong>
+                </a>
             </div>
 
             <div class="p-2">
@@ -74,7 +77,7 @@ $categories = $stmt->fetchAll(PDO::FETCH_ASSOC);
                             </td>
                             <td>
                                 <a href="<?= $base_url ?>/edit-albums-details.php?album_id=<?php echo htmlspecialchars($row['uniq_id']) ?>"
-                                    title="Edit Video Album Details" class="btn btn-info"><i
+                                    title="Edit Video Album Details" class="btn btn-primary"><i
                                         class="ti ti-edit"></i></a>&nbsp;&nbsp;
 
                             </td>

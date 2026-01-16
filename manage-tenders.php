@@ -18,14 +18,17 @@ $categories = $pdo->query($sql)->fetchAll(PDO::FETCH_ASSOC);
 <div class="container-fluid">
 
     <div class="card">
-                    <div class="card-body p-0">
-                <div class="card-header-modern">
-                    Manage Tenders
-                </div>
+        <div class="card-body p-0">
+            <div class="card-header-modern d-flex align-items-center justify-content-between">
+                Manage Tenders
+                <a href="<?= $base_url ?>/create-tender.php" class="btn btn-warning btn-sm">
+                    <strong>+ Create</strong>
+                </a>
+            </div>
 
-                <div class="p-2">
-                    <!-- rest form / content -->
-                </div>
+            <div class="p-2">
+                <!-- rest form / content -->
+            </div>
             <?php if (isset($_SESSION['message'])) { ?>
                 <div class="alert alert-success alert-dismissible fade show mt-3" role="alert">
                     <strong>Success!</strong> <?php echo $_SESSION['message']; ?>.
@@ -65,7 +68,7 @@ $categories = $pdo->query($sql)->fetchAll(PDO::FETCH_ASSOC);
                             <td><?php echo htmlspecialchars($row['tender_title']); ?></td>
                             <td><?= htmlspecialchars($row['tender_dated']); ?></td>
                             <td><a href="<?= $base_url ?>/edit-tenders.php?id=<?php echo htmlspecialchars($row['uniq_id']) ?>"
-                                    class="btn btn-info btn-sm"><i class="ti ti-edit"></i></a>&nbsp;&nbsp;
+                                    class="btn btn-primary btn-sm"><i class="ti ti-edit"></i></a>&nbsp;&nbsp;
 
                                 <form action="<?= $base_url ?>/src/controllers/tender/EditTenderController.php"
                                     method="post">
