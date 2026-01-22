@@ -1,12 +1,17 @@
 <?php
+require_once __DIR__ . '../../utils/ActivityLogger.php';
 
 class UserModel
 {
     private $pdo;
+    private $logger;
+    private $loggedId;
 
     public function __construct($pdo)
     {
         $this->pdo = $pdo;
+        $this->logger = new ActivityLogger($pdo);
+        $this->loggedId = $_SESSION['login_id'];
         date_default_timezone_set('Asia/Kolkata');
     }
 
@@ -122,77 +127,109 @@ class UserModel
         return $stmt->fetch(PDO::FETCH_ASSOC);
     }
 
-    public function create(array $data)
+    public function create(array $data): bool
     {
         try {
-            // Check if email or mobile already exists
             if ($this->isEmailOrMobileExists($data['email'], $data['phone'])) {
                 throw new Exception("Email or mobile number already registered.");
             }
 
             $this->pdo->beginTransaction();
-            $passwordSet = date('Y-m-d H:i:s');
-            $ip = $_SERVER['REMOTE_ADDR'];
 
-            // Convert permission array to JSON
-            $permissions = json_encode($data['permission'], JSON_UNESCAPED_UNICODE);
+            $now = date('Y-m-d H:i:s');
+            $ip  = $_SERVER['REMOTE_ADDR'] ?? '0.0.0.0';
 
-            // Insert user
-            $sql = "INSERT INTO users (
-                        domain_id,
-                        username,
-                        email,
-                        mobile,
-                        role,
-                        password,
-                        password_expire_in_days,
-                        password_set_date,
-                        permission,
-                        created_by,
-                        created_at,
-                        user_ip
-                    ) VALUES (
-                        :domain_id,
-                        :name,
-                        :email,
-                        :phone,
-                        :role,
-                        :password,
-                        :password_expire_in_days,
-                        :password_set_date,
-                        :permission,
-                        :created_by,
-                        :created_at,
-                        :userIp
-                    )";
+            $userSql = "
+                INSERT INTO users (
+                    domain_id, username, email, mobile, role,
+                    password, password_expire_in_days,
+                    password_set_date, created_by, created_at, user_ip
+                ) VALUES (
+                    :domain_id, :name, :email, :phone, :role,
+                    :password, :password_expire_in_days,
+                    :password_set_date, :created_by, :created_at, :user_ip
+                )
+            ";
 
-            $stmt = $this->pdo->prepare($sql);
-            $stmt->execute([
+            $userStmt = $this->pdo->prepare($userSql);
+            $userStmt->execute([
                 ':domain_id' => $data['domain_id'],
-                ':name' => $data['name'],
-                ':email' => $data['email'],
-                ':phone' => $data['phone'],
-                ':role' => $data['role'],
-                ':password' => $data['password'],
+                ':name'      => $data['name'],
+                ':email'     => $data['email'],
+                ':phone'     => $data['phone'],
+                ':role'      => $data['role'],
+                ':password'  => $data['password'],
                 ':password_expire_in_days' => $data['password_expire_in_days'],
-                ':password_set_date' => $passwordSet,
-                ':permission' => $permissions,
+                ':password_set_date' => $now,
                 ':created_by' => $data['created_by'],
-                ':created_at' => $passwordSet,
-                ':userIp' => $ip
+                ':created_at' => $now,
+                ':user_ip'    => $ip
             ]);
+
+            $userId = $this->pdo->lastInsertId();
+
+            $modules     = $data['module'] ?? [];
+            $permissions = $data['permission'] ?? [];
+            $createdBy = $data['created_by'];
+
+            $permSql = "
+            INSERT INTO permissions
+            (user_id, module, can_create, can_edit, can_delete)
+            VALUES
+            (:user_id, :module, :create, :edit, :delete)";
+
+            $permStmt = $this->pdo->prepare($permSql);
+
+            foreach ($modules as $module) {
+
+                // Default: all false
+                $create = $edit = $delete = 0;
+
+                if (!isset($permissions[$module])) {
+                    $create = $edit = $delete = 1;
+                } else {
+                    $create = in_array('create', $permissions[$module], true) ? 1 : 0;
+                    $edit   = in_array('edit',   $permissions[$module], true) ? 1 : 0;
+                    $delete = in_array('delete', $permissions[$module], true) ? 1 : 0;
+                }
+
+                $permStmt->execute([
+                    ':user_id' => $userId,
+                    ':module'  => $module,
+                    ':create'  => $create,
+                    ':edit'    => $edit,
+                    ':delete'  => $delete
+                ]);
+            }
+
+            $data = [
+                'domain_id' => $data['domain_id'],
+                'name'      => $data['name'],
+                'email'     => $data['email'],
+                'phone'     => $data['phone'],
+                'role'      => $data['role'],
+                'password'  => $data['password'],
+                'password_expire_in_days' => $data['password_expire_in_days'],
+                'password_set_date' => $now,
+                'created_by' => $data['created_by'],
+                'created_at' => $now,
+                'user_ip'    => $ip ,
+                'module'     => $module,
+                'permission' => $permissions
+            ];
+
+            $this->logger->log('users', $userId, 'INSERT', null, null, json_encode($data), $createdBy, $this->loggedId);
             $this->pdo->commit();
             return true;
-        } catch (PDOException $e) {
-            $this->pdo->rollBack();
-            echo "<pre>";
-            echo "Message: " . $e->getMessage() . "\n";
-            echo "Code: " . $e->getCode() . "\n";
-            print_r($e->errorInfo);
-            echo "</pre>";
-            die();
+        } catch (Throwable $e) {
+            if ($this->pdo->inTransaction()) {
+                $this->pdo->rollBack();
+            }
+
+            throw new Exception($e->getMessage(), (int)$e->getCode());
         }
     }
+
 
     public function updateUser(array $data): bool
     {
@@ -201,17 +238,17 @@ class UserModel
             $now = date('Y-m-d H:i:s');
             $ip  = $_SERVER['REMOTE_ADDR'] ?? null;
 
-            // Convert permissions array to JSON
-            $permissions = !empty($data['permission'])
-                ? json_encode($data['permission'], JSON_UNESCAPED_UNICODE)
-                : json_encode([]);
+            // Fetch old data
+            $oldDataStmt = $this->pdo->prepare("SELECT domain_id , username, mobile, email, password, role, password_expire_in_days, updated_by, updated_at, user_ip FROM users WHERE id = :id");
+            $oldDataStmt->execute([':id' => $data['user_id']]);
+            $oldData = $oldDataStmt->fetch(PDO::FETCH_ASSOC);
 
             // Base SQL
             $sql = "UPDATE users SET
+                    domain_id = :domain_id,
                     email = :email,
                     role = :role,
                     password_expire_in_days = :password_expire_in_days,
-                    permission = :permission,
                     updated_by = :updated_by,
                     updated_at = :updated_at,
                     user_ip = :user_ip";
@@ -237,11 +274,11 @@ class UserModel
 
             // Required bindings
             $params = [
+                ':domain_id' => $data['domain_id'],
                 ':email' => $data['email'],
                 ':username' => $data['username'],
                 ':role' => $data['role'],
                 ':password_expire_in_days' => $data['password_expire_in_days'],
-                ':permission' => $permissions,
                 ':updated_by' => $data['update_by'],
                 ':updated_at' => $now,
                 ':user_ip' => $ip,
@@ -263,6 +300,32 @@ class UserModel
             }
 
             $stmt->execute($params);
+
+            $newData = json_encode([
+                'domain_id' => $data['domain_id'],
+                'email' => $data['email'],
+                'username' => $data['username'],
+                'mobile' => $data['phone'],
+                'role' => $data['role'],
+                'password_expire_in_days' => $data['password_expire_in_days'],
+                'updated_by' => $data['update_by'],
+                'updated_at' => $now,
+                'user_ip' => $ip,
+                'password' => $data['password']
+            ]);
+
+            $updatedBy = $_SESSION['user_id'];
+
+            $this->logger->log(
+                'users',
+                $data['user_id'],
+                'UPDATE',
+                NULL,
+                json_encode($oldData),
+                $newData,
+                $updatedBy,
+                $this->loggedId
+            );
 
             $this->pdo->commit();
             return true;

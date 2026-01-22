@@ -1,6 +1,7 @@
 <?php
 require_once __DIR__ . '/../models/UserModel.php';
 require_once __DIR__ . '/../database/Database.php';
+require_once __DIR__ . '../../../permissionjson.php';
 
 class UserController
 {
@@ -21,6 +22,8 @@ class UserController
             exit;
         }
         $errors = [];
+        global $permissionRoleWise;
+        $role = trim($_POST['role'] ?? '');
 
         // Sanitize inputs
         $data = [
@@ -32,8 +35,19 @@ class UserController
             'password' => $_POST['password'] ?? '',
             'confirm_password' => $_POST['confirm_password'] ?? '',
             'password_expire_in_days' => filter_input(INPUT_POST, 'password_expire_in_days', FILTER_VALIDATE_INT),
-            'permission' => $_POST['permission'] ?? []
         ];
+
+        if (!isset($permissionRoleWise[$role])) {
+            http_response_code(400);
+            echo json_encode(['error' => 'Invalid role']);
+            return;
+        }
+
+        $data['module'] = $_POST['module']
+            ?? $permissionRoleWise[$role]['module'];
+
+        $data['permission'] = $_POST['permission']
+            ?? $permissionRoleWise[$role]['permission'];
 
         // Required field validation
         if (!$data['domain_id']) {
@@ -77,14 +91,12 @@ class UserController
             exit();
         }
 
-        
         // Hash password
         $data['password'] = password_hash($data['password'], PASSWORD_BCRYPT);
-        
+
         // Created by
         $data['created_by'] = $_SESSION['user_id'] ?? null;
-        
-        // print_r($data); die();
+
         // Save user
         $userModel = new UserModel($this->pdo);
         $result = $userModel->create($data);
@@ -110,16 +122,16 @@ class UserController
         // Sanitize inputs
         $data = [
             'user_id' => filter_input(INPUT_POST, 'userId', FILTER_VALIDATE_INT),
+            'domain_id' => filter_input(INPUT_POST, 'domain_id', FILTER_VALIDATE_INT),
             'username' => trim(filter_input(INPUT_POST, 'username', FILTER_SANITIZE_SPECIAL_CHARS)),
             'email' => filter_input(INPUT_POST, 'email', FILTER_VALIDATE_EMAIL),
             'phone' => trim(filter_input(INPUT_POST, 'mobile', FILTER_SANITIZE_SPECIAL_CHARS)),
             'role' => trim(filter_input(INPUT_POST, 'role', FILTER_SANITIZE_SPECIAL_CHARS)),
-            'password' => $_POST['newpassword'] ?? '',
+            'password' => $_POST['updatepassword'] ?? '',
             'password_expire_in_days' => filter_input(INPUT_POST, 'password_expire_in_days', FILTER_VALIDATE_INT),
-            'permission' => $_POST['permission'] ?? []
         ];
 
-         if (empty($data['username'])) {
+        if (empty($data['username'])) {
             $errors['username'] = 'Username is required';
         }
 
@@ -136,13 +148,13 @@ class UserController
         }
 
         // Password validation
-        if (isset($data['newpassword']) && strlen($data['newpassword']) < 8) {
-            $errors['newpassword'] = 'Password must be at least 8 characters';
+        if (isset($data['password']) && strlen($data['password']) < 8) {
+            $errors['updatepassword'] = 'Password must be at least 8 characters';
         }
 
         // Hash password
-        if (isset($data['newpassword'])) {
-            $data['password'] = password_hash($data['newpassword'], PASSWORD_BCRYPT);
+        if (isset($data['password'])) {
+            $data['password'] = password_hash($data['password'], PASSWORD_BCRYPT);
         }
 
         // Updated by
@@ -175,7 +187,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $controller->updateUsersDetails();
         } elseif (!empty($action) && $action == 'deleteDomains') {
             // $controller->softDeleteDomains();
-        } elseif(!empty($action) && $action == 'actionCreateUser') {
+        } elseif (!empty($action) && $action == 'actionCreateUser') {
             $controller->createUser();
         }
     }

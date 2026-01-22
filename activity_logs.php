@@ -1,5 +1,8 @@
 <?php
-session_start();
+ini_set('display_errors', 0);
+ini_set('display_startup_errors', 0);
+error_reporting(E_ALL);
+
 require_once __DIR__ . '/layouts/header.php';
 
 $limit = 20;
@@ -95,6 +98,71 @@ function prettyJson($json)
     );
 }
 
+function renderTable(array $data, ?array $oldData = null)
+{
+    echo '<table class="table table-bordered table-striped">';
+    echo '<tbody>';
+
+    foreach ($data as $key => $value) {
+
+        $label = ucwords(str_replace('_', ' ', $key));
+
+        $oldValue = $oldData[$key] ?? null;
+
+        // Compare flag
+        $isChanged = $oldData !== null
+            && trim((string)$oldValue) !== trim((string)$value);
+
+        // Highlight style
+        $highlightStart = $isChanged
+            ? '<div style="background:#ffe6e6;color:#b30000;padding:6px;border-radius:4px;">'
+            : '';
+
+        $highlightEnd = $isChanged ? '</div>' : '';
+
+        echo '<tr>';
+        echo '<th width="30%">' . htmlspecialchars($label) . '</th>';
+        echo '<td>';
+        echo $highlightStart;
+
+        // NULL / Empty
+        if ($value === null || $value === '') {
+            echo 'N/A';
+
+            // Image
+        } elseif (is_string($value) && preg_match('/\.(jpg|jpeg|png|webp)$/i', $value)) {
+            echo '<a href="src/' . htmlspecialchars($value) . '" target="_blank">View Image</a>';
+
+            // Video (YouTube iframe)
+        } elseif (is_string($value) && str_contains($value, 'youtube.com/embed')) {
+            echo '<iframe width="300" height="170" src="' . htmlspecialchars($value) . '" frameborder="0" allowfullscreen></iframe>';
+
+            // PDF
+        } elseif (is_string($value) && str_ends_with($value, '.pdf')) {
+            echo '<a href="src/' . htmlspecialchars($value) . '" target="_blank">View PDF</a>';
+
+            // HTML content (description)
+        } elseif (is_string($value) && str_contains($key, 'description')) {
+            echo '<div style="max-height:200px; overflow:auto;">' . $value . '</div>';
+
+            // Array / Object
+        } elseif (is_array($value)) {
+            echo '<pre>' . json_encode($value, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE) . '</pre>';
+
+            // Default
+        } else {
+            echo htmlspecialchars((string) $value);
+        }
+
+        echo $highlightEnd;
+        echo '</td>';
+        echo '</tr>';
+    }
+
+    echo '</tbody>';
+    echo '</table>';
+}
+
 
 ?>
 <style>
@@ -136,23 +204,6 @@ function prettyJson($json)
             <div class="p-2">
                 <!-- rest form / content -->
             </div>
-            <?php if (isset($_SESSION['message'])) { ?>
-                <div class="alert alert-success alert-dismissible fade show mt-3" role="alert">
-                    <strong>Success!</strong> <?php echo $_SESSION['message']; ?>.
-                    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
-                    <?php unset($_SESSION['message']); ?>
-                </div>
-            <?php } elseif (isset($_SESSION['error'])) { ?>
-                <div class="alert alert-danger alert-dismissible fade show mt-3" role="alert">
-                    <?php echo $_SESSION['error']; ?>.
-                    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
-                    <?php unset($_SESSION['error']); ?>
-                </div>
-            <?php } ?>
             <table class="table table-bordered table-striped">
                 <tbody>
                     <?php
@@ -173,8 +224,7 @@ function prettyJson($json)
                                 <?php elseif ($row['activity_action'] === 'DELETE'): ?>
                                     <span class="badge me-3 d-none d-md-inline-block" style="background: linear-gradient(90deg,#d30606 60%,#920404 100%);">DELETE</span>
                                 <?php endif; ?><br>
-                                <strong>Date:</strong> <?= htmlspecialchars($row['performed_at']) ?><br>
-
+                                <strong>Performed At: </strong> <?= htmlspecialchars(date('d/m/Y h:i A', strtotime($row['performed_at']))) ?><br>
                                 <?php if ($row['activity_action'] === 'DELETE'): ?>
                                     <strong>Status:</strong>
                                     <?= ($row['new_value'] == 0)
@@ -182,16 +232,65 @@ function prettyJson($json)
                                         : '<span class="badge-inactive">Inactive</span>' ?>
                                     <h6>Old Value</h6>
                                     <pre><?= $row['old_value'] ?></pre>
-                                <?php endif; ?>
-
-                                <?php if (!empty($row['old_value'])): ?>
-                                    <h6>Old Value</h6>
-                                    <pre><?= prettyJson($row['old_value']) ?></pre>
-                                <?php endif; ?>
-
-                                <?php if (!empty($row['new_value'])): ?>
                                     <h6>New Value</h6>
-                                    <pre><?= prettyJson($row['new_value']) ?></pre>
+                                    <pre><?= $row['new_value'] ?></pre>
+                                <?php endif; ?>
+                                
+                                <?php if ($row['activity_action'] === 'UPDATE' && $row['column_name'] == 'is_hide'): ?>
+                                    <strong>Hide :</strong>
+                                    <?= ($row['old_value'] == 'N')
+                                        ? '<span class="badge-active">Yes</span>'
+                                        : '<span class="badge-inactive">No</span>' ?>
+                                    <h6>Old Value</h6>
+                                    <pre><?= $row['old_value'] ?></pre>
+                                    <h6>New Value</h6>
+                                    <pre><?= $row['new_value'] ?></pre>
+                                <?php endif; ?>
+
+                                <?php
+                                $oldData = !empty($row['old_value']) ? json_decode($row['old_value'], true) : [];
+                                $newData = !empty($row['new_value']) ? json_decode($row['new_value'], true) : [];
+                                ?>
+
+                                <?php if ($row['activity_action'] !== 'DELETE' && $row['column_name'] == NULL): ?>
+                                    <div class="row">
+
+                                        <!-- OLD VALUE COLUMN -->
+                                        <div class="col-md-6">
+                                            <div class="card-header-modern bg-light d-flex align-items-center justify-content-between p-2 mt-2">
+                                                <span class="fw-semibold">
+                                                    <i class="ti ti-history me-1"></i> Old Value
+                                                </span>
+                                                <span class="badge bg-secondary-subtle text-secondary">
+                                                    Previous
+                                                </span>
+                                            </div>
+                                            <?php if (!empty($oldData)): ?>
+                                                <?php renderTable($oldData); ?>
+                                            <?php else: ?>
+                                                <p class="text-muted">N/A</p>
+                                            <?php endif; ?>
+                                        </div>
+
+                                        <!-- NEW VALUE COLUMN -->
+                                        <div class="col-md-6">
+                                            <div class="card-header-modern text-white d-flex align-items-center justify-content-between mt-2 p-2">
+                                                <span class="fw-semibold">
+                                                    <i class="ti ti-edit me-1"></i> New Value
+                                                </span>
+                                                <span class="badge bg-warning text-dark">
+                                                    Updated
+                                                </span>
+                                            </div>
+
+                                            <?php if (!empty($newData)): ?>
+                                                <?php renderTable($newData, $oldData ?: null); ?>
+                                            <?php else: ?>
+                                                <p class="text-muted">N/A</p>
+                                            <?php endif; ?>
+                                        </div>
+
+                                    </div>
                                 <?php endif; ?>
                             </td>
                         </tr>

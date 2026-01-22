@@ -7,6 +7,7 @@ if (session_status() === PHP_SESSION_NONE) {
 include('./system-config.php'); // system color theme or basic details
 include('./service.php'); // database connection and dashboard logged data
 include('./src/utils/domains.php'); // global domains list according role based
+require('./permission_helper.php');
 
 // Generate CSRF token if not exists
 if (!isset($_SESSION['csrf_token'])) {

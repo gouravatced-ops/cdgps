@@ -35,6 +35,7 @@ require_once __DIR__ . '/layouts/header.php'; ?>
             <?php } ?>
 
             <form action="<?= $base_url ?>/src/controllers/UpdatePasswordController.php" method="post" id="updatePass">
+                <input type="hidden" name="page" value="expirypage">
                 <div class="mb-4">
                     <label for="oldpassword" class="form-label">Old Password: <span class="text-danger">*</span></label>
                     <input type="password" class="form-control" name="useroldpassword" id="oldpassword"

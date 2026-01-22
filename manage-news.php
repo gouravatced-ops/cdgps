@@ -4,6 +4,7 @@ require_once __DIR__ . '/src/helpers/session_helper.php';
 requireLogin();
 
 require_once __DIR__ . '/layouts/header.php';
+$module = 'news';
 $params = [];
 $sql = "SELECT cm.*, dm.eng_name FROM news cm LEFT JOIN domains dm ON dm.id = cm.domain_id WHERE cm.is_deleted='0' ";
 
@@ -24,9 +25,11 @@ $news_data = $stmt->fetchAll(PDO::FETCH_ASSOC);
         <div class="card-body p-0">
             <div class="card-header-modern d-flex align-items-center justify-content-between">
                 Manage News
+                <?php if (canCreate($pdo, $userId, $module)) : ?>
                 <a href="<?= $base_url ?>/post-news.php" class="btn btn-warning btn-sm">
                     <strong>+ Create</strong>
                 </a>
+                <?php endif; ?>
             </div>
 
             <div class="p-2">
@@ -59,7 +62,6 @@ $news_data = $stmt->fetchAll(PDO::FETCH_ASSOC);
                             <th>Title</th>
                             <th>News Date</th>
                             <th>Actions</th>
-                            <th>Hide/Unhide</th>
                         </tr>
                     </thead>
 
@@ -73,19 +75,25 @@ $news_data = $stmt->fetchAll(PDO::FETCH_ASSOC);
                                 <td><?php echo htmlspecialchars($row['news_title']); ?></td>
                                 <td style="white-space: nowrap;"><?php echo htmlspecialchars(date("d-M-Y", strtotime($row['news_event_date']))); ?></td>
                                 </td>
-                                <td style="white-space: nowrap;"><a href="<?= $base_url ?>/edit-news.php?id=<?php echo htmlspecialchars($row['uniq_id']) ?>"
-                                        class="btn btn-primary btn-lg" title="Edit News"><i class="ti ti-edit"></i></a>&nbsp;&nbsp;
-                                    <button class="btn btn-danger btn-lg" title="Delete News"
+                                <td style="white-space: nowrap;">
+                                    <?php if (canEdit($pdo, $userId, $module)) : ?>
+                                    <a href="<?= $base_url ?>/edit-news.php?id=<?php echo htmlspecialchars($row['uniq_id']) ?>"
+                                        class="btn btn-primary btn-sm" title="Edit News"><i class="ti ti-edit"></i></a>
+                                    <?php endif; ?>
+
+                                    <?php if (canDelete($pdo, $userId, $module)) : ?>
+                                    <button class="btn btn-danger btn-sm" title="Delete News"
                                         onclick="deleteNews(<?php echo htmlspecialchars($row['uniq_id']); ?>, 'dn', '')">
                                         <i class="ti ti-trash"></i>
                                     </button>
-                                </td>
-                                <td>
-                                    <button class="btn btn-<?= $row['is_hide'] == 'Y' ? 'success' : 'warning' ?> btn-lg"
+                                    <?php endif; ?>
+                                    <?php if (canEdit($pdo, $userId, $module)) : ?>
+                                    <button class="btn btn-<?= $row['is_hide'] == 'Y' ? 'warning' : 'danger' ?> btn-sm"
                                         title="<?= $row['is_hide'] == 'Y' ? 'Unhide' : 'Hide' ?> News"
                                         onclick="deleteNews(<?php echo htmlspecialchars($row['uniq_id']); ?>, 'hn', '<?= $row['is_hide'] == 'Y' ? 'Unhide' : 'Hide' ?>' )">
                                         <i class="ti ti-<?= $row['is_hide'] == 'Y' ? 'link' : 'unlink' ?>"></i>
                                     </button>
+                                    <?php endif; ?>
                                 </td>
                             </tr>
                         <?php endforeach; ?>

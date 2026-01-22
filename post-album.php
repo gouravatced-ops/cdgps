@@ -72,9 +72,15 @@ if ((isset($_SESSION['login'])) && ($_SESSION['login'] == true)) {
                                 class="text-danger">*</span></label>
                         <div class="col-md-8">
                             <select name="album_type" id="album_type" class="form-select">
-                                <option value="Photos">Photos</option>
-                                <option value="Videos">Videos</option>
-                                <option value="Press Clips">Press Clips</option>
+                                <?php if (canCreate($pdo, $userId, 'mediaPhoto')) : ?>
+                                    <option value="Photos">Photos</option>
+                                <?php endif; ?>
+                                <?php if (canCreate($pdo, $userId, 'mediavideo')) : ?>
+                                    <option value="Videos">Videos</option>
+                                <?php endif; ?>
+                                <?php if (canCreate($pdo, $userId, 'mediaPressclip')) : ?>
+                                    <option value="Press Clips">Press Clips</option>
+                                <?php endif; ?>
                             </select>
                         </div>
                     </div>

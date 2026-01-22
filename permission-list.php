@@ -9,7 +9,7 @@ if (!isset($_SESSION['user_id'])) {
 }
 
 require_once __DIR__ . '/layouts/header.php';
-$module = 'users';
+$module = 'permission';
 
 $users = [];
 $params = [];
@@ -61,12 +61,7 @@ if ($authRole == 'superadmin') {
     <div class="card">
         <div class="card-body p-0">
             <div class="card-header-modern d-flex align-items-center justify-content-between">
-                Manage Users
-                <?php if (canCreate($pdo, $userId, $module)) : ?>
-                    <a href="<?= $base_url ?>/add-user.php" class="btn btn-warning btn-sm">
-                        <strong>+ Create</strong>
-                    </a>
-                <?php endif; ?>
+                Manage Permission List
             </div>
 
             <div class="p-2">
@@ -98,8 +93,6 @@ if ($authRole == 'superadmin') {
                         <th>Email</th>
                         <th>Phone</th>
                         <th>Role</th>
-                        <th>Pwd Expires In (Days)</th>
-                        <th>Status</th>
                         <th>Actions</th>
                     </tr>
                 </thead>
@@ -108,25 +101,6 @@ if ($authRole == 'superadmin') {
                     <?php if (!empty($users)): ?>
                         <?php $i = 1;
                         foreach ($users as $row): ?>
-
-                            <?php
-                            // Password expiry calculation
-                            $setDate = new DateTime(date('Y-m-d', strtotime($row['password_set_date'])));
-                            $today   = new DateTime(date('Y-m-d'));
-
-                            $interval   = $setDate->diff($today);
-                            $daysPassed = (int) $interval->days;
-
-                            $expireIn = (int) $row['password_expire_in_days'];
-                            $daysLeft = max(0, $expireIn - $daysPassed);
-                            $Id_delete = $row['is_deleted'];
-
-                            // Status label
-                            $statusBadge = $Id_delete == 1
-                                ? '<span class="badge bg-danger">Expired</span>'
-                                : '<span class="badge bg-success">Active</span>';
-                            ?>
-
                             <tr>
                                 <td><?= $i++; ?></td>
                                 <td><?= htmlspecialchars($row['eng_name']); ?></td>
@@ -134,25 +108,12 @@ if ($authRole == 'superadmin') {
                                 <td><?= htmlspecialchars($row['email']); ?></td>
                                 <td><?= htmlspecialchars($row['mobile']); ?></td>
                                 <td><?= htmlspecialchars(ucfirst($usersRoles[$row['role']])); ?></td>
-                                <td><?= $daysLeft; ?></td>
-                                <td><?= $statusBadge; ?></td>
                                 <td>
                                     <?php if (canEdit($pdo, $userId, $module)) : ?>
-                                        <a href="<?= $base_url ?>/edit-user.php?id=<?= (int)$row['id']; ?>"
-                                            class="btn btn-primary btn-sm">
-                                            <i class="ti ti-edit"></i>
-                                        </a>
-
                                         <a href="<?= $base_url ?>/edit-permission.php?id=<?= (int)$row['id']; ?>"
                                             class="btn btn-secondary btn-sm">
                                             <i class="ti ti-shield-lock"></i>
                                         </a>
-                                    <?php endif; ?>
-                                    <?php if (canDelete($pdo, $userId, $module)) : ?>
-                                        <button class="btn btn-danger btn-sm delete-user-btn"
-                                            data-id="<?= (int)$row['id']; ?>">
-                                            <i class="ti ti-trash"></i>
-                                        </button>
                                     <?php endif; ?>
                                 </td>
                             </tr>
@@ -160,7 +121,7 @@ if ($authRole == 'superadmin') {
                         <?php endforeach; ?>
                     <?php else: ?>
                         <tr>
-                            <td colspan="9" class="text-center text-muted">
+                            <td colspan="7" class="text-center text-muted">
                                 No records found
                             </td>
                         </tr>

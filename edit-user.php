@@ -24,10 +24,9 @@ if (isset($_SESSION['user_id'])) {
     $data = $result ?? [];
     $errors = $errors ?? [];
 
-    $selectedPermissions = [];
-    if (!empty($data['permission'])) {
-        $selectedPermissions = json_decode($data['permission'], true) ?? [];
-    }
+    $email = $data['email'];
+
+    $prefix = explode('@', $email)[0];
 
     $isEdit = !empty($data['id']);
 
@@ -95,10 +94,10 @@ if (isset($_SESSION['user_id'])) {
 
                             <!-- Username -->
                             <div class="col-md-6">
-                                <label class="form-label">Username <span class="text-danger">*</span></label>
+                                <label class="form-label">Name <span class="text-danger">*</span></label>
                                 <input type="text"
                                     name="username"
-                                    class="form-control <?= isset($errors['username']) ? 'is-invalid' : '' ?>"
+                                    class="form-control only-alphabet <?= isset($errors['username']) ? 'is-invalid' : '' ?>"
                                     value="<?= htmlspecialchars($data['username'] ?? '') ?>"
                                     required>
                                 <div class="invalid-feedback"><?= $errors['username'] ?? '' ?></div>
@@ -107,12 +106,28 @@ if (isset($_SESSION['user_id'])) {
                             <!-- Email -->
                             <div class="col-md-6">
                                 <label class="form-label">Email ID <span class="text-danger">*</span></label>
-                                <input type="email"
-                                    name="email"
-                                    class="form-control <?= isset($errors['email']) ? 'is-invalid' : '' ?>"
-                                    value="<?= htmlspecialchars($data['email'] ?? '') ?>"
-                                    required>
-                                <div class="invalid-feedback"><?= $errors['email'] ?? '' ?></div>
+
+                                <div class="input-group">
+                                    <input
+                                        type="text"
+                                        name="email_prefix"
+                                        id="emailPrefix"
+                                        class="form-control <?= isset($errors['email']) ? 'is-invalid' : '' ?>"
+                                        value="<?= htmlspecialchars($prefix ?? '') ?>"
+                                        required>
+                                    <span class="input-group-text btn-primary text-white">@cgstranchizone.gov.in</span>
+                                </div>
+
+                                <div class="form-text text-muted">
+                                    Only lowercase letters and numbers allowed
+                                </div>
+
+                                <!-- hidden final email -->
+                                <input type="hidden" name="email" id="finalEmail" value="<?= $data['email']; ?>">
+
+                                <?php if (isset($errors['email'])): ?>
+                                    <div class="invalid-feedback d-block"><?= $errors['email'] ?></div>
+                                <?php endif; ?>
                             </div>
 
                             <!-- Mobile -->
@@ -136,20 +151,10 @@ if (isset($_SESSION['user_id'])) {
                                     <option value="">Select Role</option>
                                     <option value="admin" <?= ($data['role'] ?? '') === 'admin' ? 'selected' : '' ?>>Admin</option>
                                     <option value="coadmin" <?= ($data['role'] ?? '') === 'coadmin' ? 'selected' : '' ?>>Co-Admin</option>
+                                    <option value="author" <?= ($data['role'] ?? '') === 'author' ? 'selected' : '' ?>>Author</option>
+                                    <option value="writer" <?= ($data['role'] ?? '') === 'writer' ? 'selected' : '' ?>>Writer</option>
                                 </select>
                                 <div class="invalid-feedback"><?= $errors['role'] ?? '' ?></div>
-                            </div>
-
-                            <!-- Password (Only required on Create) -->
-                            <div class="col-md-6">
-                                <label class="form-label">
-                                    Password <?= $isEdit ? '(Leave blank to keep current)' : '<span class="text-danger">*</span>' ?>
-                                </label>
-                                <input type="password"
-                                    name="updatepassword"
-                                    class="form-control <?= isset($errors['updatepassword']) ? 'is-invalid' : '' ?>"
-                                    <?= $isEdit ? '' : 'required' ?>>
-                                <div class="invalid-feedback"><?= $errors['updatepassword'] ?? '' ?></div>
                             </div>
 
                             <!-- Password Expiry -->
@@ -165,40 +170,29 @@ if (isset($_SESSION['user_id'])) {
                                 </select>
                             </div>
 
-                            <!-- Permissions -->
-                            <div class="col-12">
-                                <label class="form-label fw-semibold">Permissions Modules</label>
-                                <div class="row g-2">
-                                    <?php
-                                    $permissions = [
-                                        'category' => 'Category',
-                                        'subcategory' => 'Sub Category',
-                                        'childsubcategory' => 'Child Sub Category',
-                                        'news' => 'News',
-                                        'notices' => 'Notices',
-                                        'media' => 'Gallery',
-                                        'tenders' => 'Tenders',
-                                        'users' => 'Users',
-                                        'permission' => 'Permissions'
-                                    ];
-
-                                    foreach ($permissions as $key => $label):
-                                    ?>
-                                        <div class="col-md-3">
-                                            <div class="form-check">
-                                                <input class="form-check-input"
-                                                    type="checkbox"
-                                                    name="permission[]"
-                                                    value="<?= $key ?>"
-                                                    id="perm_<?= $key ?>"
-                                                    <?= in_array($key, $selectedPermissions) ? 'checked' : '' ?>>
-                                                <label class="form-check-label" for="perm_<?= $key ?>">
-                                                    <?= $label ?>
-                                                </label>
-                                            </div>
-                                        </div>
-                                    <?php endforeach; ?>
+                            <!-- Password (Only required on Create) -->
+                            <div class="col-md-6">
+                                <label class="form-label">
+                                    Password <?= $isEdit ? '(Leave blank to keep current)' : '<span class="text-danger">*</span>' ?>
+                                </label>
+                                <div class="input-group">
+                                    <input type="password"
+                                        name="updatepassword" id="editUpdatePassword"
+                                        class="form-control <?= isset($errors['updatepassword']) ? 'is-invalid' : '' ?>"
+                                        <?= $isEdit ? '' : 'required' ?>>
+                                    <button class="input-group-text btn-primary text-white border-0" type="button" id="EdittogglePassword">
+                                        <i class="bi bi-eye"></i>
+                                    </button>
                                 </div>
+                                <div class="invalid-feedback"><?= $errors['updatepassword'] ?? '' ?></div>
+                                <!-- Password Criteria -->
+                                <ul class="mt-2 small password-criteria" id="editpasswordCriteria">
+                                    <li id="len" class="text-dark">Max 8 characters</li>
+                                    <li id="upper" class="text-dark">Only 1 uppercase letter</li>
+                                    <li id="lower" class="text-dark">At least 1 lowercase</li>
+                                    <li id="number" class="text-dark">At least 1 number</li>
+                                    <li id="special" class="text-dark">Only 1 special character</li>
+                                </ul>
                             </div>
 
                             <!-- Submit -->
@@ -216,7 +210,52 @@ if (isset($_SESSION['user_id'])) {
             </div>
         </div>
     </div>
+    <script>
+        document.getElementById('editUpdatePassword').addEventListener('keyup', function() {
+            const val = this.value;
 
+            const lengthOk = val.length >= 8;
+            const upperOk = (val.match(/[A-Z]/g) || []).length === 1;
+            const lowerOk = (val.match(/[a-z]/g) || []).length >= 1;
+            const numberOk = (val.match(/[0-9]/g) || []).length >= 1;
+            const specialOk = (val.match(/[^A-Za-z0-9]/g) || []).length === 1;
+
+            toggle('len', lengthOk);
+            toggle('upper', upperOk);
+            toggle('lower', lowerOk);
+            toggle('number', numberOk);
+            toggle('special', specialOk);
+
+            // hide criteria when all satisfied
+            if (lengthOk && upperOk && lowerOk && numberOk && specialOk) {
+                document.getElementById('editpasswordCriteria').style.display = 'block';
+            } else {
+                document.getElementById('editpasswordCriteria').style.display = 'block';
+            }
+        });
+
+        function toggle(id, ok) {
+            const el = document.getElementById(id);
+            el.classList.remove('text-dark', 'text-danger', 'text-success');
+            el.classList.add(ok ? 'text-success' : 'text-danger');
+        }
+
+        // 👁 eye toggle
+        document.getElementById('EdittogglePassword').addEventListener('click', function() {
+            const passwordInput = document.getElementById('editUpdatePassword');;
+            const icon = this.querySelector('i');
+
+            if (passwordInput.type === 'password') {
+                passwordInput.type = 'text';
+                icon.classList.remove('bi-eye');
+                icon.classList.add('bi-eye-slash');
+            } else {
+                passwordInput.type = 'password';
+                icon.classList.remove('bi-eye-slash');
+                icon.classList.add('bi-eye');
+            }
+        });
+    </script>
 <?php
     $embed_script = "restriction.js";
     require_once __DIR__ . '/layouts/footer.php';

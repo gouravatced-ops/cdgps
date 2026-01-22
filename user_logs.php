@@ -119,11 +119,13 @@ if ($endPage > $totalPages) {
                             <td><?= htmlspecialchars($row['ip']) ?></td>
                             <td><?= date('d/m/Y h:i A', strtotime($row['created_at'])) ?></td>
                             <td><?= htmlspecialchars($row['activity_count']) ?></td>
-                            <?php if ($row['action'] == 'User logged in successfully') { ?>
+                            <?php if ($row['action'] == 'User logged in successfully' && $row['activity_count'] > 0) { ?>
                                 <td><a href="<?= $base_url ?>/activity_logs.php?id=<?php echo htmlspecialchars($row['login_id']) ?>"
                                         class="btn btn-primary btn-sm"><i class="ti ti-list-details"></i></a>
                                     </button>
                                 </td>
+                            <?php } else { ?>
+                                <td></td>
                             <?php } ?>
                         </tr>
                     <?php endforeach; ?>
