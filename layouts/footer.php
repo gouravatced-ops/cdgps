@@ -56,6 +56,9 @@ function closeAlert(button) {
 <!-- Modern Admin JS -->
 <script src="<?= $base_url ?>/assets/js/modern-admin.js"></script>
 
+<!-- UserForm JS -->
+<script src="<?= $base_url ?>/assets/js/userForm.js"></script>
+
 <!-- Page Specific Scripts -->
 <?php if (isset($embed_script)): ?>
 <script src="<?= $base_url . '/assets/js/' . $embed_script ?>"></script>

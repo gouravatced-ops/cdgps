@@ -24,6 +24,33 @@
                     </a>
                 </li>
 
+                <?php if ($authRole == 'superadmin') { ?>
+                    <!-- Domains Section -->
+                    <li class="nav-small-cap">
+                        <span>SESSIONS</span>
+                    </li>
+                    <li class="sidebar-item">
+                        <a class="sidebar-link has-arrow" href="javascript:void(0)" data-bs-toggle="collapse" data-bs-target="#domainsMenu" aria-expanded="false">
+                            <i class="ti ti-calendar"></i>
+                            <span>Sessions</span>
+                        </a>
+                        <ul class="collapse" style="padding:0px !important;" id="domainsMenu">
+                            <li class="sidebar-item">
+                                <a class="sidebar-link" href="<?= $base_url ?>/create-session.php" data-page="add-domain">
+                                    <i class="ti ti-plus"></i>
+                                    <span>Add Session</span>
+                                </a>
+                            </li>
+                            <li class="sidebar-item">
+                                <a class="sidebar-link" href="<?= $base_url ?>/manage-session.php" data-page="manage-domain">
+                                    <i class="ti ti-list"></i>
+                                    <span>Manage Sessions</span>
+                                </a>
+                            </li>
+                        </ul>
+                    </li>
+                <?php } ?>
+
                 <?php if (hasModuleRow($pdo, $userId, 'domain')) { ?>
                     <!-- Domains Section -->
                     <li class="nav-small-cap">
@@ -46,7 +73,7 @@
                             <li class="sidebar-item">
                                 <a class="sidebar-link" href="<?= $base_url ?>/manage-domain.php" data-page="manage-domain">
                                     <i class="ti ti-list"></i>
-                                    <span>Manage Domain</span>
+                                    <span>Manage Domains</span>
                                 </a>
                             </li>
                         </ul>
@@ -77,7 +104,7 @@
                             <li class="sidebar-item">
                                 <a class="sidebar-link" href="<?= $base_url ?>/manage-category.php" data-page="manage-category">
                                     <i class="ti ti-list"></i>
-                                    <span>Manage Category</span>
+                                    <span>Manage Categories</span>
                                 </a>
                             </li>
                             <?php if (canCreate($pdo, $userId, 'category')) : ?>
@@ -91,7 +118,7 @@
                             <li class="sidebar-item">
                                 <a class="sidebar-link" href="<?= $base_url ?>/manage-sub-category.php" data-page="manage-sub-category">
                                     <i class="ti ti-list"></i>
-                                    <span>Manage Sub-Category</span>
+                                    <span>Manage Sub-Categories</span>
                                 </a>
                             </li>
                             <?php if (canCreate($pdo, $userId, 'category')) : ?>
@@ -105,7 +132,7 @@
                             <li class="sidebar-item">
                                 <a class="sidebar-link" href="<?= $base_url ?>/manage-child-sub-category.php" data-page="manage-child-sub-category">
                                     <i class="ti ti-list"></i>
-                                    <span>Manage Child-Sub-Cate</span>
+                                    <span>Manage Child-Sub-Categories   </span>
                                 </a>
                             </li>
                         </ul>
@@ -163,7 +190,7 @@
                             <li class="sidebar-item">
                                 <a class="sidebar-link" href="<?= $base_url ?>/manage-notices.php" data-page="manage-notices">
                                     <i class="ti ti-list"></i>
-                                    <span>Manage Notice</span>
+                                    <span>Manage Notices</span>
                                 </a>
                             </li>
                         </ul>
@@ -293,7 +320,7 @@
                                     href="<?= $base_url ?>/manage-user.php"
                                     data-page="manage-user">
                                     <i class="ti ti-list-details"></i>
-                                    <span>User List</span>
+                                    <span>Users List</span>
                                 </a>
                             </li>
                         </ul>

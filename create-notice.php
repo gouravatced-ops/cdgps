@@ -97,10 +97,9 @@ require_once __DIR__ . '/layouts/header.php';
                             <!-- Notice Category -->
                             <div class="mb-3">
                                 <input type="hidden" name="cat_id" value="2">
-                                <label for="noticeCategory" class="form-label">Category <span
-                                        class="text-danger">*</span></label>
-                                <select class="form-select" name="noticeCategory" id="postcategoryId" required>
-                                    <option value="">Select Category</option>
+                                <label for="noticeCategory" class="form-label">Sub Category</label>
+                                <select class="form-select" name="noticeCategory" id="postcategoryId">
+                                    <option value="">Select Sub Category</option>
                                 </select>
                                 <?php if (isset($_SESSION['req_error_msg']['noticeCategory'])) { ?>
                                     <div class="form-text text-danger">
@@ -113,7 +112,7 @@ require_once __DIR__ . '/layouts/header.php';
                         <div class="col-md-6">
                             <!-- News Date -->
                             <div class="mb-3">
-                                <label for="childSubCategoryId" class="form-label">Sub Category</label>
+                                <label for="childSubCategoryId" class="form-label">Child Sub Category</label>
                                 <select name="childSubCategoryId" id="SubCategoryId" class="form-select" >
                                     <option value="">Choose Child Sub Category...</option>
                                 </select>
@@ -200,7 +199,7 @@ require_once __DIR__ . '/layouts/header.php';
                             </label>
 
                             <input type="file" class="form-control" id="attachNotice" name="attachNotice"
-                                accept="application/pdf" required>
+                                accept="application/pdf , image/jpg" required>
                             <div id="preview-container" class="mt-2"></div>
                             <?php if (isset($err['attachNotice'])) { ?>
                                 <div class="form-text text-danger"><?php echo $err['attachNotice']; ?></div>

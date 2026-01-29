@@ -904,3 +904,137 @@ footer,
     margin: 0;
   }
 }
+
+/* Length dropdown */
+.dt-layout-cell.dt-start .dt-length select.dt-input {
+  border: 2px solid var(--primary-color);
+  padding: 4px 8px;
+  font-weight: 500;
+  font-size: 0.95rem;
+  transition: all 0.3s;
+}
+
+.dt-layout-cell.dt-start .dt-length select.dt-input:focus {
+  border-color: var(--sidebar-active-secondary);
+  box-shadow: 0 0 6px var(--sidebar-active-secondary);
+  outline: none;
+}
+
+/* Right cell: Search box */
+.dt-layout-cell.dt-end .dt-search label {
+  font-weight: 600;
+  color: #1f1f1f;
+  margin-right: 0.5rem;
+}
+
+/* Search input */
+.dt-layout-cell.dt-end .dt-search input.dt-input {
+  padding: 5px 12px;
+  border: 2px solid var(--primary-color);
+  background-color: #f0f8ff;
+  font-size: 0.95rem;
+  font-weight: 500;
+  color: #1e3799;
+  transition: all 0.3s;
+}
+
+.dt-layout-cell.dt-end .dt-search input.dt-input:focus {
+  border-color: var(--sidebar-active-secondary);
+  box-shadow: 0 0 6px var(--sidebar-active-secondary);
+  outline: none;
+}
+
+#syFyTable thead th {
+  background-color: #343a40;
+  color: #fff;
+  font-weight: 600;
+  padding: 10px;
+  text-align: center;
+}
+
+#syFyTable tbody tr {
+  transition: all 0.3s ease;
+}
+
+div.dt-container .dt-paging .dt-paging-button.current {
+  background: var(--primary-color) !important;
+  color: #ffffff !important;
+  border-color: var(--primary-color) !important;
+}
+
+div.dt-container .dt-paging .dt-paging-button.current:hover {
+  background: var(--primary-hover) !important;
+  color: #ffffff !important;
+  border-color: var(--primary-hover) !important;
+}
+
+div.dt-container .dt-paging .dt-paging-button:hover {
+  background: var(--sidebar-hover) !important;
+  color: #ffffff !important;
+  border-color: var(--sidebar-hover) !important;
+}
+
+div.dt-container .dt-paging .dt-paging-button:active {
+  background: var(--sidebar-active) !important;
+  color: #ffffff !important;
+}
+
+div.dt-container .dt-paging .dt-paging-button.disabled {
+  background: #cccccc !important;
+  color: #666666 !important;
+  cursor: not-allowed;
+}
+
+div.dt-container .dt-table thead th {
+  background: var(--sidebar-bg) !important;
+  color: #ffffff !important;
+  border-bottom: 2px solid var(--primary-color) !important;
+}
+
+div.dt-container .dt-table tbody tr:hover {
+  background: rgba(21, 128, 61, 0.1) !important;
+}
+
+div.dt-container .dt-search input {
+  border: 1px solid var(--primary-color) !important;
+}
+
+div.dt-container .dt-search input:focus {
+  border-color: var(--sidebar-active) !important;
+  outline: none;
+  box-shadow: 0 0 0 2px rgba(21, 128, 61, 0.2);
+}
+
+div.dt-container .dt-length select {
+  border: 1px solid var(--primary-color) !important;
+}
+
+div.dt-container .dt-length select:focus {
+  border-color: var(--sidebar-active) !important;
+  outline: none;
+}
+
+div.dt-container .dt-info {
+  color: var(--sidebar-secondary) !important;
+}
+
+div.dt-container .dt-table tbody tr.selected {
+  background: var(--sidebar-active) !important;
+  color: #ffffff !important;
+}
+
+.dataTables_processing {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    width: auto;
+    height: auto;
+    margin-left: -50px;
+    margin-top: -50px;
+    padding: 15px 25px;
+    background: rgba(255, 255, 255, 0.95);
+    border-radius: 6px;
+    box-shadow: 0 0 10px rgba(0,0,0,.2);
+    z-index: 9999;
+    font-weight: 600;
+}

@@ -1,24 +1,33 @@
-0<?php
+<?php
 
-session_start();
+    session_start();
 
-if (!isset($_SESSION['user_id'])) {
-    header("Location: index.php");
-    exit;
-}
+    if (!isset($_SESSION['user_id'])) {
+        header("Location: index.php");
+        exit;
+    }
 
-require_once __DIR__ . '/layouts/header.php';
+    require_once __DIR__ . '/layouts/header.php';
 
-$sql = "SELECT * FROM sy_fy";
+    $sql = "SELECT * FROM sy_fy";
 
-$syfy = $pdo->query($sql)->fetchAll(PDO::FETCH_ASSOC);
+    $syfy = $pdo->query($sql)->fetchAll(PDO::FETCH_ASSOC);
 
-?>
+    ?>
 
 <div class="container-fluid">
     <div class="card">
-        <div class="card-body">
-            <h5 class="card-title fw-semibold mb-4">Manage Session & Financial Year</h5>
+        <div class="card-body p-0">
+            <div class="card-header-modern d-flex align-items-center justify-content-between">
+                Manage Sessions
+                    <a href="<?= $base_url ?>/create-session.php" class="btn btn-warning btn-sm">
+                        <strong>+ Create</strong>
+                    </a>
+            </div>
+
+            <div class="p-2">
+                <!-- rest form / content -->
+            </div>
 
             <table id="syFyTable" class="table table-bordered table-striped ">
                 <thead>
@@ -32,12 +41,13 @@ $syfy = $pdo->query($sql)->fetchAll(PDO::FETCH_ASSOC);
                 </thead>
 
                 <tbody>
-                    <?php $i=1; foreach ($syfy as $row): ?>
+                    <?php $i = 1;
+                    foreach ($syfy as $row): ?>
                         <tr>
                             <td><?php echo $i++; ?></td>
-                            <td><?php echo ($row['type']=='sy'?'Session Year':'Financial Year'); ?></td>
+                            <td><?php echo ($row['type'] == 'sy' ? 'Session Year' : 'Financial Year'); ?></td>
                             <td><?php echo htmlspecialchars($row['calender_year']); ?></td>
-                            <td><?php echo htmlspecialchars(empty($row['financial_year']) ? 'NA' : $row['financial_year']); ?>
+                            <td><?php echo htmlspecialchars(empty($row['financial_year']) ? 'N/A' : $row['financial_year']); ?>
                             </td>
                             <td><a href="<?= $base_url ?>/edit-session.php?id=<?= htmlspecialchars($row['id']) ?>"
                                     class="btn btn-primary btn-sm"><i class="ti ti-edit"></i></a>&nbsp;&nbsp;

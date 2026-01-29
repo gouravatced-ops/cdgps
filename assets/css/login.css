@@ -741,7 +741,7 @@ a {
 /* Large Desktop (1200px and above) */
 @media (min-width: 1200px) {
   .login-container {
-    max-width: 1100px;
+    max-width: 1001px;
   }
 
   .form-right {

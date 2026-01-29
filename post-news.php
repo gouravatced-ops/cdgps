@@ -101,7 +101,7 @@ if (isLoggedIn()) {
                             <!-- News Date -->
                             <div class="mb-3">
                                 <label for="subCategoryId" class="form-label">Sub Category</label>
-                                <select name="subCategoryId" id="postcategoryId" class="form-select" required>
+                                <select name="subCategoryId" id="postcategoryId" class="form-select">
                                     <option value="">Choose Category...</option>
                                 </select>
                             </div>
