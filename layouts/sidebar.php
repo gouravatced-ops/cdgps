@@ -26,7 +26,7 @@
 
                 <?php if ($authRole == 'superadmin') { ?>
                     <!-- Domains Section -->
-                    <li class="nav-small-cap">
+                    <!-- <li class="nav-small-cap">
                         <span>SESSIONS</span>
                     </li>
                     <li class="sidebar-item">
@@ -48,7 +48,7 @@
                                 </a>
                             </li>
                         </ul>
-                    </li>
+                    </li> -->
                 <?php } ?>
 
                 <?php if (hasModuleRow($pdo, $userId, 'domain')) { ?>

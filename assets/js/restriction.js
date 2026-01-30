@@ -1,125 +1,141 @@
-document.addEventListener("DOMContentLoaded", function () {
-  const input = document.getElementById("domain_path");
-  const prefix = "https://";
+document.addEventListener("DOMContentLoaded", () => {
+  // (() => {
+  //   const input = document.getElementById("domain_path");
+  //   if (!input) return;
 
-  // Ensure prefix on page load
-  if (!input.value.startsWith(prefix)) {
-    input.value = prefix;
-  }
+  //   const prefix = "https://";
 
-  input.addEventListener("input", function () {
-    // Always keep prefix
-    if (!input.value.startsWith(prefix)) {
-      input.value = prefix;
-    }
+  //   // ensure prefix on load
+  //   if (!input.value.startsWith(prefix)) {
+  //     input.value = prefix;
+  //   }
 
-    // Extract user-entered part
-    let domainPart = input.value.slice(prefix.length);
+  //   input.addEventListener("input", () => {
+  //     if (!input.value.startsWith(prefix)) {
+  //       input.value = prefix;
+  //     }
 
-    // Allow only lowercase letters and dots
-    domainPart = domainPart.toLowerCase().replace(/[^a-z.]/g, "");
+  //     let domainPart = input.value.slice(prefix.length);
+  //     domainPart = domainPart.toLowerCase().replace(/[^a-z.]/g, "");
 
-    input.value = prefix + domainPart;
-  });
+  //     input.value = prefix + domainPart;
+  //   });
 
-  // Prevent cursor from going before prefix
-  input.addEventListener("keydown", function (e) {
-    if (input.selectionStart < prefix.length) {
-      input.setSelectionRange(prefix.length, prefix.length);
-    }
-  });
+  //   const lockCursor = () => {
+  //     if (input.selectionStart < prefix.length) {
+  //       input.setSelectionRange(prefix.length, prefix.length);
+  //     }
+  //   };
 
-  input.addEventListener("click", function () {
-    if (input.selectionStart < prefix.length) {
-      input.setSelectionRange(prefix.length, prefix.length);
-    }
-  });
-});
+  //   input.addEventListener("keydown", lockCursor);
+  //   input.addEventListener("click", lockCursor);
+  // })();
 
-document.addEventListener('DOMContentLoaded', function () {
+  /* =====================================================
+     2 PASSWORD + CONFIRM PASSWORD VALIDATION
+  ===================================================== */
+  (() => {
+    const passwordInput = document.getElementById("UserPassword");
+    const confirmInput = document.getElementById("confirmPassword");
+    const mismatchText = document.getElementById("passwordMismatch");
+    const criteriaBox = document.getElementById("passwordCriteria");
+    const toggleBtn = document.getElementById("togglePassword");
 
-    const passwordInput = document.getElementById('UserPassword');
-    const confirmInput  = document.getElementById('confirmPassword');
-    const mismatchText  = document.getElementById('passwordMismatch');
-    const criteriaBox   = document.getElementById('passwordCriteria');
-    const toggleBtn     = document.getElementById('togglePassword');
-    const form          = passwordInput.closest('form');
-    const submitBtn     = form.querySelector('button[type="submit"]');
+    if (!passwordInput || !confirmInput) return;
 
-    function validatePassword() {
-        const val = passwordInput.value;
+    const form = passwordInput.closest("form");
+    const submitBtn = form?.querySelector('button[type="submit"]');
+    if (!submitBtn) return;
 
-        const checks = {
-            len:      val.length >= 8,
-            upper:    (val.match(/[A-Z]/g) || []).length === 1,
-            lower:    (val.match(/[a-z]/g) || []).length >= 1,
-            number:   (val.match(/[0-9]/g) || []).length >= 1,
-            special:  (val.match(/[^A-Za-z0-9]/g) || []).length === 1
-        };
+    const toggle = (id, ok) => {
+      const el = document.getElementById(id);
+      if (!el) return;
+      el.className = ok ? "text-success" : "text-danger";
+    };
 
-        Object.keys(checks).forEach(id => toggle(id, checks[id]));
+    const validatePassword = () => {
+      const val = passwordInput.value;
 
-        const passwordOk = Object.values(checks).every(Boolean);
+      const checks = {
+        len: val.length >= 8,
+        upper: (val.match(/[A-Z]/g) || []).length === 1,
+        lower: /[a-z]/.test(val),
+        number: /[0-9]/.test(val),
+        special: (val.match(/[^A-Za-z0-9]/g) || []).length === 1,
+      };
 
-        criteriaBox.style.display = passwordOk ? 'block' : 'block';
+      Object.entries(checks).forEach(([id, ok]) => toggle(id, ok));
 
-        return passwordOk;
-    }
+      criteriaBox.style.display = "block";
+      return Object.values(checks).every(Boolean);
+    };
 
-    function validateConfirm() {
-        const match = passwordInput.value !== '' &&
-                      passwordInput.value === confirmInput.value;
+    const validateConfirm = () => {
+      const match =
+        passwordInput.value && passwordInput.value === confirmInput.value;
+      mismatchText.style.display = match ? "none" : "block";
+      return match;
+    };
 
-        mismatchText.style.display = match ? 'none' : 'block';
+    const toggleSubmit = () => {
+      submitBtn.disabled = !(validatePassword() && validateConfirm());
+    };
 
-        return match;
-    }
+    passwordInput.addEventListener("keyup", toggleSubmit);
+    confirmInput.addEventListener("keyup", toggleSubmit);
 
-    function toggle(id, ok) {
-        const el = document.getElementById(id);
-        if (!el) return;
-
-        el.classList.remove('text-dark', 'text-danger', 'text-success');
-        el.classList.add(ok ? 'text-success' : 'text-danger');
-    }
-
-    function toggleSubmit() {
-        const isPasswordOk = validatePassword();
-        const isMatchOk    = validateConfirm();
-
-        submitBtn.disabled = !(isPasswordOk && isMatchOk);
-    }
-
-    passwordInput.addEventListener('keyup', toggleSubmit);
-    confirmInput.addEventListener('keyup', toggleSubmit);
-
-    // 👁 Eye toggle
-    toggleBtn.addEventListener('click', function () {
-        const icon = this.querySelector('i');
-
-        passwordInput.type =
-            passwordInput.type === 'password' ? 'text' : 'password';
-
-        icon.classList.toggle('bi-eye');
-        icon.classList.toggle('bi-eye-slash');
-    });
-
-    // initial state
     submitBtn.disabled = true;
 
-});
+    // 👁 toggle password visibility
+    toggleBtn?.addEventListener("click", () => {
+      const icon = toggleBtn.querySelector("i");
+      passwordInput.type =
+        passwordInput.type === "password" ? "text" : "password";
+      icon?.classList.toggle("bi-eye");
+      icon?.classList.toggle("bi-eye-slash");
+    });
+  })();
 
-const prefixInput = document.getElementById('emailPrefix');
-const finalEmail = document.getElementById('finalEmail');
-const domain = '@cgstranchizone.gov.in';
+  /* =====================================================
+     2 EMAIL PREFIX → FINAL EMAIL
+  ===================================================== */
+  (() => {
+    const prefixInput = document.getElementById("emailPrefix");
+    const finalEmail = document.getElementById("finalEmail");
+    if (!prefixInput || !finalEmail) return;
 
-prefixInput.addEventListener('input', function () {
-    // allow only lowercase letters & numbers
-    this.value = this.value
+    const domain = "@cgstranchizone.gov.in";
+
+    prefixInput.addEventListener("input", () => {
+      prefixInput.value = prefixInput.value
         .toLowerCase()
-        .replace(/[^a-z0-9]/g, '');
+        .replace(/[^a-z0-9]/g, "");
 
-    // build final email
-    finalEmail.value = this.value + domain;
+      finalEmail.value = prefixInput.value + domain;
+    });
+  })();
+
+  /* =====================================================
+     43 DOMAIN PATH (patna1 rule)
+     → lowercase letters + only ONE digit at end
+  ===================================================== */
+  (() => {
+    const input = document.getElementById("domainPath");
+    const hidden = document.getElementById("finaldomainPath");
+    if (!input) return;
+
+    input.addEventListener("input", () => {
+      let value = input.value.toLowerCase().replace(/[^a-z0-9]/g, "");
+
+      const letters = value.replace(/[0-9]/g, "");
+      const digit = value.match(/[0-9]/);
+
+      const cleanValue = letters + (digit ? digit[0] : "");
+      input.value = cleanValue;
+
+      if (hidden) {
+        hidden.value = "https://" + cleanValue + ".cgstranchizone.gov.in";
+      }
+    });
+  })();
 });
-

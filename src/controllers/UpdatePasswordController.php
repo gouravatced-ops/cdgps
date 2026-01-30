@@ -1,7 +1,6 @@
 <?php
 
 require_once __DIR__ . '/../database/Database.php';
-require_once __DIR__ . '../../utils/ActivityLogger.php';
 session_start();
 
 $userId          = $_SESSION['user_id'] ?? null;
@@ -34,9 +33,6 @@ try {
     $database = new Database();
     $pdo = $database->getConnection();
 
-    $logger = new ActivityLogger($pdo);
-    $loggedId = $_SESSION['login_id'];
-
     /* Fetch OLD password hash from DB */
     $stmt = $pdo->prepare("SELECT password FROM users WHERE id = :id AND is_deleted = '0'");
     $stmt->execute([':id' => $userId]);
@@ -66,27 +62,6 @@ try {
         ':password_set_date' => $passwordSet,
         ':id'                => $userId
     ]);
-
-    $oldData = [
-        'id' => $userId,
-        'password' => $userOldPassword
-    ];
-
-    $newData = [
-        'id' => $userId,
-        'password' => $newPassword
-    ];
-
-    $logger->log(
-        'users',
-        $userId,
-        'UPDATE',
-        '',
-        json_encode($oldData),
-        json_encode($newData),
-        $userId,
-        $loggedId
-    );
 
     $_SESSION['message'] = 'Password updated successfully';
 } catch (PDOException $e) {

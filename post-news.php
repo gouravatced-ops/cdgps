@@ -97,6 +97,36 @@ if (isLoggedIn()) {
                                 <?php } ?>
                             </div>
                         </div>
+
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="type" class="form-label">Calender Type <span
+                                        class="text-danger">*</span></label>
+                                <select class="form-control" id="type" name="calendertype" required>
+                                    <option value="sy">Calender Year</option>
+                                    <option value="fy">Financial Year</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="col-md-6">
+                            <div class="mb-3" id="syField">
+                                <label for="sessionYear" class="form-label">Choose Session Year<span
+                                        class="text-danger">*</span></label>
+                                <select class="form-control" id="sessionYear" name="sessionYear" required>
+                                    <option value="">Choose Session Year...</option>
+                                </select>
+                            </div>
+
+                            <div class="mb-3" id="fyField" style="display:none">
+                                <label for="financialYear" class="form-label">Choose Financial Year <span
+                                        class="text-danger">*</span></label>
+                                <select class="form-control" id="financialYear" name="financialYear" disabled>
+                                    <option value="">Choose Financial Year...</option>
+                                </select>
+                            </div>
+                        </div>
+
                         <div class="col-md-6">
                             <!-- News Date -->
                             <div class="mb-3">
@@ -200,7 +230,7 @@ if (isLoggedIn()) {
 
                                 <div class="col-md-6">
                                     <label class="videoAttach1 w-100">
-                                        <span class="text">Youtube Video Link 1</span>
+                                        <span class="text">Video Link 1</span>
                                         <input type="url" class="form-control" name="videoAttach1"
                                             placeholder="Enter video URL"
                                             value="<?= htmlspecialchars(@$_SESSION['post']['videoAttach1'], ENT_QUOTES, 'UTF-8'); ?>"
@@ -211,7 +241,7 @@ if (isLoggedIn()) {
                                 </div>
 
                                 <div class="col-md-6"><label class="videoAttach_title1 w-100">
-                                        <span class="text">Youtube Video Link Title 1</span>
+                                        <span class="text">Video Link Title 1</span>
                                         <input type="text" class="form-control" name="videoAttach_title1"
                                             placeholder="Enter video title"
                                             value="<?= @$_SESSION['post']['videoAttach_title1']; ?>"
@@ -223,7 +253,7 @@ if (isLoggedIn()) {
                                 style="<?= (@$_SESSION['post']['videoAttach2'] || @$_SESSION['post']['videoAttach_title2']) ? '' : 'display:none;' ?>">
                                 <div class="col-md-6">
                                     <label class="videoAttach2 w-100">
-                                        <span class="text">Youtube Video Link 2</span>
+                                        <span class="text">Video Link 2</span>
                                         <input type="url" class="form-control" name="videoAttach2"
                                             placeholder="Enter video URL" value="<?= @$_SESSION['post']['videoAttach2']; ?>"
                                             pattern="https?://.+"
@@ -232,7 +262,7 @@ if (isLoggedIn()) {
                                     </label>
                                 </div>
                                 <div class="col-md-6"><label class="videoAttach_title2 w-100">
-                                        <span class="text">Youtube Video Attachments Title 2</span>
+                                        <span class="text">Video Attachments Title 2</span>
                                         <input type="text" class="form-control" name="videoAttach_title2"
                                             placeholder="Enter video title"
                                             value="<?= @$_SESSION['post']['videoAttach_title2']; ?>"
@@ -243,7 +273,7 @@ if (isLoggedIn()) {
                             <div class="row" id="video3"
                                 style="<?= (@$_SESSION['post']['videoAttach3'] || @$_SESSION['post']['videoAttach_title3']) ? '' : 'display:none;' ?>">
                                 <div class="col-md-6"><label class="videoAttach3 w-100">
-                                        <span class="text">Youtube Video Link 3</span>
+                                        <span class="text">Video Link 3</span>
                                         <input type="url" class="form-control" name="videoAttach3"
                                             placeholder="Enter video URL" pattern="https?://.+"
                                             title="Please enter a valid URL starting with http:// or https://"
@@ -252,7 +282,7 @@ if (isLoggedIn()) {
                                     </label>
                                 </div>
                                 <div class="col-md-6"><label class="videoAttach_title3 w-100">
-                                        <span class="text">Youtube Video Attachments Title 3</span>
+                                        <span class="text">Video Attachments Title 3</span>
                                         <input type="url" class="form-control" name="videoAttach_title3"
                                             placeholder="Enter video title"
                                             value="<?= @$_SESSION['post']['videoAttach_title3']; ?>"
@@ -263,7 +293,7 @@ if (isLoggedIn()) {
                             <div class="row" id="video4"
                                 style="<?= (@$_SESSION['post']['videoAttach4`'] || @$_SESSION['post']['videoAttach_title4']) ? '' : 'display:none;' ?>">
                                 <div class="col-md-6"><label class="videoAttach4 w-100">
-                                        <span class="text">Youtube Video Attachments 4</span>
+                                        <span class="text">Video Attachments 4</span>
                                         <input type="text" class="form-control" name="videoAttach4"
                                             placeholder="Enter video URL" pattern="https?://.+"
                                             title="Please enter a valid URL starting with http:// or https://"
@@ -274,7 +304,7 @@ if (isLoggedIn()) {
 
                                 <div class="col-md-6">
                                     <label class="videoAttach_title4 w-100">
-                                        <span class="text">Youtube Video Attachments Title 4</span>
+                                        <span class="text">Video Attachments Title 4</span>
                                         <input type="text" class="form-control" name="videoAttach_title4"
                                             placeholder="Enter video title"
                                             value="<?= @$_SESSION['post']['videoAttach_title4']; ?>"
@@ -284,236 +314,241 @@ if (isLoggedIn()) {
                             </div>
                         </div>
                         <div class="mt-2">
-                            <button type="button" class="btn" style="background-color: #db0101; color:white;" id="deleteVideo">Delete Last Attachement &
-                                Title</button>
-                            <button type="button" class="btn" style="background-color: #02a102; color:white;" id="addVideo">Add More</button>
+                            <button type="button" class="btn btn-danger" id="deleteVideo">
+                                <i class="ti ti-trash"></i> Delete
+                            </button>
+
+                            <button type="button" class="btn btn-primary" id="addVideo">
+                                <i class="ti ti-plus"></i> Add More
+                            </button>
                         </div>
                     </div>
 
                     <!-- PDF Section -->
-                    <div class="card mb-3">
-                        <h5 class="mb-0 text-primary border-bottom border-primary">PDF Attachement</h5>
-                        <div class="mt-3" id="pdfAttachments">
-                            <!-- PDF input groups will go here -->
+                    <h5 class="mb-0 text-primary border-bottom border-primary">PDF Attachement</h5>
+                    <div class="mt-3" id="pdfAttachments">
+                        <!-- PDF input groups will go here -->
 
-                            <div class="row" id="pdf1">
-                                <div class="col-md-6">
-                                    <label class="w-100 pdf_attachement1">
-                                        <span class="text">PDF Attachment 1</span>
-                                        <input type="file" name="pdf_attachement1" class="form-control" id="pdf_attachment1"
-                                            value="" data-constraints="@Required" accept=".pdf" />
-                                    </label>
-                                    <?php if (isset($err['pdf_attachement1'])) {
-                                        echo '<span class="empty-message">' . $err['pdf_attachement1'] . '</span>';
-                                    } ?>
-                                </div>
-                                <div class="col-md-6">
-                                    <label class="w-100 pdf_attachement_title1">
-                                        <span class="text">PDF Attachment Title 1</span>
-                                        <input type="text" class="form-control" name="pdf_attachement_title1"
-                                            id="pdf_attachement_title1"
-                                            value="<?= @$_SESSION['post']['pdf_attachement_title1']; ?>"
-                                            data-constraints="@Required" placeholder="Title PDF Attachement 1" />
-                                    </label>
-                                    <?php if (isset($err['pdf_attachement1'])) {
-                                        echo '<span style="color:red">' . $err['pdf_attachement1'] . '</span>';
-                                    } ?>
-                                </div>
+                        <div class="row" id="pdf1">
+                            <div class="col-md-6">
+                                <label class="w-100 pdf_attachement1">
+                                    <span class="text">Attachment 1</span>
+                                    <input type="file" name="pdf_attachement1" class="form-control" id="pdf_attachment1"
+                                        value="" data-constraints="@Required" accept=".pdf" />
+                                </label>
+                                <?php if (isset($err['pdf_attachement1'])) {
+                                    echo '<span class="empty-message">' . $err['pdf_attachement1'] . '</span>';
+                                } ?>
                             </div>
-
-                            <div class="row" id="pdf2" style="display: none;">
-                                <div class="col-md-6">
-                                    <label class="w-100 pdf_attachement2">
-                                        <span class="text">PDF Attachment 2</span>
-                                        <input type="file" name="pdf_attachement2" class="form-control"
-                                            id="pdf_attachement2" value="" data-constraints="@Required"
-                                            accept=".pdf, .mp3" />
-                                    </label>
-                                    <?php if (isset($err['pdf_attachement2'])) {
-                                        echo '<span style="color:red">' . $err['pdf_attachement2'] . '</span>';
-                                    } ?>
-                                </div>
-                                <div class="col-md-6">
-                                    <label class="w-100 pdf_attachement_title2">
-                                        <span class="text">PDF Attachment Title 2</span>
-                                        <input type="text" class="form-control" name="pdf_attachement_title2"
-                                            id="pdf_attachement_title2"
-                                            value="<?= @$_SESSION['post']['pdf_attachement_title2']; ?>"
-                                            data-constraints="@Required" placeholder="Title PDF Attachement 2" />
-                                    </label>
-                                    <?php if (isset($err['pdf_attachement2'])) {
-                                        echo '<span style="color:red">' . $err['pdf_attachement2'] . '</span>';
-                                    } ?>
-                                </div>
-
-                            </div>
-
-                            <div class="row" id="pdf3" style="display: none;">
-                                <div class="col-md-6">
-                                    <label class="w-100 pdf_attachement3">
-                                        <span class="text">PDF Attachment 3</span>
-                                        <input type="file" name="pdf_attachement3" class="form-control" id="pdf_attachment3"
-                                            value="<?= @$_SESSION['post']['pdf_attachement3']; ?>"
-                                            data-constraints="@Required" accept=".pdf, .mp3" />
-                                    </label>
-                                    <?php if (isset($err['pdf_attachement3'])) {
-                                        echo '<span style="color:red">' . $err['pdf_attachement3'] . '</span>';
-                                    } ?>
-                                </div>
-                                <div class="col-md-6">
-                                    <label class="w-100 pdf_attachement_title3">
-                                        <span class="text">PDF Attachment Title 3</span>
-                                        <input type="text" class="form-control" name="pdf_attachement_title3"
-                                            id="pdf_attachement_title3"
-                                            value="<?= @$_SESSION['post']['pdf_attachement_title3']; ?>"
-                                            data-constraints="@Required" placeholder="Title PDF Attachement 3" />
-                                    </label>
-                                    <?php if (isset($err['pdf_attachement3'])) {
-                                        echo '<span style="color:red">' . $err['pdf_attachement3'] . '</span>';
-                                    } ?>
-                                </div>
-                            </div>
-                            <div class="row" id="pdf4" style="display: none;">
-                                <div class="col-md-6">
-                                    <label class="w-100 pdf_attachement4">
-                                        <span class="text">PDF Attachment 4</span>
-                                        <input type="file" name="pdf_attachement4" class="form-control"
-                                            id="pdf_attachement4" value="<?= @$_SESSION['post']['pdf_attachement4']; ?>"
-                                            data-constraints="@Required" accept=".pdf, .mp3" />
-                                    </label>
-                                    <?php if (isset($err['pdf_attachement4'])) {
-                                        echo '<span style="color:red">' . $err['pdf_attachement4'] . '</span>';
-                                    } ?>
-                                </div>
-                                <div class="col-md-6">
-                                    <label class="w-100 pdf_attachement_title4">
-                                        <span class="text">PDF Attachment Title 4</span>
-                                        <input type="text" class="form-control" name="pdf_attachement_title4"
-                                            id="pdf_attachement_title4"
-                                            value="<?= @$_SESSION['post']['pdf_attachement_title4']; ?>"
-                                            data-constraints="@Required" placeholder="Title PDF Attachement 4" />
-                                    </label>
-                                    <?php if (isset($err['pdf_attachement4'])) {
-                                        echo '<span style="color:red">' . $err['pdf_attachement4'] . '</span>';
-                                    } ?>
-                                </div>
-
-                            </div>
-
-                            <div class="row" id="pdf5" style="display: none;">
-                                <div class="col-md-6">
-                                    <label class="w-100 pdf_attachement5">
-                                        <span class="text">PDF Attachment 5</span>
-                                        <input type="file" name="pdf_attachement5" class="form-control"
-                                            id="pdf_attachement5" value="<?= @$_SESSION['post']['pdf_attachement5']; ?>"
-                                            data-constraints="@Required" accept=".pdf, .mp3" />
-                                    </label>
-                                    <?php if (isset($err['pdf_attachement5'])) {
-                                        echo '<span style="color:red">' . $err['pdf_attachement5'] . '</span>';
-                                    } ?>
-                                </div>
-                                <div class="col-md-6">
-                                    <label class="w-100 pdf_attachement_title5">
-                                        <span class="text">PDF Attachment Title 5</span>
-                                        <input type="text" class="form-control" name="pdf_attachement_title5"
-                                            id="pdf_attachement_title5"
-                                            value="<?= @$_SESSION['post']['pdf_attachement_title5']; ?>"
-                                            data-constraints="@Required" placeholder="Title PDF Attachement 5" />
-                                    </label>
-                                    <?php if (isset($err['pdf_attachement5'])) {
-                                        echo '<span style="color:red">' . $err['pdf_attachement5'] . '</span>';
-                                    } ?>
-                                </div>
-                            </div>
-
-                            <div class="row" id="pdf6" style="display: none;">
-                                <div class="col-md-6">
-                                    <label class="w-100 pdf_attachement6">
-                                        <span class="text">PDF Attachment 6</span>
-                                        <input type="file" name="pdf_attachement6" class="form-control"
-                                            id="pdf_attachement6" value="<?= @$_SESSION['post']['pdf_attachement6']; ?>"
-                                            data-constraints="@Required" accept=".pdf, .mp3" />
-                                    </label>
-                                    <?php if (isset($err['pdf_attachement6'])) {
-                                        echo '<span style="color:red">' . $err['pdf_attachement6'] . '</span>';
-                                    } ?>
-                                </div>
-                                <div class="col-md-6">
-                                    <label class="w-100 pdf_attachement_title6">
-                                        <span class="text">PDF Attachment Title 6</span>
-                                        <input type="text" class="form-control" name="pdf_attachement_title6"
-                                            id="pdf_attachement_title6"
-                                            value="<?= @$_SESSION['post']['pdf_attachement_title6']; ?>"
-                                            data-constraints="@Required" placeholder="Title PDF Attachement 6" />
-                                    </label>
-                                    <?php if (isset($err['pdf_attachement6'])) {
-                                        echo '<span style="color:red">' . $err['pdf_attachement6'] . '</span>';
-                                    } ?>
-                                </div>
-                            </div>
-
-                            <div class="row" id="pdf7" style="display: none;">
-                                <div class="col-md-6">
-                                    <label class="w-100 pdf_attachement7">
-                                        <span class="text">PDF Attachment 7</span>
-                                        <input type="file" name="pdf_attachement7" class="form-control"
-                                            id="pdf_attachement7" value="<?= @$_SESSION['post']['pdf_attachement7']; ?>"
-                                            data-constraints="@Required" accept=".pdf, .mp3" />
-                                    </label>
-                                    <?php if (isset($err['pdf_attachement7'])) {
-                                        echo '<span style="color:red">' . $err['pdf_attachement7'] . '</span>';
-                                    } ?>
-                                </div>
-                                <div class="col-md-6">
-                                    <label class="w-100 pdf_attachement_title7">
-                                        <span class="text">PDF Attachment Title 7</span>
-                                        <input type="text" class="form-control" name="pdf_attachement_title7"
-                                            id="pdf_attachement_title7"
-                                            value="<?= @$_SESSION['post']['pdf_attachement_title7']; ?>"
-                                            data-constraints="@Required" placeholder="Title PDF Attachement 7" />
-                                    </label>
-                                    <?php if (isset($err['pdf_attachement7'])) {
-                                        echo '<span style="color:red">' . $err['pdf_attachement7'] . '</span>';
-                                    } ?>
-                                </div>
-
-                            </div>
-
-                            <div class="row" id="pdf8" style="display: none;">
-                                <div class="col-md-6">
-                                    <label class="w-100 pdf_attachement8">
-                                        <span class="text">PDF Attachment 8</span>
-                                        <input type="file" name="pdf_attachement8" class="form-control"
-                                            id="pdf_attachement8" value="<?= @$_SESSION['post']['pdf_attachement8']; ?>"
-                                            data-constraints="@Required" accept=".pdf, .mp3" />
-                                    </label>
-                                    <?php if (isset($err['pdf_attachement8'])) {
-                                        echo '<span style="color:red">' . $err['pdf_attachement8'] . '</span>';
-                                    } ?>
-                                </div>
-                                <div class="col-md-6">
-                                    <label class="w-100 pdf_attachement_title8">
-                                        <span class="text">PDF Attachment Title 8</span>
-                                        <input type="text" class="form-control" name="pdf_attachement_title8"
-                                            id="pdf_attachement_title8"
-                                            value="<?= @$_SESSION['post']['pdf_attachement_title8']; ?>"
-                                            data-constraints="@Required" placeholder="Title PDF Attachement 8" />
-                                    </label>
-                                    <?php if (isset($err['pdf_attachement8'])) {
-                                        echo '<span style="color:red">' . $err['pdf_attachement8'] . '</span>';
-                                    } ?>
-                                </div>
+                            <div class="col-md-6">
+                                <label class="w-100 pdf_attachement_title1">
+                                    <span class="text">Attachment Title 1</span>
+                                    <input type="text" class="form-control" name="pdf_attachement_title1"
+                                        id="pdf_attachement_title1"
+                                        value="<?= @$_SESSION['post']['pdf_attachement_title1']; ?>"
+                                        data-constraints="@Required" placeholder="Title Attachement 1" />
+                                </label>
+                                <?php if (isset($err['pdf_attachement1'])) {
+                                    echo '<span style="color:red">' . $err['pdf_attachement1'] . '</span>';
+                                } ?>
                             </div>
                         </div>
-                        <div class="mt-2">
-                            <button type="button" class="btn" style="background-color: #db0101; color:white;" id="deletePdf" style="color:red">Delete Last
-                                Attachment</button>
-                            <button type="button" class="btn" style="background-color: #02a102; color:white;" id="addPdf">Add More</button>
+
+                        <div class="row" id="pdf2" style="display: none;">
+                            <div class="col-md-6">
+                                <label class="w-100 pdf_attachement2">
+                                    <span class="text">Attachment 2</span>
+                                    <input type="file" name="pdf_attachement2" class="form-control"
+                                        id="pdf_attachement2" value="" data-constraints="@Required"
+                                        accept=".pdf, .mp3" />
+                                </label>
+                                <?php if (isset($err['pdf_attachement2'])) {
+                                    echo '<span style="color:red">' . $err['pdf_attachement2'] . '</span>';
+                                } ?>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="w-100 pdf_attachement_title2">
+                                    <span class="text">Attachment Title 2</span>
+                                    <input type="text" class="form-control" name="pdf_attachement_title2"
+                                        id="pdf_attachement_title2"
+                                        value="<?= @$_SESSION['post']['pdf_attachement_title2']; ?>"
+                                        data-constraints="@Required" placeholder="Title Attachement 2" />
+                                </label>
+                                <?php if (isset($err['pdf_attachement2'])) {
+                                    echo '<span style="color:red">' . $err['pdf_attachement2'] . '</span>';
+                                } ?>
+                            </div>
+
+                        </div>
+
+                        <div class="row" id="pdf3" style="display: none;">
+                            <div class="col-md-6">
+                                <label class="w-100 pdf_attachement3">
+                                    <span class="text">Attachment 3</span>
+                                    <input type="file" name="pdf_attachement3" class="form-control" id="pdf_attachment3"
+                                        value="<?= @$_SESSION['post']['pdf_attachement3']; ?>"
+                                        data-constraints="@Required" accept=".pdf, .mp3" />
+                                </label>
+                                <?php if (isset($err['pdf_attachement3'])) {
+                                    echo '<span style="color:red">' . $err['pdf_attachement3'] . '</span>';
+                                } ?>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="w-100 pdf_attachement_title3">
+                                    <span class="text">Attachment Title 3</span>
+                                    <input type="text" class="form-control" name="pdf_attachement_title3"
+                                        id="pdf_attachement_title3"
+                                        value="<?= @$_SESSION['post']['pdf_attachement_title3']; ?>"
+                                        data-constraints="@Required" placeholder="Title Attachement 3" />
+                                </label>
+                                <?php if (isset($err['pdf_attachement3'])) {
+                                    echo '<span style="color:red">' . $err['pdf_attachement3'] . '</span>';
+                                } ?>
+                            </div>
+                        </div>
+                        <div class="row" id="pdf4" style="display: none;">
+                            <div class="col-md-6">
+                                <label class="w-100 pdf_attachement4">
+                                    <span class="text">Attachment 4</span>
+                                    <input type="file" name="pdf_attachement4" class="form-control"
+                                        id="pdf_attachement4" value="<?= @$_SESSION['post']['pdf_attachement4']; ?>"
+                                        data-constraints="@Required" accept=".pdf, .mp3" />
+                                </label>
+                                <?php if (isset($err['pdf_attachement4'])) {
+                                    echo '<span style="color:red">' . $err['pdf_attachement4'] . '</span>';
+                                } ?>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="w-100 pdf_attachement_title4">
+                                    <span class="text">Attachment Title 4</span>
+                                    <input type="text" class="form-control" name="pdf_attachement_title4"
+                                        id="pdf_attachement_title4"
+                                        value="<?= @$_SESSION['post']['pdf_attachement_title4']; ?>"
+                                        data-constraints="@Required" placeholder="Title Attachement 4" />
+                                </label>
+                                <?php if (isset($err['pdf_attachement4'])) {
+                                    echo '<span style="color:red">' . $err['pdf_attachement4'] . '</span>';
+                                } ?>
+                            </div>
+
+                        </div>
+
+                        <div class="row" id="pdf5" style="display: none;">
+                            <div class="col-md-6">
+                                <label class="w-100 pdf_attachement5">
+                                    <span class="text">Attachment 5</span>
+                                    <input type="file" name="pdf_attachement5" class="form-control"
+                                        id="pdf_attachement5" value="<?= @$_SESSION['post']['pdf_attachement5']; ?>"
+                                        data-constraints="@Required" accept=".pdf, .mp3" />
+                                </label>
+                                <?php if (isset($err['pdf_attachement5'])) {
+                                    echo '<span style="color:red">' . $err['pdf_attachement5'] . '</span>';
+                                } ?>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="w-100 pdf_attachement_title5">
+                                    <span class="text">Attachment Title 5</span>
+                                    <input type="text" class="form-control" name="pdf_attachement_title5"
+                                        id="pdf_attachement_title5"
+                                        value="<?= @$_SESSION['post']['pdf_attachement_title5']; ?>"
+                                        data-constraints="@Required" placeholder="Title Attachement 5" />
+                                </label>
+                                <?php if (isset($err['pdf_attachement5'])) {
+                                    echo '<span style="color:red">' . $err['pdf_attachement5'] . '</span>';
+                                } ?>
+                            </div>
+                        </div>
+
+                        <div class="row" id="pdf6" style="display: none;">
+                            <div class="col-md-6">
+                                <label class="w-100 pdf_attachement6">
+                                    <span class="text">Attachment 6</span>
+                                    <input type="file" name="pdf_attachement6" class="form-control"
+                                        id="pdf_attachement6" value="<?= @$_SESSION['post']['pdf_attachement6']; ?>"
+                                        data-constraints="@Required" accept=".pdf, .mp3" />
+                                </label>
+                                <?php if (isset($err['pdf_attachement6'])) {
+                                    echo '<span style="color:red">' . $err['pdf_attachement6'] . '</span>';
+                                } ?>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="w-100 pdf_attachement_title6">
+                                    <span class="text">Attachment Title 6</span>
+                                    <input type="text" class="form-control" name="pdf_attachement_title6"
+                                        id="pdf_attachement_title6"
+                                        value="<?= @$_SESSION['post']['pdf_attachement_title6']; ?>"
+                                        data-constraints="@Required" placeholder="Title Attachement 6" />
+                                </label>
+                                <?php if (isset($err['pdf_attachement6'])) {
+                                    echo '<span style="color:red">' . $err['pdf_attachement6'] . '</span>';
+                                } ?>
+                            </div>
+                        </div>
+
+                        <div class="row" id="pdf7" style="display: none;">
+                            <div class="col-md-6">
+                                <label class="w-100 pdf_attachement7">
+                                    <span class="text">Attachment 7</span>
+                                    <input type="file" name="pdf_attachement7" class="form-control"
+                                        id="pdf_attachement7" value="<?= @$_SESSION['post']['pdf_attachement7']; ?>"
+                                        data-constraints="@Required" accept=".pdf, .mp3" />
+                                </label>
+                                <?php if (isset($err['pdf_attachement7'])) {
+                                    echo '<span style="color:red">' . $err['pdf_attachement7'] . '</span>';
+                                } ?>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="w-100 pdf_attachement_title7">
+                                    <span class="text">Attachment Title 7</span>
+                                    <input type="text" class="form-control" name="pdf_attachement_title7"
+                                        id="pdf_attachement_title7"
+                                        value="<?= @$_SESSION['post']['pdf_attachement_title7']; ?>"
+                                        data-constraints="@Required" placeholder="Title Attachement 7" />
+                                </label>
+                                <?php if (isset($err['pdf_attachement7'])) {
+                                    echo '<span style="color:red">' . $err['pdf_attachement7'] . '</span>';
+                                } ?>
+                            </div>
+
+                        </div>
+
+                        <div class="row" id="pdf8" style="display: none;">
+                            <div class="col-md-6">
+                                <label class="w-100 pdf_attachement8">
+                                    <span class="text">Attachment 8</span>
+                                    <input type="file" name="pdf_attachement8" class="form-control"
+                                        id="pdf_attachement8" value="<?= @$_SESSION['post']['pdf_attachement8']; ?>"
+                                        data-constraints="@Required" accept=".pdf, .mp3" />
+                                </label>
+                                <?php if (isset($err['pdf_attachement8'])) {
+                                    echo '<span style="color:red">' . $err['pdf_attachement8'] . '</span>';
+                                } ?>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="w-100 pdf_attachement_title8">
+                                    <span class="text">Attachment Title 8</span>
+                                    <input type="text" class="form-control" name="pdf_attachement_title8"
+                                        id="pdf_attachement_title8"
+                                        value="<?= @$_SESSION['post']['pdf_attachement_title8']; ?>"
+                                        data-constraints="@Required" placeholder="Title Attachement 8" />
+                                </label>
+                                <?php if (isset($err['pdf_attachement8'])) {
+                                    echo '<span style="color:red">' . $err['pdf_attachement8'] . '</span>';
+                                } ?>
+                            </div>
                         </div>
                     </div>
+                    <div class="mt-2">
+                        <button type="button" class="btn btn-danger" id="deletePdf">
+                            <i class="ti ti-trash"></i> Delete
+                        </button>
 
+                        <button type="button" class="btn btn-primary" id="addPdf">
+                            <i class="ti ti-plus"></i> Add More
+                        </button>
+                    </div>
 
-                    <div class="row">
+                    <div class="row mt-2">
                         <div class="col-md-6 mb-3">
                             <label for="location" class="form-label">Location <span class="text-danger">*</span></label>
                             <input type="text" class="form-control" class="form-control" id="location" name="location"
@@ -531,9 +566,9 @@ if (isLoggedIn()) {
                     </div>
 
                     <!-- Submit Buttons -->
-                    <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                    <div class="d-grid gap-2 d-md-flex justify-content-md-start mt-2 mb-2">
+                        <button type="submit" class="btn btn-primary"><i class="ti ti-save"></i>Post News</button>
                         <button type="reset" class="btn btn-secondary me-md-2">Clear</button>
-                        <button type="submit" class="btn btn-primary">Post News</button>
                     </div>
                 </form>
 

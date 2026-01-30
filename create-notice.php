@@ -7,15 +7,15 @@ require_once __DIR__ . '/layouts/header.php';
 
 <div class="container-fluid">
     <div class="card">
-            <div class="card-body p-0">
-                <div class="col-md-12">
-                    <div class="card-header-modern d-flex align-items-center justify-content-between">
-                        Create Notice
-                    </div>
+        <div class="card-body p-0">
+            <div class="col-md-12">
+                <div class="card-header-modern d-flex align-items-center justify-content-between">
+                    Create Notice
+                </div>
 
-                    <div class="p-2">
-                        <!-- rest form / content -->
-                    </div>
+                <div class="p-2">
+                    <!-- rest form / content -->
+                </div>
 
                 <?php if (isset($_SESSION['message'])) { ?>
                     <div class="alert alert-success alert-dismissible fade show mt-3" role="alert">
@@ -94,6 +94,36 @@ require_once __DIR__ . '/layouts/header.php';
                         </div>
 
                         <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="type" class="form-label">Calender Type <span
+                                        class="text-danger">*</span></label>
+                                <select class="form-control" id="type" name="calendertype" required>
+                                    <option value="sy">Calender Year</option>
+                                    <option value="fy">Financial Year</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="col-md-6">
+                            <div class="mb-3" id="syField">
+                                <label for="sessionYear" class="form-label">Choose Session Year<span
+                                        class="text-danger">*</span></label>
+                                <select class="form-control" id="sessionYear" name="sessionYear" required>
+                                    <option value="">Choose Session Year...</option>
+                                </select>
+                            </div>
+
+                            <div class="mb-3" id="fyField" style="display:none">
+                                <label for="financialYear" class="form-label">Choose Financial Year <span
+                                        class="text-danger">*</span></label>
+                                <select class="form-control" id="financialYear" name="financialYear" disabled>
+                                    <option value="">Choose Financial Year...</option>
+                                </select>
+                            </div>
+                        </div>
+
+
+                        <div class="col-md-6">
                             <!-- Notice Category -->
                             <div class="mb-3">
                                 <input type="hidden" name="cat_id" value="2">
@@ -113,7 +143,7 @@ require_once __DIR__ . '/layouts/header.php';
                             <!-- News Date -->
                             <div class="mb-3">
                                 <label for="childSubCategoryId" class="form-label">Child Sub Category</label>
-                                <select name="childSubCategoryId" id="SubCategoryId" class="form-select" >
+                                <select name="childSubCategoryId" id="SubCategoryId" class="form-select">
                                     <option value="">Choose Child Sub Category...</option>
                                 </select>
                             </div>

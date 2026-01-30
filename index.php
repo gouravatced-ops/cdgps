@@ -1,5 +1,15 @@
 <!DOCTYPE html>
 <?php
+
+require './src/database/Database.php';
+
+try {
+    new Database();
+} catch (Exception $e) {
+    header('Location: db-status.php');
+    exit;
+}
+
 // Start the session at the very beginning of the file
 session_start();
 
