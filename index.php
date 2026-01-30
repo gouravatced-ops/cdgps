@@ -1,5 +1,15 @@
 <!DOCTYPE html>
 <?php
+
+require './src/database/Database.php';
+
+try {
+    new Database();
+} catch (Exception $e) {
+    header('Location: db-status.php');
+    exit;
+}
+
 // Start the session at the very beginning of the file
 session_start();
 
@@ -44,7 +54,7 @@ include('./system-config.php')
 
                   <!-- Left Side : Heading -->
                   <h4 class="administration-title mb-0">
-                    <?= htmlspecialchars($full_app_name); ?>
+                    <?= htmlspecialchars($loginPage_app_name); ?>
                   </h4>
 
                   <!-- Right Side : Logo -->
@@ -137,11 +147,12 @@ include('./system-config.php')
               </div>
               <div class="form-left-footer d-flex align-items-center justify-content-center gap-2">
                 <span class="footer-label">Technology Partner</span>
+                <img src="./assets/images/logos/insta-logo.jpg" alt="" srcset="" style="width: 35px;">
                 <a href="https://www.computered.in/"
                   target="_blank"
                   rel="noopener noreferrer"
                   class="footer-brand">
-                  Computer Ed
+                  <span style="color:#ff00ff; font-family: old-bookmark;font-size: 16px;"><b>COMPUTER Ed.</b></span>
                 </a>
               </div>
             </div>

@@ -22,14 +22,17 @@ if (isset($_SESSION['user_id'])) {
 
     // print_r($data);
     // die;
-    ?>
+?>
 
     <div class="container-fluid">
         <div class="card">
             <div class="card-body p-0">
                 <div class="col-md-12">
-                    <div class="card-header-modern">
-                        Add Domain
+                    <div class="card-header-modern d-flex align-items-center justify-content-between">
+                        View Trash Posting
+                        <a href="javascript:history.back()" class="btn btn-danger btn-sm">
+                            ← Back
+                        </a>
                     </div>
 
                     <div class="p-2">
@@ -39,7 +42,10 @@ if (isset($_SESSION['user_id'])) {
                     <?php if (isset($_SESSION['message'])) { ?>
                         <div class="alert alert-success alert-dismissible fade show mt-3" role="alert">
                             <strong>Success!</strong> <?php echo $_SESSION['message']; ?>.
-                            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                            <button type="button"
+                                class="btn btn-sm btn-primary ml-3"
+                                aria-label="Close"
+                                onclick="closeAlert(this)">
                                 <span aria-hidden="true">&times;</span>
                             </button>
                             <?php unset($_SESSION['message']); ?>
@@ -47,7 +53,10 @@ if (isset($_SESSION['user_id'])) {
                     <?php } elseif (isset($_SESSION['error'])) { ?>
                         <div class="alert alert-danger alert-dismissible fade show mt-3" role="alert">
                             <?php echo $_SESSION['error']; ?>.
-                            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                            <button type="button"
+                                class="btn btn-sm btn-primary ml-3"
+                                aria-label="Close"
+                                onclick="closeAlert(this)">
                                 <span aria-hidden="true">&times;</span>
                             </button>
                             <?php unset($_SESSION['error']); ?>
@@ -77,7 +86,8 @@ if (isset($_SESSION['user_id'])) {
                                             <option value="<?php echo htmlspecialchars($type['id']); ?>" <?php $data['type'] === $type['id'] ? "selected" : "" ?>>
                                                 <?php echo htmlspecialchars($type['calender_year']); ?>
                                             </option>
-                                        <?php }endforeach; ?>
+                                    <?php }
+                                    endforeach; ?>
                                 </select>
                             </div>
                             <div class="mb-3 col-md-6" id="fyField" <?php echo ($data['syfy_type'] == 'fy') ? '' : 'style="display: none;"' ?>>
@@ -88,7 +98,8 @@ if (isset($_SESSION['user_id'])) {
                                             <option value="<?php echo htmlspecialchars($type['id']); ?>" <?php $data['type'] === $type['id'] ? "selected" : "" ?>>
                                                 <?php echo htmlspecialchars($type['financial_year']); ?>
                                             </option>
-                                        <?php }endforeach; ?>
+                                    <?php }
+                                    endforeach; ?>
                                 </select>
                             </div>
                         </div>
@@ -121,7 +132,7 @@ if (isset($_SESSION['user_id'])) {
                                 <label for="doc_nos" class="form-label">Document No. <span
                                         class="text-danger">*</span></label>
                                 <input type="text" name="doc_nos" id="doc_nos" class="form-control"
-                                    value="<?= htmlspecialchars($data['document_no']); ?>" >
+                                    value="<?= htmlspecialchars($data['document_no']); ?>">
                             </div>
                             <div class="mb-3 col-md-6">
                                 <label for="doc_date" class="form-label">Documnet Date</label>
@@ -132,7 +143,7 @@ if (isset($_SESSION['user_id'])) {
                                 <label for="ref_nos" class="form-label">Reference No. <span
                                         class="text-danger">*</span></label>
                                 <input type="text" name="ref_nos" id="ref_nos" class="form-control"
-                                    value="<?= htmlspecialchars($data['reference_no']); ?>" >
+                                    value="<?= htmlspecialchars($data['reference_no']); ?>">
                             </div>
                             <div class="mb-3 col-md-6">
                                 <label for="ref_date" class="form-label">Reference Date</label>

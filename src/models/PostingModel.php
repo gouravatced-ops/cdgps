@@ -1,12 +1,17 @@
 <?php
+require_once __DIR__ . '../../utils/ActivityLogger.php';
 
 class PostingModel
 {
     private $pdo;
+    private $logger;
+    private $loggedId;
 
     public function __construct($pdo)
     {
         $this->pdo = $pdo;
+        $this->logger = new ActivityLogger($pdo);
+        $this->loggedId = $_SESSION['login_id'];
     }
 
     public function generateUniqueSixDigitID()
@@ -46,7 +51,7 @@ class PostingModel
     }
 
     public function saveData($data)
-    {   
+    {
         // print_r($data); die();
         $sql = "INSERT INTO notices (
                     domain_id, uniq_id, notice_category, notice_subcategory, notice_childsubcategory, notice_dated,
@@ -56,7 +61,7 @@ class PostingModel
                     :domainId, :uniq_id, :category, :sub_category, :child_sub_category, :dated,
                     :reference_no, :title, :attachment,
                     :new_flag, :new_no_of_days, :ip_address, :session_year, :external_url, :url_tab_open
-                )";  
+                )";
         $stmt = $this->pdo->prepare($sql);
         $stmt->bindParam(':domainId', $data['domain_id'], PDO::PARAM_INT);
         $stmt->bindParam(':uniq_id', $data['uniq_id'], PDO::PARAM_INT);
@@ -73,7 +78,10 @@ class PostingModel
         $stmt->bindParam(':session_year', $data['session_year'], PDO::PARAM_STR);
         $stmt->bindParam(':external_url', $data['attachmentURL'], PDO::PARAM_STR);
         $stmt->bindParam(':url_tab_open', $data['new_tab_open'], PDO::PARAM_STR);
-        return $stmt->execute();
+        $stmt->execute();
+
+        $this->logger->log('notices', $data['uniq_id'], 'INSERT', null, null, json_encode($data), $_SESSION['user_id'], $this->loggedId);
+        return true;
     }
     public function fetchSubCategoriesByCategoryId($categoryId)
     {
@@ -91,7 +99,6 @@ class PostingModel
         $stmt->bindValue(':categoryId', $categoryId, PDO::PARAM_INT);
         $stmt->execute();
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
-
     }
 
     public function searchTypeCategoryId($categoryId, $type = '')
@@ -149,8 +156,20 @@ class PostingModel
 
             $stmt->bindParam(':id', $id, PDO::PARAM_INT);
 
-            return $stmt->execute();
+            $stmt->execute();
         }
+
+        $this->logger->log(
+            'notices',
+            $id,
+            'DELETE',
+            'is_deleted',
+            '0',
+            '1',
+            $_SESSION['user_id'],
+            $this->loggedId
+        );
+        return true;
     }
 
     public function deleteAttach($id)

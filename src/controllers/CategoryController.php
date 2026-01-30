@@ -13,7 +13,7 @@ class CategoryController
             echo "Method Not Allowed";
             exit;
         }
-        
+
         session_start();
         $domainCatId = filter_input(INPUT_POST, 'domainId', FILTER_SANITIZE_STRING);
         $engCat = filter_input(INPUT_POST, 'eng_cat', FILTER_SANITIZE_STRING);
@@ -22,6 +22,29 @@ class CategoryController
 
         $database = new Database();
         $pdo = $database->getConnection();
+
+        $checkStmt = $pdo->prepare("
+            SELECT id 
+            FROM category_master 
+            WHERE domain_id = :domain_id
+            AND (
+                    category_name = :eng_cat
+                    OR category_name LIKE :eng_like
+                )
+            LIMIT 1
+        ");
+
+        $checkStmt->execute([
+            ':domain_id' => $domainCatId,
+            ':eng_cat'  => $engCat,
+            ':eng_like' => '%' . $engCat . '%',
+        ]);
+
+        if ($checkStmt->rowCount() > 0) {
+            $_SESSION['error'] = $engCat ." Category already exists for this domain.";
+            header("Location: ../../create-category.php");
+            exit;
+        }
 
         $categoryModel = new CategoryModel($pdo);
 
@@ -99,7 +122,6 @@ class CategoryController
             exit;
         }
     }
-
 }
 
 $controller = new CategoryController();
@@ -116,7 +138,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     } else {
         $controller->insertCategory();
     }
-
 } else {
     $controller->showCategories();
 }

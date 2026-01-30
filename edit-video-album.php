@@ -47,8 +47,11 @@ if ((isset($_SESSION['login'])) && ($_SESSION['login'] == true)) {
     <div class="container-fluid">
         <div class="card shadow-sm border-0">
             <div class="card-body p-0">
-                <div class="card-header-modern">
+                <div class="card-header-modern d-flex align-items-center justify-content-between">
                     Edit Video Album
+                    <a href="javascript:history.back()" class="btn btn-danger btn-sm">
+                        ← Back
+                    </a>
                 </div>
 
                 <div class="p-2">

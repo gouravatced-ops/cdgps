@@ -34,7 +34,7 @@ if (isset($_SESSION['user_id'])) {
     $location = htmlspecialchars($album['location']);
     $coverId = $album['cover_photo_id'];
 
-    ?>
+?>
 
     <style>
         /* Custom styles */
@@ -68,8 +68,11 @@ if (isset($_SESSION['user_id'])) {
     <div class="container-fluid">
         <div class="card">
             <div class="card-body p-0">
-                <div class="card-header-modern">
+                <div class="card-header-modern d-flex align-items-center justify-content-between">
                     Edit Press Clip
+                    <a href="javascript:history.back()" class="btn btn-danger btn-sm">
+                        ← Back
+                    </a>
                 </div>
 
                 <div class="p-2">
@@ -133,7 +136,7 @@ if (isset($_SESSION['user_id'])) {
                                 <input type="radio" class="form-check-input" id="coverPhoto<?= $photoId ?>" name="coverPhoto"
                                     value="<?= $photoId ?>" <?= $photoId == $coverId ? 'checked' : '' ?>>
                                 <label for=" coverPhoto<?= $photoId ?>" class="form-check-label">Cover Photo</label>
-                                <?php echo '
+                            <?php echo '
                                                         </div>
                                                     </div>
                                                 </div>

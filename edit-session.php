@@ -21,8 +21,11 @@ $data = $stmt->fetch(PDO::FETCH_ASSOC);
 <div class="container-fluid">
     <div class="card">
         <div class="card-body p-0">
-            <div class="card-header-modern">
+            <div class="card-header-modern d-flex align-items-center justify-content-between">
                 Edit Session & Financial Year
+                <a href="javascript:history.back()" class="btn btn-danger btn-sm">
+                    ← Back
+                </a>
             </div>
 
             <div class="p-2">

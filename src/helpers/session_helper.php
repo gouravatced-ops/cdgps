@@ -35,7 +35,7 @@ function checkSessionTimeout() {
     
     // Check if session expiration is set
     if (!isset($_SESSION['exp_session'])) {
-        $_SESSION['exp_session'] = 15 * 60; // 15 minutes in seconds
+        $_SESSION['exp_session'] = 60 * 60; // 60 minutes in seconds
     }
     
     // Check if login time is set

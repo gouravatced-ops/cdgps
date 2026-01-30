@@ -69,6 +69,10 @@ class LoginController
                     $userModel->resetFailedAttempts($user['id']);
                 }
             }
+        } else {
+            $_SESSION['login_error'] = "Account is Deactivated.";
+            header('Location: ../../index.php');
+            exit;
         }
 
         // Verify password
@@ -82,7 +86,7 @@ class LoginController
             $_SESSION['user_id'] = $user['id'];
             date_default_timezone_set('Asia/Kolkata');
             $_SESSION['login_time'] = date('Y-m-d H:i:s');
-            $_SESSION['exp_session'] = 15 * 60; // Session expiration 15 min
+            $_SESSION['exp_session'] = 60 * 60; // Session expiration 15 min
             $_SESSION['login_id'] = $result;
 
             header("Location: ../../dashboard_view.php");

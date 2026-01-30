@@ -1,15 +1,13 @@
 <?php
 session_start();
 require_once "../../database/Database.php";
-
-// Display all errors, warnings, and notices (remove in production)
-ini_set('display_errors', 1);
-ini_set('display_startup_errors', 1);
-error_reporting(E_ALL);
+require_once __DIR__ . '../../../utils/ActivityLogger.php';
 
 class NewsController
 {
     private $pdo;
+    private $logger;
+    private $loggedId;
 
     public function __construct()
     {
@@ -20,6 +18,9 @@ class NewsController
 
         $database = new Database();
         $this->pdo = $database->getConnection();
+
+        $this->logger = new ActivityLogger($this->pdo);
+        $this->loggedId = $_SESSION['login_id'];
     }
 
     public function getSessionYear($event_date)
@@ -115,12 +116,6 @@ class NewsController
         // Basic validations
         if (empty($_POST['domainId'])) {
             $errors['domainId'] = "Domain is required";
-        }
-        if (empty($_POST['subCategoryId'])) {
-            $errors['subCategoryId'] = "Category is required";
-        }
-        if (empty($_POST['childSubCategoryId'])) {
-            $errors['childSubCategoryId'] = "Sub Category is required";
         }
         if (empty($_POST['news_date'])) {
             $errors['news_date'] = "News Date is required";
@@ -229,7 +224,7 @@ class NewsController
         // Generate unique ID and prepare paths
         $uniqueTenderID = $this->generateUniqueTenderID();
         $domainId = $_POST['domainId'];
-        $subCategoryId = $_POST['subCategoryId'];
+        $subCategoryId = $_POST['subCategoryId'] ?? NULL;
         $stmt = $this->pdo->prepare(
             "SELECT category_id 
             FROM sub_category 
@@ -240,7 +235,7 @@ class NewsController
 
         $stmt->execute(['subCategoryId' => $subCategoryId]);
         $categoryId = $stmt->fetchColumn();
-        $childSubCategoryId = $_POST['childSubCategoryId'];
+        $childSubCategoryId = $_POST['childSubCategoryId'] ?? NULL;
         $news_date = $_POST['news_date'];
         $news_title = $_POST['news_title'];
         $news_title_hin = $_POST['news_title_hin'];
@@ -386,6 +381,54 @@ class NewsController
                 $location,
                 $session_year
             ]);
+
+            $data = [
+                'uniq_id'                => $uniqueTenderID,
+                'domain_id'              => $domainId,
+                'category_id'            => $categoryId,
+                'sub_category_id'        => $subCategoryId,
+                'child_sub_category_id'  => $childSubCategoryId,
+                'news_title'             => $news_title,
+                'news_title_hin'         => $news_title_hin,
+                'news_event_date'        => $news_date,
+                'news_description'       => $news_description,
+                'hashtag'                => $hash_tag,
+                'news_pic1'              => $news_picture,
+                'news_pic2'              => $other_images,
+                'created_by'             => $_SESSION['user_id'],
+
+                'video1'        => $video1,
+                'video_title1'  => $video_title1,
+                'video2'        => $video2,
+                'video_title2'  => $video_title2,
+                'video3'        => $video3,
+                'video_title3'  => $video_title3,
+                'video4'        => $video4,
+                'video_title4'  => $video_title4,
+
+                'pdf1' => $pdf_attachement1,
+                'pdf_title1' => $pdf_attachement_title1,
+                'pdf2' => $pdf_attachement2,
+                'pdf_title2' => $pdf_attachement_title2,
+                'pdf3' => $pdf_attachement3,
+                'pdf_title3' => $pdf_attachement_title3,
+                'pdf4' => $pdf_attachement4,
+                'pdf_title4' => $pdf_attachement_title4,
+                'pdf5' => $pdf_attachement5,
+                'pdf_title5' => $pdf_attachement_title5,
+                'pdf6' => $pdf_attachement6,
+                'pdf_title6' => $pdf_attachement_title6,
+                'pdf7' => $pdf_attachement7,
+                'pdf_title7' => $pdf_attachement_title7,
+                'pdf8' => $pdf_attachement8,
+                'pdf_title8' => $pdf_attachement_title8,
+
+                'location'      => $location,
+                'session_year'  => $session_year
+            ];
+
+
+            $this->logger->log('news', $uniqueTenderID, 'INSERT', null, null, json_encode($data), $_SESSION['user_id'], $this->loggedId);
             $this->pdo->commit();
 
             unset($_SESSION['post']);
@@ -425,12 +468,6 @@ class NewsController
         // Basic validations
         if (empty($_POST['domainId'])) {
             $errors['domainId'] = "Domain is required";
-        }
-        if (empty($_POST['subCategoryId'])) {
-            $errors['subCategoryId'] = "Category is required";
-        }
-        if (empty($_POST['childSubCategoryId'])) {
-            $errors['childSubCategoryId'] = "Sub Category is required";
         }
         if (empty($_POST['news_date'])) {
             $errors['news_date'] = "News Date is required";
@@ -506,7 +543,7 @@ class NewsController
 
         $uniqueTenderID = $existingNews['uniq_id'];
         $domainId = $_POST['domainId'];
-        $subCategoryId = $_POST['subCategoryId'];
+        $subCategoryId = $_POST['subCategoryId'] ?? NULL;
         $stmt = $this->pdo->prepare(
             "SELECT category_id 
             FROM sub_category 
@@ -517,7 +554,7 @@ class NewsController
 
         $stmt->execute(['subCategoryId' => $subCategoryId]);
         $categoryId = $stmt->fetchColumn();
-        $childSubCategoryId = $_POST['childSubCategoryId'];
+        $childSubCategoryId = $_POST['childSubCategoryId'] ?? NULL;
         $news_date = $_POST['news_date'];
         $news_title = $_POST['news_title'];
         $news_title_hin = $_POST['news_title_hin'];
@@ -527,7 +564,7 @@ class NewsController
         $session_year = $this->getSessionYear($news_date);
 
         // Sanitize news description
-       
+
         $allowed_tags = '<p></p><a></a><b></b><u></u><strong></strong><em></em><ul></ul><ol></ol><li></li><i></i><table></table>';
         $news_description = strip_tags($_POST['news_description'], $allowed_tags);
         $location = $_POST['location'] ?? null;
@@ -701,6 +738,69 @@ class NewsController
                 $session_year,
                 $newsId
             ]);
+
+            $data = [
+                'domain_id'                => $domainId,
+                'category_id'              => $categoryId,
+                'sub_category_id'          => $subCategoryId,
+                'child_sub_category_id'    => $childSubCategoryId,
+
+                'news_title'               => $news_title,
+                'news_title_hin'           => $news_title_hin,
+                'news_event_date'          => $news_date,
+                'news_description'         => $news_description,
+                'hashtag'                  => $hash_tag,
+
+                'news_pic1'                => $news_picture,
+                'news_pic2'                => $other_images,
+
+                'created_by'               => $_SESSION['user_id'],
+
+                'video_attach_1'           => $video1,
+                'video_attach_title1'      => $video_title1,
+                'video_attach_2'           => $video2,
+                'video_attach_title2'      => $video_title2,
+                'video_attach_3'           => $video3,
+                'video_attach_title3'      => $video_title3,
+                'video_attach_4'           => $video4,
+                'video_attach_title4'      => $video_title4,
+
+                'pdf_attachement1'         => $pdf_files['pdf_attachement1'] ?? null,
+                'pdf_attachement_title1'   => $pdf_attachement_title1,
+                'pdf_attachement2'         => $pdf_files['pdf_attachement2'] ?? null,
+                'pdf_attachement_title2'   => $pdf_attachement_title2,
+                'pdf_attachement3'         => $pdf_files['pdf_attachement3'] ?? null,
+                'pdf_attachement_title3'   => $pdf_attachement_title3,
+                'pdf_attachement4'         => $pdf_files['pdf_attachement4'] ?? null,
+                'pdf_attachement_title4'   => $pdf_attachement_title4,
+                'pdf_attachement5'         => $pdf_files['pdf_attachement5'] ?? null,
+                'pdf_attachement_title5'   => $pdf_attachement_title5,
+                'pdf_attachement6'         => $pdf_files['pdf_attachement6'] ?? null,
+                'pdf_attachement_title6'   => $pdf_attachement_title6,
+                'pdf_attachement7'         => $pdf_files['pdf_attachement7'] ?? null,
+                'pdf_attachement_title7'   => $pdf_attachement_title7,
+                'pdf_attachement8'         => $pdf_files['pdf_attachement8'] ?? null,
+                'pdf_attachement_title8'   => $pdf_attachement_title8,
+
+                'location'                 => $location,
+                'session_year'             => $session_year,
+
+                'news_id'                  => $newsId
+            ];
+
+            $newData = json_encode($data);
+
+            $this->logger->log(
+                'news',
+                $newsId,
+                'UPDATE',
+                NULL,
+                json_encode($existingNews),
+                $newData,
+                $_SESSION['user_id'],
+                $this->loggedId
+            );
+
             $this->pdo->commit();
 
             unset($_SESSION['post']);
@@ -735,6 +835,19 @@ class NewsController
 
             $data = $stmt->execute();
 
+            $this->logger->log(
+                'news',
+                $post,
+                'DELETE',
+                'is_deleted',
+                '0',
+                '1',
+                $_SESSION['user_id'],
+                $this->loggedId
+            );
+
+            return true;
+
             header('Content-Type: application/json');
 
             if ($data) {
@@ -758,7 +871,6 @@ class NewsController
                 'message' => 'Failed data.'
             ]);
         }
-
     }
 
     public function hideNews()
@@ -783,6 +895,17 @@ class NewsController
 
             $data = $stmt->execute();
 
+            $this->logger->log(
+                'news',
+                $post,
+                'UPDATE',
+                'is_hide',
+                'N',
+                'Y',
+                $_SESSION['user_id'],
+                $this->loggedId
+            );
+
             header('Content-Type: application/json');
 
             if ($data) {
@@ -806,7 +929,6 @@ class NewsController
                 'message' => 'Failed data.'
             ]);
         }
-
     }
 }
 

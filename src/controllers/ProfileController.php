@@ -22,6 +22,7 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
 
 $userId = $_SESSION['user_id'];
 $username = filter_input(INPUT_POST, 'username', FILTER_SANITIZE_STRING);
+$mobile = filter_input(INPUT_POST, 'mobile', FILTER_SANITIZE_STRING);
 $email = filter_input(INPUT_POST, 'email', FILTER_SANITIZE_EMAIL);
 
 // Validate input
@@ -54,9 +55,10 @@ try {
     }
 
     // Update user profile
-    $stmt = $pdo->prepare("UPDATE users SET username = :username, email = :email WHERE id = :userId");
+    $stmt = $pdo->prepare("UPDATE users SET username = :username, email = :email, mobile = :mobile WHERE id = :userId");
     $stmt->bindParam(':username', $username);
     $stmt->bindParam(':email', $email);
+    $stmt->bindParam(':mobile', $mobile);
     $stmt->bindParam(':userId', $userId, PDO::PARAM_INT);
 
     if ($stmt->execute()) {

@@ -50,7 +50,7 @@ if (isset($_SESSION['user_id'])) {
     <div class="container-fluid">
         <div class="card">
             <div class="card-body p-0">
-                <div class="card-header-modern">
+                <div class="card-header-modern d-flex align-items-center justify-content-between">
                     Photo Album View
                 </div>
 

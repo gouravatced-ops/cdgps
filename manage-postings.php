@@ -20,7 +20,7 @@ $postings = $pdo->query($sql)->fetchAll(PDO::FETCH_ASSOC);
 <div class="container-fluid">
     <div class="card">
         <div class="card-body p-0">
-            <div class="card-header-modern">
+            <div class="card-header-modern d-flex align-items-center justify-content-between">
                 Manage Posting
             </div>
 
@@ -84,7 +84,7 @@ $postings = $pdo->query($sql)->fetchAll(PDO::FETCH_ASSOC);
                             <td><a href="<?= $base_url ?>/view-posting.php?id=<?= htmlspecialchars($row['id']) ?>"
                                     class="btn btn-success btn-sm"><i class="ti ti-eye"></i></a>&nbsp;&nbsp;<a
                                     href="<?= $base_url ?>/edit-postings.php?id=<?= htmlspecialchars($row['id']) ?>"
-                                    class="btn btn-info btn-sm"><i class="ti ti-edit"></i></a>&nbsp;&nbsp;
+                                    class="btn btn-primary btn-sm"><i class="ti ti-edit"></i></a>&nbsp;&nbsp;
                                 <button class="btn btn-danger btn-sm delete-post-button"
                                     data-id="<?php echo htmlspecialchars($row['id']); ?>">
                                     <i class="ti ti-trash"></i>

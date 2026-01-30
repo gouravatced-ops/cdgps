@@ -6,21 +6,18 @@ class Database
     private string $dbname;
     private string $username;
     private string $password;
-    private PDO $pdo;
+    private ?PDO $pdo = null;
 
     public function __construct()
     {
-        // Detect environment
         $isLocal = in_array($_SERVER['SERVER_NAME'], ['localhost', '127.0.0.1']);
 
         if ($isLocal) {
-            // LOCAL
             $this->host     = 'localhost';
-            $this->dbname   = 'gpsimdega';
+            $this->dbname   = 'cgst_db';
             $this->username = 'root';
             $this->password = '';
         } else {
-            // PRODUCTION
             $this->host     = 'localhost';
             $this->dbname   = 'domains_cgst';
             $this->username = 'domains_cgst';
@@ -45,10 +42,9 @@ class Database
                     PDO::ATTR_EMULATE_PREPARES   => false,
                 ]
             );
-
         } catch (PDOException $e) {
             error_log($e->getMessage());
-            die('Database connection failed.');
+            throw new Exception('DB_CONNECTION_FAILED');
         }
     }
 

@@ -55,148 +55,24 @@ include('./src/utils/dashboard.php');
 </div>
 <div class="container-fluid mt-4">
     <div class="row">
-
-        <div class="col-sm-6 col-xl-3 mb-3">
-            <a href="<?= $base_url ?>/manage-category.php">
-                <div class="card overflow-hidden rounded-2 shadow-sm">
-                    <div class="card-header p-2 text-center" style="color:white !important; background : <?= $cardColors['category']; ?>">
-                        <h6 class="fw-semibold" style="font-size: 22px;" style="color:white !important;">Total Category</h6>
-                    </div>
-                    <div class="d-flex align-items-center justify-content-between p-2">
-                        <div>
-                            <h2 class="mb-0" style="font-size: 22px;"><?= $catCount ?></h2>
-                        </div>
-                        <div class="bg-secondary bg-opacity-10 rounded-circle p-1">
-                            <i class="ti ti-category fs-3" style="color : <?= $cardColors['category']; ?>"></i>
-                        </div>
-                    </div>
-                </div>
-            </a>
-        </div>
-
-        <div class="col-sm-6 col-xl-3 mb-3">
-            <a href="<?= $base_url ?>/manage-sub-category.php">
-                <div class="card overflow-hidden rounded-2 shadow-sm">
-                    <div class="card-header p-2 text-center" style="color:white !important; background : <?= $cardColors['subcategory']; ?>">
-                        <h6 class="fw-semibold" style="font-size: 22px;" style="color:white !important;">Total Sub Category</h6>
-                    </div>
-                    <div class="d-flex align-items-center justify-content-between p-2">
-                        <div>
-                            <h2 class="mb-0" style="font-size: 22px;"><?= $subCatCount ?></h2>
-                        </div>
-                        <div class="bg-secondary bg-opacity-10 rounded-circle p-1">
-                            <i class="ti ti-layout-list fs-3" style="color : <?= $cardColors['subcategory']; ?>"></i>
-                        </div>
-                    </div>
-                </div>
-            </a>
-        </div>
-
-        <div class="col-sm-6 col-xl-3 mb-3">
-            <a href="<?= $base_url ?>/manage-news.php">
-                <div class="card overflow-hidden rounded-2 shadow-sm">
-                    <div class="card-header p-2 text-center" style="color:white !important; background : <?= $cardColors['news']; ?>">
-                        <h6 class="fw-semibold" style="font-size: 22px;" style="color:white !important;">Total News</h6>
-                    </div>
-                    <div class="d-flex align-items-center justify-content-between p-2">
-                        <div>
-                            <h2 class="mb-0" style="font-size: 22px;"><?= $newsCount ?></h2>
-                        </div>
-                        <div class="bg-secondary bg-opacity-10 rounded-circle p-1">
-                            <i class="ti ti-news fs-3" style="color : <?= $cardColors['news']; ?>"></i>
-                        </div>
-                    </div>
-                </div>
-            </a>
-        </div>
-
-        <div class="col-sm-6 col-xl-3 mb-3">
-            <a href="<?= $base_url ?>/manage-notices.php">
-                <div class="card overflow-hidden rounded-2 shadow-sm">
-                    <div class="card-header p-2 text-center" style="color:white !important; background : <?= $cardColors['notices']; ?>">
-                        <h6 class="fw-semibold" style="font-size: 22px;" style="color:white !important;">Total Notice</h6>
-                    </div>
-                    <div class="d-flex align-items-center justify-content-between p-2">
-                        <div>
-                            <h2 class="mb-0" style="font-size: 22px;"><?= $noticeCount ?></h2>
-                        </div>
-                        <div class="bg-secondary bg-opacity-10 rounded-circle p-1">
-                            <i class="ti ti-file-text fs-3" style="color : <?= $cardColors['notices']; ?>"></i>
-                        </div>
-                    </div>
-                </div>
-            </a>
-        </div>
-
-        <div class="col-sm-6 col-xl-3 mb-3">
-            <a href="<?= $base_url ?>/manage-photos.php">
-                <div class="card overflow-hidden rounded-2 shadow-sm">
-                    <div class="card-header p-2 text-info text-center" style="color:white !important; background : <?= $cardColors['photos']; ?>">
-                        <h6 class="fw-semibold" style="font-size: 22px;" style="color:white !important;">Total Photos</h6>
-                    </div>
-                    <div class="d-flex align-items-center justify-content-between p-2">
-                        <div>
-                            <h2 class="mb-0" style="font-size: 22px;"><?= $photoCount ?></h2>
-                        </div>
-                        <div class="bg-secondary bg-opacity-10 rounded-circle p-1">
-                            <i class="ti ti-photo fs-3" style="color : <?= $cardColors['photos']; ?>"></i>
-                        </div>
-                    </div>
-                </div>
-            </a>
-        </div>
-
-        <div class="col-sm-6 col-xl-3 mb-3">
-            <a href="<?= $base_url ?>/manage-videos.php">
-                <div class="card overflow-hidden rounded-2 shadow-sm">
-                    <div class="card-header p-2 p-2 text-info text-center" style="color:white !important; background : <?= $cardColors['videos']; ?>">
-                        <h6 class="fw-semibold" style="font-size: 22px;" style="color:white !important;">Total Videos</h6>
-                    </div>
-                    <div class="d-flex align-items-center justify-content-between p-2">
-                        <div>
-                            <h2 class="mb-0" style="font-size: 22px;"><?= $vdoCount ?></h2>
-                        </div>
-                        <div class="bg-secondary bg-opacity-10 rounded-circle p-1">
-                            <i class="ti ti-video fs-3" style="color : <?= $cardColors['videos']; ?>"></i>
-                        </div>
-                    </div>
-                </div>
-            </a>
-        </div>
-
-        <div class="col-sm-6 col-xl-3 mb-3">
-            <a href="<?= $base_url ?>/manage-press-clips.php">
-                <div class="card overflow-hidden rounded-2 shadow-sm">
-                    <div class="card-header p-2  text-info text-center" style="color:white !important; background : <?= $cardColors['pressclips']; ?>">
-                        <h6 class="fw-semibold" style="font-size: 22px;" style="color:white !important;">Total Press Clip</h6>
-                    </div>
-                    <div class="d-flex align-items-center justify-content-between p-2">
-                        <div>
-                            <h2 class="mb-0" style="font-size: 22px;"><?= $pressCount ?></h2>
-                        </div>
-                        <div class="bg-secondary bg-opacity-10 rounded-circle p-1">
-                            <i class="ti ti-clipboard fs-3" style="color : <?= $cardColors['pressclips']; ?>"></i>
-                        </div>
-                    </div>
-                </div>
-            </a>
-        </div>
-
-        <?php if ($authRole == 'superadmin') { ?>
+        <?php foreach ($cards as $card) { ?>
             <div class="col-sm-6 col-xl-3 mb-3">
-                <a href="<?= $base_url ?>/manage-domain.php">
+                <a href="<?= $base_url . '/' . $card['url']; ?>">
                     <div class="card overflow-hidden rounded-2 shadow-sm">
-                        <div class="card-header p-2 text-center" style="color:white !important; background : <?= $cardColors['domains']; ?>">
-                            <h6 class="fw-semibold" style="font-size: 22px;" style="color:white !important;">Total Domains</h6>
+
+                        <div class="card-header p-2 text-center"
+                            style="background:<?= $card['color']; ?>;color:#fff;">
+                            <h6 class="fw-semibold"><?= $card['title']; ?></h6>
                         </div>
+
                         <div class="d-flex align-items-center justify-content-between p-2">
-                            <div>
-                                <h2 class="mb-0" style="font-size: 22px;"><?= $domainCount ?></h2>
-                            </div>
-                            <div class="bg-success bg-opacity-10 rounded-circle p-1">
-                                <i class="ti ti-world fs-3" style="color : <?= $cardColors['domains']; ?>"></i>
+                            <h2 class="mb-0"><?= $card['count']; ?></h2>
+                            <div class="bg-secondary bg-opacity-10 rounded-circle p-1">
+                                <i class="<?= $card['icon']; ?> fs-3"
+                                    style="color:<?= $card['color']; ?>"></i>
                             </div>
                         </div>
+
                     </div>
                 </a>
             </div>
@@ -243,7 +119,7 @@ include('./src/utils/dashboard.php');
                                 <a href="manage-notices.php">View More</a>
                             </td>
                         </tr>
-                    <?php } else if(count($recentNotices) <= 0) { ?>
+                    <?php } else if (count($recentNotices) <= 0) { ?>
                         <tr>
                             <td colspan="5" class="text-center text-muted py-2">
                                 No notices generated yet

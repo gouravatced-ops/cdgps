@@ -5,7 +5,8 @@ if (!isset($_SESSION['user_id'])) {
     header("Location: index.php");
     exit;
 }
-require_once __DIR__ . '/layouts/header.php'; 
+require_once __DIR__ . '/layouts/header.php';
+$module = 'mediavideo';
 
 $params = [];
 $sql = "SELECT cm.*, p.video_link, dm.eng_name FROM albums cm LEFT JOIN videos p on p.id = cm.cover_video_id JOIN domains as dm ON dm.id = cm.domain_id WHERE cm.type='Videos' AND cm.is_deleted='0'";
@@ -26,8 +27,13 @@ $categories = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
     <div class="card">
         <div class="card-body p-0">
-            <div class="card-header-modern">
+            <div class="card-header-modern d-flex align-items-center justify-content-between">
                 Manage Videos
+                <?php if (canCreate($pdo, $userId, $module)) : ?>
+                <a href="<?= $base_url ?>/post-album.php" class="btn btn-warning btn-sm">
+                    <strong>+ Create</strong>
+                </a>
+                <?php endif; ?>
             </div>
 
             <div class="p-2">
@@ -74,20 +80,22 @@ $categories = $stmt->fetchAll(PDO::FETCH_ASSOC);
                             </td>
                             <td>
                                 <a href="<?= $base_url ?>/edit-albums-details.php?album_id=<?php echo htmlspecialchars($row['uniq_id']) ?>"
-                                    title="Edit Video Album Details" class="btn btn-info"><i
+                                    title="Edit Video Album Details" class="btn btn-primary"><i
                                         class="ti ti-edit"></i></a>&nbsp;&nbsp;
 
                             </td>
                             <td style="white-space: nowrap;">
+                                <?php if (canEdit($pdo, $userId, $module)) : ?>
                                 <a href="<?= $base_url ?>/edit-video-album.php?album_id=<?php echo htmlspecialchars($row['uniq_id']) ?>"
                                     title="Add & Manage Videos" class="btn btn-primary"><i
                                         class="ti ti-photo-edit"></i></a>&nbsp;&nbsp;
-
+                                <?php endif; ?>
+                                <?php if (canDelete($pdo, $userId, $module)) : ?>
                                 <button class="btn btn-danger delete-photo-albums-button" title="Delete Video Album"
                                     data-id="<?php echo htmlspecialchars($row['uniq_id']); ?>">
                                     <i class="ti ti-trash"></i>
                                 </button>
-
+                                <?php endif; ?>
                                 <!-- <button class="btn btn-warning delete-category-button"
                                     data-id="<?php echo htmlspecialchars($row['uniq_id']); ?>" title="Hide Videos Album">
                                     <i class="ti ti-eye"></i>

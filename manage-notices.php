@@ -7,7 +7,8 @@
 require_once __DIR__ . '/src/helpers/session_helper.php';
 requireLogin(); // This will redirect if not logged in or session expired
 
-require_once __DIR__ . '/layouts/header.php'; 
+require_once __DIR__ . '/layouts/header.php';
+$module = 'notices';
 
 $params = [];
 $sql = "SELECT *, b.sub_category_name as category_name , dm.eng_name , csc.child_sub_category_name FROM notices a join sub_category b on a.notice_subcategory = b.id LEFT JOIN domains as dm ON dm.id = a.domain_id LEFT JOIN child_sub_category as csc ON csc.id = a.notice_childsubcategory WHERE  a.is_deleted='0' ";
@@ -27,8 +28,13 @@ $notices_data = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
     <div class="card">
         <div class="card-body p-0">
-            <div class="card-header-modern">
+            <div class="card-header-modern d-flex align-items-center justify-content-between">
                 Manage Notices
+                <?php if (canCreate($pdo, $userId, $module)) : ?>
+                <a href="<?= $base_url ?>/create-notice.php" class="btn btn-warning btn-sm">
+                    <strong>+ Create</strong>
+                </a>
+                <?php endif; ?>
             </div>
 
             <div class="p-2">
@@ -76,15 +82,19 @@ $notices_data = $stmt->fetchAll(PDO::FETCH_ASSOC);
                             <td><?php echo htmlspecialchars($row['child_sub_category_name']); ?></td>
                             <td><?php echo htmlspecialchars($row['notice_title']); ?></td>
                             <td style="white-space: nowrap;"><?= htmlspecialchars($row['notice_dated']); ?></td>
-                            <td><a href="<?= $base_url ?>/edit-notices.php?id=<?php echo htmlspecialchars($row['uniq_id']) ?>"
-                                    class="btn btn-info btn-sm"><i class="ti ti-edit"></i></a>&nbsp;&nbsp;
-
+                            <td style="white-space: nowrap;">
+                                <?php if (canEdit($pdo, $userId, $module)) : ?>    
+                                <a href="<?= $base_url ?>/edit-notices.php?id=<?php echo htmlspecialchars($row['uniq_id']) ?>"
+                                        class="btn btn-primary btn-sm"><i class="ti ti-edit"></i></a>&nbsp;&nbsp;
+                                <?php endif; ?>
+                                <?php if (canDelete($pdo, $userId, $module)) : ?>
                                 <form action="<?= $base_url ?>/src/controllers/notice/NoticeController.php" method="post">
                                     <input type="hidden" name="ed" value="<?php echo htmlspecialchars($row['uniq_id']); ?>">
                                     <button class="btn btn-danger btn-sm delete-category-button" type="submit">
                                         <i class="ti ti-trash"></i>
                                     </button>
                                 </form>
+                                <?php endif; ?>
                             </td>
                         </tr>
                     <?php endforeach; ?>
