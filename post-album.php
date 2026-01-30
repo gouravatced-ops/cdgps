@@ -71,13 +71,19 @@ if ((isset($_SESSION['login'])) && ($_SESSION['login'] == true)) {
                         <label for="type" class="col-form-label col-md-4">Calender Type <span
                                 class="text-danger">*</span></label>
                         <div class="col-md-8">
-                            <select class="form-control" id="type" name="calendertype" required>
-                                <option value="sy">Calender Year</option>
-                                <option value="fy">Financial Year</option>
+                            <select class="form-control" id="type" disabled>
+                                <?php if ($calendarType == 'financialYear') { ?>
+                                    <option value="fy">Financial Year</option>
+                                <?php } ?>
+                                <?php if ($calendarType == 'calendarYear') { ?>
+                                    <option value="sy">Calender Year</option>
+                                <?php } ?>
                             </select>
+                            <input type="hidden" name="calendertype" value="<?= $calendarType; ?>">
                         </div>
                     </div>
-
+                    
+                    <?php if($calendarType=='calendarYear') { ?>
                     <div class="form-group row mt-3" id="syField">
                         <label for="sessionYear" class="col-form-label col-md-4">Choose Session Year<span
                                 class="text-danger">*</span></label>
@@ -87,16 +93,19 @@ if ((isset($_SESSION['login'])) && ($_SESSION['login'] == true)) {
                             </select>
                         </div>
                     </div>
-
-                    <div class="form-group row mt-3" id="fyField" style="display:none">
+                    <?php } ?>
+                    
+                    <?php if($calendarType=='financialYear') { ?>
+                    <div class="form-group row mt-3" id="fyField">
                         <label for="financialYear" class="col-form-label col-md-4">Choose Financial Year <span
                                 class="text-danger">*</span></label>
                         <div class="col-md-8">
-                            <select class="form-control" id="financialYear" name="financialYear" disabled>
+                            <select class="form-control" id="financialYear" name="financialYear" required>
                                 <option value="">Choose Financial Year...</option>
                             </select>
                         </div>
                     </div>
+                    <?php } ?>
 
                     <div class="form-group row mt-3">
                         <label for="album_type" class="col-form-label col-md-4">Album Type <span

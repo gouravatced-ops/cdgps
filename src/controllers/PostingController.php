@@ -32,6 +32,7 @@ class PostingController
             exit;
         }
 
+        print_r($_POST); die();
         session_start();
 
         $database = new Database();

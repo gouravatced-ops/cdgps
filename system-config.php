@@ -21,6 +21,7 @@ $full_app_name = "Central GST & Central Excise Ranchi Zone , Patna";
 $loginPage_app_name = "CGST & CE Ranchi Zone , Patna";
 $logo = $base_url . "/assets/images/logos/cgst-logo.png";
 $faviconIcon = $base_url . '/assets/images/logos/cgst-logo.png';
+$calendarType = 'financialYear';  // calendarYear
 
 $dashboardThemes = [
     'indigo' => [

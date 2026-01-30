@@ -97,14 +97,20 @@ require_once __DIR__ . '/layouts/header.php';
                             <div class="mb-3">
                                 <label for="type" class="form-label">Calender Type <span
                                         class="text-danger">*</span></label>
-                                <select class="form-control" id="type" name="calendertype" required>
+                                <select class="form-control" id="type" disabled>
+                                    <?php if($calendarType=='financialYear') { ?>
+                                        <option value="fy">Financial Year</option>
+                                    <?php } ?>
+                                    <?php if($calendarType=='calendarYear') { ?>
                                     <option value="sy">Calender Year</option>
-                                    <option value="fy">Financial Year</option>
+                                    <?php } ?>
                                 </select>
+                                <input type="hidden" name="calendertype" value="<?= $calendarType; ?>">
                             </div>
-                        </div>
-
+                        </div>                        
+                        
                         <div class="col-md-6">
+                            <?php if($calendarType=='calendarYear') { ?>
                             <div class="mb-3" id="syField">
                                 <label for="sessionYear" class="form-label">Choose Session Year<span
                                         class="text-danger">*</span></label>
@@ -112,14 +118,17 @@ require_once __DIR__ . '/layouts/header.php';
                                     <option value="">Choose Session Year...</option>
                                 </select>
                             </div>
-
-                            <div class="mb-3" id="fyField" style="display:none">
+                            <?php } ?>
+                            
+                            <?php if($calendarType=='financialYear') { ?>
+                            <div class="mb-3" id="fyField">
                                 <label for="financialYear" class="form-label">Choose Financial Year <span
                                         class="text-danger">*</span></label>
-                                <select class="form-control" id="financialYear" name="financialYear" disabled>
+                                <select class="form-control" id="financialYear" name="financialYear" required>
                                     <option value="">Choose Financial Year...</option>
                                 </select>
                             </div>
+                            <?php } ?>
                         </div>
 
 
